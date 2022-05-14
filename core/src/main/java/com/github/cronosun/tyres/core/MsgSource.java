@@ -1,42 +1,43 @@
 package com.github.cronosun.tyres.core;
 
-import java.util.Locale;
-
 import org.jetbrains.annotations.Nullable;
 
-public interface MsgSource {
-    /**
-     * Returns the message.
-     * 
-     * Never returns null. If the resource cannot be found but has a default value (see 
-     * {@link Default}), the default value is taken. If it does not have a default value, the
-     * system returns a fallback message instead. 
-     */
-    String getMessage(MsgRes resource, @Nullable Object[] args, Locale locale);
-   
-    /**
-     * Returns the message.
-     * 
-     * Never returns null. If the resource cannot be found, the given default message is used
-     * instead.
-     */
-    String getMessage(MsgRes resource, @Nullable Object[] args, String defaultMessage, Locale locale);
-    
-    /**
-     * Returns the message.
-     * 
-     * If the resource cannot be found, uses the default value (see {@link Default}) - if this
-     * is missing too, returns `null`.
-     */
-    @Nullable
-    String tryGetMessage(MsgRes resource, @Nullable Object[] args, Locale locale);
+import java.util.Locale;
 
-    default String getMessageOrThrow(MsgRes resource, @Nullable Object[] args, Locale locale) {
-        var maybeMessage = tryGetMessage(resource, args, locale);
-        if (maybeMessage ==null) {
-            var info = resource.info();
-            throw new TyResException("Message not found: " + info);
-        }
-        return maybeMessage;
+public interface MsgSource {
+
+    String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale);
+
+    default String message(MsgRes resource, Locale locale) {
+        return message(resource, notFoundStrategy(), locale);
+    }
+
+    @Nullable
+    String maybeMessage(MsgRes resource, Locale locale);
+
+    @Nullable
+    default String maybeMessage(Msg message, Locale locale) {
+        return message.maybeMessage(this, locale);
+    }
+
+    default String message(Msg message, NotFoundStrategy notFoundStrategy, Locale locale) {
+        return message.message(this, notFoundStrategy, locale);
+    }
+
+    default String message(Msg message, Locale locale) {
+        return message.message(this, notFoundStrategy(), locale);
+    }
+
+    NotFoundStrategy notFoundStrategy();
+
+    enum NotFoundStrategy {
+        /**
+         * If there's no such message, throws a {@link TyResException} exception.
+         */
+        THROW,
+        /**
+         * If there's no such message, returns the fallback value.
+         */
+        FALLBACK
     }
 }

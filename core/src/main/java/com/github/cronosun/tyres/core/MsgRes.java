@@ -1,16 +1,31 @@
 package com.github.cronosun.tyres.core;
 
-public abstract class MsgRes implements Res<MsgRes> {
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Locale;
+
+public abstract class MsgRes implements Res<MsgRes>, Msg {
 
   private static final Object[] NO_ARGS = new Object[] {};
 
   private MsgRes() {}
 
-  public static final MsgRes create(BundleInfo _ignored, ResInfo info) {
+  public static MsgRes create(BundleInfo _ignored, ResInfo info) {
     return new NoArgs(info);
   }
 
   public abstract MsgRes withArgs(Object[] args);
+
+  @Override
+  public final String message(MsgSource source, MsgSource.NotFoundStrategy notFoundStrategy, Locale locale) {
+    return source.message(this, notFoundStrategy, locale);
+  }
+
+  @Nullable
+  @Override
+  public final String maybeMessage(MsgSource source, Locale locale) {
+    return source.maybeMessage(this, locale);
+  }
 
   private static final class NoArgs extends MsgRes {
 

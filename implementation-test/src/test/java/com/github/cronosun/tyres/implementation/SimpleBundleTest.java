@@ -1,5 +1,6 @@
 package com.github.cronosun.tyres.implementation;
 
+import com.github.cronosun.tyres.core.BaseName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,13 +11,13 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.voidMethod();
     var info = res.info();
     var method = info.method();
-    var bundleinfo = info.bundle();
+    var bundleInfo = info.bundle();
 
     Assertions.assertEquals(0, res.args().length);
-    Assertions.assertNull(bundleinfo.customPackage());
+    Assertions.assertEquals(BaseName.fromClass(SimpleBundle.class), bundleInfo.baseName());
     Assertions.assertEquals("voidMethod", method.getName());
     Assertions.assertEquals(SimpleBundle.class, method.getDeclaringClass());
-    Assertions.assertEquals(SimpleBundle.class, bundleinfo.bundleClass());
+    Assertions.assertEquals(SimpleBundle.class, bundleInfo.bundleClass());
     Assertions.assertEquals(method.getName(), info.name());
   }
 
@@ -25,14 +26,14 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.methodWithArgument("Hello");
     var info = res.info();
     var method = info.method();
-    var bundleinfo = info.bundle();
+    var bundleInfo = info.bundle();
 
     Assertions.assertEquals(1, res.args().length);
     Assertions.assertEquals("Hello", res.args()[0]);
-    Assertions.assertNull(bundleinfo.customPackage());
+    Assertions.assertEquals(BaseName.fromClass(SimpleBundle.class), bundleInfo.baseName());
     Assertions.assertEquals("methodWithArgument", method.getName());
     Assertions.assertEquals(SimpleBundle.class, method.getDeclaringClass());
-    Assertions.assertEquals(SimpleBundle.class, bundleinfo.bundleClass());
+    Assertions.assertEquals(SimpleBundle.class, bundleInfo.bundleClass());
     Assertions.assertEquals(method.getName(), info.name());
   }
 
@@ -41,7 +42,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethod();
     var info = res.info();
 
-    Assertions.assertEquals("renamed_method", info.name());
+    Assertions.assertEquals("renamedMethod", info.name());
   }
 
   @Test
@@ -49,7 +50,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethodTwo();
     var info = res.info();
 
-    Assertions.assertEquals("renamed_method", info.name());
+    Assertions.assertEquals("renamedMethod", info.name());
   }
 
   @Test
@@ -57,7 +58,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethodTwo();
     var info = res.info();
 
-    Assertions.assertEquals(null, info.defaultValue());
+    Assertions.assertNull(info.defaultValue());
   }
 
   @Test

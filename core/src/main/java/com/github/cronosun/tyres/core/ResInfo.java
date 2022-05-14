@@ -12,7 +12,7 @@ public interface ResInfo {
   Method method();
 
   /**
-   * The name. This is either {@link Method#getName()} or the name from the {@link Name}-annotation (if
+   * The name. This is either {@link Method#getName()} or the name from the {@link RenameMethod}-annotation (if
    * this annotation is present).
    */
   String name();
