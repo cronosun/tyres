@@ -3,3 +3,6 @@
 /.idea/
 /defaults/defaults.iml
 /.vscode/
+/implementation/target/
+/implementation-test/target/
+/spring/target/
