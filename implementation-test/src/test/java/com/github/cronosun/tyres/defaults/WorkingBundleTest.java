@@ -103,6 +103,18 @@ class WorkingBundleTest {
     assertNull(msgDe);
   }
 
+  @Test
+  void umlautsWork() {
+    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+
+    var somethingWithUmlauts = WorkingBundle.INSTANCE.somethingWithUmlauts();
+    var msgEn = source.message(somethingWithUmlauts, Locale.UK);
+    var msgDe = source.message(somethingWithUmlauts, Locale.GERMAN);
+
+    assertEquals("Bigger", msgEn);
+    assertEquals("Größer", msgDe);
+  }
+
   private static Date convertLocalDateToDateUtc(LocalDate localDate) {
     var utc = ZoneId.of("UTC");
     return Date.from(localDate.atStartOfDay(utc).toInstant());

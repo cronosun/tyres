@@ -9,7 +9,8 @@ import com.github.cronosun.tyres.core.ThreadSafe;
 @ThreadSafe
 public interface ResourceBundleProvider {
   /**
-   * Returns the bundle. Never returns <code>null</code>: If there's no such bundle, returns an empty bundle.
+   * Returns the bundle that can be used to resolve the given {@link ResInfo}. Never returns <code>null</code>:
+   * If there's no such bundle, returns an empty bundle.
    */
   TyResResourceBundle getBundleFor(ResInfo resInfo);
 }

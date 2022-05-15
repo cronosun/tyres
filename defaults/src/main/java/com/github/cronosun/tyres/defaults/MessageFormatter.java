@@ -11,7 +11,7 @@ public interface MessageFormatter {
   /**
    * Formats the given message.
    * <p>
-   * Note: Arguments of type {@link com.github.cronosun.tyres.core.Msg} are resolved. <--- TODO: Nein
+   * Note: Most implementations will just use {@link java.text.MessageFormat} internally.
    * <p>
    * Throws {@link TyResException} if the pattern is invalid and/or the given arguments are not compatible
    * with the given pattern.

@@ -18,5 +18,7 @@ public interface WorkingBundle extends WorkingBundleParent {
 
   MsgRes somethingThatIsMissing();
 
+  MsgRes somethingWithUmlauts();
+
   MsgRes colour();
 }
