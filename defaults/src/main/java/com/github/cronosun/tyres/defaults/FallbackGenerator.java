@@ -9,4 +9,11 @@ import com.github.cronosun.tyres.core.ThreadSafe;
 @ThreadSafe
 public interface FallbackGenerator {
   String generateFallbackMessageFor(ResInfo resInfo, Object[] args);
+
+  /**
+   * Returns the default implementation.
+   */
+  static FallbackGenerator defaultImplementation() {
+    return DefaultFallbackGenerator.instance();
+  }
 }

@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.defaults;
 import com.github.cronosun.tyres.core.ResInfo;
 import java.util.Arrays;
 
-public final class DefaultFallbackGenerator implements FallbackGenerator {
+final class DefaultFallbackGenerator implements FallbackGenerator {
 
   private static final DefaultFallbackGenerator INSTANCE = new DefaultFallbackGenerator();
 

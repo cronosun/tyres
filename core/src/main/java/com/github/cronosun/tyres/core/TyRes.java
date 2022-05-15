@@ -61,7 +61,7 @@ public final class TyRes {
       return implementation;
     } else {
       throw new TyResException(
-        "No tyres implementation found. Make sure exactly one implementation of " +
+        "No TyRes implementation found. Make sure exactly one implementation of " +
         "TyRes is on the classpath (loadable by java ServiceLoader)."
       );
     }

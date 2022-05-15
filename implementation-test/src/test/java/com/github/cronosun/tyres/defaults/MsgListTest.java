@@ -3,10 +3,6 @@ package com.github.cronosun.tyres.defaults;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.cronosun.tyres.core.MsgSource;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
@@ -15,7 +11,7 @@ class MsgListTest {
 
   @Test
   void simpleMessageList() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var messages = List.of(
       WorkingBundle.INSTANCE.colour(),
@@ -30,7 +26,7 @@ class MsgListTest {
 
   @Test
   void emptyMessageList() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var list = MsgList.empty();
     var messageString = source.message(list, Locale.UK);
@@ -40,7 +36,7 @@ class MsgListTest {
 
   @Test
   void messageListWithCustomConfiguration() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var messages = List.of(
       WorkingBundle.INSTANCE.colour(),

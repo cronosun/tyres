@@ -21,4 +21,6 @@ public interface WorkingBundle extends WorkingBundleParent {
   MsgRes somethingWithUmlauts();
 
   MsgRes colour();
+
+  MsgRes wrapLocalizedMessage(LocalizedMsg localizedMsg);
 }

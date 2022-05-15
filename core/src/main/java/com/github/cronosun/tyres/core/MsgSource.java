@@ -33,7 +33,7 @@ public interface MsgSource {
    * Generates the fallback message (note, this is not to be confused with the default message,
    * see {@link ResInfo#defaultValue()}).
    */
-  String fallbackFor(MsgRes resource);
+  String fallbackFor(ResInfo resInfo, Object[] args);
 
   enum NotFoundStrategy {
     /**

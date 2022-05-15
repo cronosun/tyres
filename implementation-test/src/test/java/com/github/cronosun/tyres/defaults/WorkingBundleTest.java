@@ -14,7 +14,7 @@ class WorkingBundleTest {
 
   @Test
   void basicTestsWithDifferentLocales() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var msgColourUk = source.message(WorkingBundle.INSTANCE.colour(), Locale.UK);
     assertEquals("Colour", msgColourUk);
@@ -26,7 +26,7 @@ class WorkingBundleTest {
 
   @Test
   void inheritance() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var msg = source.message(WorkingBundle.INSTANCE.somethingFromParent(), Locale.UK);
     assertEquals("Message from parent interface", msg);
@@ -34,7 +34,7 @@ class WorkingBundleTest {
 
   @Test
   void inheritanceWithArg() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var msg = source.message(
       WorkingBundle.INSTANCE.somethingFromParentWithArgument("Albert"),
@@ -45,7 +45,7 @@ class WorkingBundleTest {
 
   @Test
   void fallbackMessage() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.FALLBACK);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.FALLBACK);
 
     var msg = source.message(
       WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"),
@@ -59,7 +59,7 @@ class WorkingBundleTest {
 
   @Test
   void returnsNullIfCannotBeFound() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.FALLBACK);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var msg = source.maybeMessage(
       WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"),
@@ -70,7 +70,7 @@ class WorkingBundleTest {
 
   @Test
   void msgAsArgumentIsResolved() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var monday = WorkingBundle.INSTANCE.monday();
     var friday = WorkingBundle.INSTANCE.friday();
@@ -86,7 +86,7 @@ class WorkingBundleTest {
 
   @Test
   void ifAnArgumentCannotBeResolvedTheEntireMessageCannotBeResolved() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var monday = WorkingBundle.INSTANCE.monday();
     var doesNotExist = WorkingBundle.INSTANCE.somethingThatIsMissing();
@@ -105,7 +105,7 @@ class WorkingBundleTest {
 
   @Test
   void umlautsWork() {
-    var source = DefaultMsgSource.newWithDefaults(MsgSource.NotFoundStrategy.THROW);
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
 
     var somethingWithUmlauts = WorkingBundle.INSTANCE.somethingWithUmlauts();
     var msgEn = source.message(somethingWithUmlauts, Locale.UK);
@@ -113,6 +113,32 @@ class WorkingBundleTest {
 
     assertEquals("Bigger", msgEn);
     assertEquals("Größer", msgDe);
+  }
+
+  @Test
+  void testLocalizedMsg() {
+    var source = DefaultMsgSource.newDefaultImplementation(MsgSource.NotFoundStrategy.THROW);
+    var localizedMsg = LocalizedMsg
+      .builder()
+      .with(Locale.GERMAN, "ein farbenfrohes Bier")
+      .with(Locale.ENGLISH, "a colourful beer")
+      .with(Locale.US, "a colorful beer")
+      .build();
+    var msg = WorkingBundle.INSTANCE.wrapLocalizedMessage(localizedMsg);
+
+    var msgDe = source.message(msg, Locale.GERMAN);
+    var msgEn = source.message(msg, Locale.ENGLISH);
+    var msgUs = source.message(msg, Locale.US);
+    // should fall back to 'ENGLISH'
+    var msgCa = source.message(msg, Locale.CANADA);
+    // something that is not present
+    var msgFr = source.maybeMessage(msg, Locale.FRENCH);
+
+    assertEquals("Der Text 'ein farbenfrohes Bier' wurde schon übersetzt.", msgDe);
+    assertEquals("The text 'a colourful beer' has already been localized.", msgEn);
+    assertEquals("The text 'a colorful beer' has already been localized.", msgUs);
+    assertEquals("The text 'a colourful beer' has already been localized.", msgCa);
+    assertNull(msgFr);
   }
 
   private static Date convertLocalDateToDateUtc(LocalDate localDate) {
