@@ -7,10 +7,10 @@ public interface SimpleBundle {
 
   MsgRes voidMethod();
 
-  @RenameMethod("renamedMethod")
+  @Rename("renamedMethod")
   MsgRes renamedMethod();
 
-  @RenameMethod("renamedMethod")
+  @Rename("renamedMethod")
   MsgRes renamedMethodTwo();
 
   MsgRes methodWithArgument(String arg0);

@@ -8,6 +8,7 @@ package com.github.cronosun.tyres.core;
  *  - must provide a static method: `TThis create(BundleInfo bundleInfo, ResInfo resInfo)`
  *  - `TThis` must be assignable to the implementation.
  */
+@ThreadSafe
 public interface Res<TThis> {
   ResInfo info();
   TThis withArgs(Object[] args);

@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 public @interface RenameName {
-    String value();
+  String value();
 }

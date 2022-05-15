@@ -4,33 +4,38 @@ import java.util.Objects;
 import java.util.ServiceLoader;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 public final class TyRes {
 
   private static final Object SYNCHRONIZATION_LOCK = new Object();
 
   @Nullable
-  private static volatile TyResImplementation IMPLEMETATION;
+  private static volatile TyResImplementation IMPLEMENTATION;
 
   private TyRes() {}
 
+  /**
+   * Creates a bundle from the given bundle class.
+   */
+  @ThreadSafe
   public static <T> T create(Class<T> bundleClass) {
     var implementation = implementation();
     return implementation.createInstance(bundleClass);
   }
 
   private static TyResImplementation implementation() {
-    var implementation = IMPLEMETATION;
+    var implementation = IMPLEMENTATION;
     if (implementation != null) {
       return implementation;
     } else {
       synchronized (SYNCHRONIZATION_LOCK) {
-        var implementationSecondTry = IMPLEMETATION;
+        var implementationSecondTry = IMPLEMENTATION;
         if (implementationSecondTry != null) {
           return implementationSecondTry;
         }
         var determinedImplementation = determineImplementation();
         Objects.requireNonNull(determinedImplementation);
-        IMPLEMETATION = determinedImplementation;
+        IMPLEMENTATION = determinedImplementation;
         return determinedImplementation;
       }
     }

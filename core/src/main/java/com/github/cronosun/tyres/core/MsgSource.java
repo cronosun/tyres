@@ -1,43 +1,48 @@
 package com.github.cronosun.tyres.core;
 
+import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Locale;
-
+@ThreadSafe
 public interface MsgSource {
+  String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale);
 
-    String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale);
+  default String message(MsgRes resource, Locale locale) {
+    return message(resource, notFoundStrategy(), locale);
+  }
 
-    default String message(MsgRes resource, Locale locale) {
-        return message(resource, notFoundStrategy(), locale);
-    }
+  @Nullable
+  String maybeMessage(MsgRes resource, Locale locale);
 
-    @Nullable
-    String maybeMessage(MsgRes resource, Locale locale);
+  @Nullable
+  default String maybeMessage(Msg message, Locale locale) {
+    return message.maybeMessage(this, locale);
+  }
 
-    @Nullable
-    default String maybeMessage(Msg message, Locale locale) {
-        return message.maybeMessage(this, locale);
-    }
+  default String message(Msg message, NotFoundStrategy notFoundStrategy, Locale locale) {
+    return message.message(this, notFoundStrategy, locale);
+  }
 
-    default String message(Msg message, NotFoundStrategy notFoundStrategy, Locale locale) {
-        return message.message(this, notFoundStrategy, locale);
-    }
+  default String message(Msg message, Locale locale) {
+    return message.message(this, notFoundStrategy(), locale);
+  }
 
-    default String message(Msg message, Locale locale) {
-        return message.message(this, notFoundStrategy(), locale);
-    }
+  NotFoundStrategy notFoundStrategy();
 
-    NotFoundStrategy notFoundStrategy();
+  /**
+   * Generates the fallback message (note, this is not to be confused with the default message,
+   * see {@link ResInfo#defaultValue()}).
+   */
+  String fallbackFor(MsgRes resource);
 
-    enum NotFoundStrategy {
-        /**
-         * If there's no such message, throws a {@link TyResException} exception.
-         */
-        THROW,
-        /**
-         * If there's no such message, returns the fallback value.
-         */
-        FALLBACK
-    }
+  enum NotFoundStrategy {
+    /**
+     * If there's no such message, throws a {@link TyResException} exception.
+     */
+    THROW,
+    /**
+     * If there's no such message, returns the fallback value.
+     */
+    FALLBACK,
+  }
 }

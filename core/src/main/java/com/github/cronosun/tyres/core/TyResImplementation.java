@@ -1,5 +1,6 @@
 package com.github.cronosun.tyres.core;
 
+@ThreadSafe
 public interface TyResImplementation {
   <T> T createInstance(Class<T> bundleClass);
 

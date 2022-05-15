@@ -6,6 +6,7 @@ import java.util.Collection;
  * Information about all resources in the bundle and information about the bundle
  * itself.
  */
+@ThreadSafe
 public interface ReflectionInfo {
   /**
    * Default reflection implementation that conforms to the specification and can be used by

@@ -1,9 +1,9 @@
 package com.github.cronosun.tyres.core;
 
+import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Locale;
-
+@ThreadSafe
 public abstract class MsgRes implements Res<MsgRes>, Msg {
 
   private static final Object[] NO_ARGS = new Object[] {};
@@ -17,7 +17,11 @@ public abstract class MsgRes implements Res<MsgRes>, Msg {
   public abstract MsgRes withArgs(Object[] args);
 
   @Override
-  public final String message(MsgSource source, MsgSource.NotFoundStrategy notFoundStrategy, Locale locale) {
+  public final String message(
+    MsgSource source,
+    MsgSource.NotFoundStrategy notFoundStrategy,
+    Locale locale
+  ) {
     return source.message(this, notFoundStrategy, locale);
   }
 

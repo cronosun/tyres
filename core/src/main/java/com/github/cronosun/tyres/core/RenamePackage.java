@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 public @interface RenamePackage {
-    String value() default "";
+  String value() default "";
 }
