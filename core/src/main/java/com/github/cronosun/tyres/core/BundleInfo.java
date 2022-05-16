@@ -5,6 +5,7 @@ import java.util.Objects;
 
 @ThreadSafe
 public final class BundleInfo {
+
   private final Class<?> bundleClass;
   private final BaseName baseName;
   private final TyResImplementation implementation;
@@ -49,7 +50,11 @@ public final class BundleInfo {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     BundleInfo that = (BundleInfo) o;
-    return bundleClass.equals(that.bundleClass) && baseName.equals(that.baseName) && implementation.equals(that.implementation);
+    return (
+      bundleClass.equals(that.bundleClass) &&
+      baseName.equals(that.baseName) &&
+      implementation.equals(that.implementation)
+    );
   }
 
   @Override
@@ -59,10 +64,15 @@ public final class BundleInfo {
 
   @Override
   public String toString() {
-    return "BundleInfo{" +
-            "bundleClass=" + bundleClass +
-            ", baseName=" + baseName +
-            ", implementation=" + implementation +
-            '}';
+    return (
+      "BundleInfo{" +
+      "bundleClass=" +
+      bundleClass +
+      ", baseName=" +
+      baseName +
+      ", implementation=" +
+      implementation +
+      '}'
+    );
   }
 }

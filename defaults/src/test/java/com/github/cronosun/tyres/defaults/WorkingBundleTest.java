@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +79,10 @@ class WorkingBundleTest {
     var msgDe = source.message(message, Locale.GERMAN);
 
     Assertions.assertEquals("Friday is much better than Monday; today is 15/05/2022.", msgEn);
-    Assertions.assertEquals("Freitag ist deutlich besser als Montag; heute ist 15.05.2022.", msgDe);
+    Assertions.assertEquals(
+      "Freitag ist deutlich besser als Montag; heute ist 15.05.2022.",
+      msgDe
+    );
   }
 
   @Test

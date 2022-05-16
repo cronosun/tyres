@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.Msg;
 import com.github.cronosun.tyres.core.Res;
+import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.core.TyRes;
 import java.util.Date;
 
@@ -10,7 +11,11 @@ public interface WorkingBundle extends WorkingBundleParent {
 
   Res<Msg> somethingThatCannotBeFound(String argument);
 
-  Res<Msg> saySomethingAboutDaysOfTheWeek(Msg firstDay, Msg secondDay, Date date);
+  Res<Msg> saySomethingAboutDaysOfTheWeek(
+    Resolvable<Msg> firstDay,
+    Resolvable<Msg> secondDay,
+    Date date
+  );
 
   Res<Msg> monday();
 

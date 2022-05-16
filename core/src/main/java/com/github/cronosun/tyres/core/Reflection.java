@@ -15,8 +15,10 @@ final class Reflection {
     var bundleInfo = BundleInfoReflection.reflect(bundleClass, implementation);
     // note: we also include inherited methods.
     var methods = bundleClass.getMethods();
-    var resources = Arrays.stream(methods).map(method ->
-            ResInfoReflection.reflect(bundleInfo, method)).collect(Collectors.toUnmodifiableList());
+    var resources = Arrays
+      .stream(methods)
+      .map(method -> ResInfoReflection.reflect(bundleInfo, method))
+      .collect(Collectors.toUnmodifiableList());
     return new DefaultReflectionInfo(resources, bundleInfo);
   }
 
@@ -25,10 +27,7 @@ final class Reflection {
     private final BundleInfo bundleInfo;
     private final Collection<ResInfo> resources;
 
-    private DefaultReflectionInfo(
-      Collection<ResInfo> resources,
-      BundleInfo bundleInfo
-    ) {
+    private DefaultReflectionInfo(Collection<ResInfo> resources, BundleInfo bundleInfo) {
       this.resources = resources;
       this.bundleInfo = bundleInfo;
     }

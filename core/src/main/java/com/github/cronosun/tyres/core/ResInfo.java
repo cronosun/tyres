@@ -5,6 +5,7 @@ import java.util.Objects;
 
 @ThreadSafe
 public final class ResInfo {
+
   private final BundleInfo bundleInfo;
   private final Method method;
   private final ResInfoDetails details;
@@ -58,7 +59,11 @@ public final class ResInfo {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ResInfo resInfo = (ResInfo) o;
-    return bundleInfo.equals(resInfo.bundleInfo) && method.equals(resInfo.method) && details.equals(resInfo.details);
+    return (
+      bundleInfo.equals(resInfo.bundleInfo) &&
+      method.equals(resInfo.method) &&
+      details.equals(resInfo.details)
+    );
   }
 
   @Override
@@ -68,10 +73,8 @@ public final class ResInfo {
 
   @Override
   public String toString() {
-    return "ResInfo{" +
-            "bundleInfo=" + bundleInfo +
-            ", method=" + method +
-            ", details=" + details +
-            '}';
+    return (
+      "ResInfo{" + "bundleInfo=" + bundleInfo + ", method=" + method + ", details=" + details + '}'
+    );
   }
 }

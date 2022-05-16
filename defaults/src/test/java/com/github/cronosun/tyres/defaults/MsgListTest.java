@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.List;
 import java.util.Locale;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class MsgListTest {
@@ -21,7 +22,10 @@ class MsgListTest {
     var list = MsgList.fromList(messages);
     var messageString = source.message(list, Locale.UK);
 
-    Assertions.assertEquals("Colour, Message from parent interface, Hello, TheArgument!", messageString);
+    Assertions.assertEquals(
+      "Colour, Message from parent interface, Hello, TheArgument!",
+      messageString
+    );
   }
 
   @Test
@@ -46,9 +50,15 @@ class MsgListTest {
     var list = MsgList.fromList(CustomMsgListConfiguration.INSTANCE, messages);
 
     var messageEn = source.message(list, Locale.UK);
-    Assertions.assertEquals("\"Colour, Message from parent interface, Hello, TheArgument!\"", messageEn);
+    Assertions.assertEquals(
+      "\"Colour, Message from parent interface, Hello, TheArgument!\"",
+      messageEn
+    );
 
     var messageDe = source.message(list, Locale.GERMAN);
-    Assertions.assertEquals("<<Farbe; Meldung vom Elter-Interface; Hallo, TheArgument!>>", messageDe);
+    Assertions.assertEquals(
+      "<<Farbe; Meldung vom Elter-Interface; Hallo, TheArgument!>>",
+      messageDe
+    );
   }
 }

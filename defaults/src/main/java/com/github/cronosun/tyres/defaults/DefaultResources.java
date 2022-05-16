@@ -9,20 +9,20 @@ public final class DefaultResources implements Resources {
 
   private final NotFoundStrategy notFoundStrategy;
   private final FallbackGenerator fallbackGenerator;
-  private final MsgSourceBackend backend;
+  private final StringBackend backend;
 
   public static DefaultResources newDefaultImplementation(NotFoundStrategy notFoundStrategy) {
     return new DefaultResources(
       notFoundStrategy,
       FallbackGenerator.defaultImplementation(),
-      MsgSourceBackend.usingResourceBundle()
+      StringBackend.usingResourceBundle()
     );
   }
 
   public DefaultResources(
     NotFoundStrategy notFoundStrategy,
     FallbackGenerator fallbackGenerator,
-    MsgSourceBackend backend
+    StringBackend backend
   ) {
     this.notFoundStrategy = notFoundStrategy;
     this.fallbackGenerator = fallbackGenerator;
@@ -30,7 +30,56 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public String message(Res<Msg> resource, NotFoundStrategy notFoundStrategy, Locale locale) {
+  public String message(
+    Resolvable<? extends Msg> resolvable,
+    NotFoundStrategy notFoundStrategy,
+    Locale locale
+  ) {
+    var resouce = resolvable.resource();
+    if (resouce != null) {
+      return messageFromResource(resouce, notFoundStrategy, locale);
+    } else {
+      var maybeResolvable = resolvable.resolvable();
+      if (maybeResolvable != null) {
+        return maybeResolvable.message(this, notFoundStrategy, locale);
+      } else {
+        throw new TyResException(
+          "Given " +
+          Resolvable.class.getSimpleName() +
+          " (" +
+          resolvable +
+          ") is not implemented correctly. See documentation."
+        );
+      }
+    }
+  }
+
+  @Override
+  public @Nullable String maybeMessage(Resolvable<? extends Msg> resolvable, Locale locale) {
+    var resouce = resolvable.resource();
+    if (resouce != null) {
+      return maybeMessageFromResource(resouce, locale);
+    } else {
+      var maybeResolvable = resolvable.resolvable();
+      if (maybeResolvable != null) {
+        return maybeResolvable.maybeMessage(this, locale);
+      } else {
+        throw new TyResException(
+          "Given " +
+          Resolvable.class.getSimpleName() +
+          " (" +
+          resolvable +
+          ") is not implemented correctly. See documentation."
+        );
+      }
+    }
+  }
+
+  private String messageFromResource(
+    Res<? extends Msg> resource,
+    NotFoundStrategy notFoundStrategy,
+    Locale locale
+  ) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
     final boolean throwOnError;
     switch (notFoundStrategy) {
@@ -65,8 +114,7 @@ public final class DefaultResources implements Resources {
   }
 
   @Nullable
-  @Override
-  public String maybeMessage(Res<Msg> resource, Locale locale) {
+  private String maybeMessageFromResource(Res<? extends Msg> resource, Locale locale) {
     var argsForMaybeMessage = processArgsForMaybeMessage(resource.args(), locale);
     final Object[] args;
     if (argsForMaybeMessage != null) {
@@ -105,11 +153,12 @@ public final class DefaultResources implements Resources {
       Object[] newArgs = null;
       for (var index = 0; index < numberOfArgs; index++) {
         var existingArg = args[index];
-        if (existingArg instanceof Msg) {
+        var maybeResolvable = maybeResolvable(existingArg);
+        if (maybeResolvable != null) {
           if (newArgs == null) {
             newArgs = args.clone();
           }
-          newArgs[index] = new ArgForMessage((Msg) existingArg, locale, this, notFoundStrategy);
+          newArgs[index] = new ArgForMessage(maybeResolvable, locale, this, notFoundStrategy);
         }
       }
       return Objects.requireNonNullElse(newArgs, args);
@@ -125,13 +174,14 @@ public final class DefaultResources implements Resources {
       ArgsForMaybeMessage argsForMaybeMessage = null;
       for (var index = 0; index < numberOfArgs; index++) {
         var existingArg = args[index];
-        if (existingArg instanceof Msg) {
+        var maybeResolvable = maybeResolvable(existingArg);
+        if (maybeResolvable != null) {
           if (argsForMaybeMessage == null) {
             var newArgs = args.clone();
             argsForMaybeMessage = new ArgsForMaybeMessage(newArgs);
           }
           argsForMaybeMessage.args[index] =
-            new ArgForMaybeMessage(argsForMaybeMessage, (Msg) existingArg, locale, this);
+            new ArgForMaybeMessage(argsForMaybeMessage, maybeResolvable, locale, this);
         }
       }
       return argsForMaybeMessage;
@@ -151,13 +201,13 @@ public final class DefaultResources implements Resources {
   private static final class ArgForMaybeMessage {
 
     private final ArgsForMaybeMessage argsForMaybeMessage;
-    private final Msg msg;
+    private final Resolvable<Msg> msg;
     private final Locale locale;
     private final Resources source;
 
     private ArgForMaybeMessage(
       ArgsForMaybeMessage argsForMaybeMessage,
-      Msg msg,
+      Resolvable<Msg> msg,
       Locale locale,
       Resources source
     ) {
@@ -181,13 +231,13 @@ public final class DefaultResources implements Resources {
 
   private static final class ArgForMessage {
 
-    private final Msg msg;
+    private final Resolvable<Msg> msg;
     private final Locale locale;
     private final Resources source;
     private final NotFoundStrategy notFoundStrategy;
 
     private ArgForMessage(
-      Msg msg,
+      Resolvable<Msg> msg,
       Locale locale,
       Resources source,
       NotFoundStrategy notFoundStrategy
@@ -202,5 +252,25 @@ public final class DefaultResources implements Resources {
     public String toString() {
       return source.message(msg, notFoundStrategy, locale);
     }
+  }
+
+  @Nullable
+  private static Resolvable<Msg> maybeResolvable(Object object) {
+    if (object instanceof Resolvable) {
+      var resolvable = (Resolvable<?>) object;
+      var resource = resolvable.resource();
+      if (resource != null) {
+        if (resource.info().details().kind() == ResInfoDetails.Kind.STRING) {
+          //noinspection unchecked
+          return (Resolvable<Msg>) resolvable;
+        }
+      } else {
+        var resolvableInner = resolvable.resolvable();
+        if (resolvableInner instanceof Msg) {
+          return (Msg) resolvableInner;
+        }
+      }
+    }
+    return null;
   }
 }

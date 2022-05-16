@@ -18,7 +18,7 @@ class SimpleBundleTest {
     Assertions.assertEquals("voidMethod", method.getName());
     Assertions.assertEquals(SimpleBundle.class, method.getDeclaringClass());
     Assertions.assertEquals(SimpleBundle.class, bundleInfo.bundleClass());
-    Assertions.assertEquals(method.getName(), info.name());
+    Assertions.assertEquals(method.getName(), info.details().asStringResouce().name());
   }
 
   @Test
@@ -34,7 +34,7 @@ class SimpleBundleTest {
     Assertions.assertEquals("methodWithArgument", method.getName());
     Assertions.assertEquals(SimpleBundle.class, method.getDeclaringClass());
     Assertions.assertEquals(SimpleBundle.class, bundleInfo.bundleClass());
-    Assertions.assertEquals(method.getName(), info.name());
+    Assertions.assertEquals(method.getName(), info.details().asStringResouce().name());
   }
 
   @Test
@@ -42,7 +42,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethod();
     var info = res.info();
 
-    Assertions.assertEquals("renamedMethod", info.name());
+    Assertions.assertEquals("renamedMethod", info.details().asStringResouce().name());
   }
 
   @Test
@@ -50,7 +50,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethodTwo();
     var info = res.info();
 
-    Assertions.assertEquals("renamedMethod", info.name());
+    Assertions.assertEquals("renamedMethod", info.details().asStringResouce().name());
   }
 
   @Test
@@ -58,7 +58,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethodTwo();
     var info = res.info();
 
-    Assertions.assertNull(info.defaultValue());
+    Assertions.assertNull(info.details().asStringResouce().defaultValue());
   }
 
   @Test
@@ -66,6 +66,6 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.methodWithDefaultValue();
     var info = res.info();
 
-    Assertions.assertEquals("the_default_value", info.defaultValue());
+    Assertions.assertEquals("the_default_value", info.details().asStringResouce().defaultValue());
   }
 }

@@ -1,9 +1,8 @@
 package com.github.cronosun.tyres.core;
 
+import com.github.cronosun.tyres.core.implementation.DefaultImplementation;
 import java.util.Objects;
 import java.util.ServiceLoader;
-
-import com.github.cronosun.tyres.core.implementation.DefaultImplementation;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe

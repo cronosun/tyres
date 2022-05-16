@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.Msg;
+import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.Collections;
 import java.util.List;
@@ -15,28 +16,28 @@ import org.jetbrains.annotations.Nullable;
 public final class MsgList implements Msg {
 
   private final MsgListConfiguration configuration;
-  private final List<? extends Msg> messages;
+  private final List<? extends Resolvable<? extends Msg>> messages;
   private static final MsgList EMPTY = new MsgList(MsgListConfiguration.INSTANCE, List.of());
 
   public static MsgList fromStream(
     MsgListConfiguration configuration,
-    Stream<? extends Msg> messages
+    Stream<? extends Resolvable<? extends Msg>> messages
   ) {
     return new MsgList(configuration, messages.collect(Collectors.toUnmodifiableList()));
   }
 
-  public static MsgList fromStream(Stream<? extends Msg> messages) {
+  public static MsgList fromStream(Stream<? extends Resolvable<? extends Msg>> messages) {
     return fromStream(MsgListConfiguration.INSTANCE, messages);
   }
 
   public static MsgList fromList(
     MsgListConfiguration configuration,
-    List<? extends Msg> messages
+    List<? extends Resolvable<? extends Msg>> messages
   ) {
     return new MsgList(configuration, Collections.unmodifiableList(messages));
   }
 
-  public static MsgList fromList(List<? extends Msg> messages) {
+  public static MsgList fromList(List<? extends Resolvable<? extends Msg>> messages) {
     return new MsgList(MsgListConfiguration.INSTANCE, Collections.unmodifiableList(messages));
   }
 
@@ -48,12 +49,15 @@ public final class MsgList implements Msg {
     return EMPTY;
   }
 
-  private MsgList(MsgListConfiguration configuration, List<Msg> messages) {
+  private MsgList(
+    MsgListConfiguration configuration,
+    List<? extends Resolvable<? extends Msg>> messages
+  ) {
     this.configuration = configuration;
     this.messages = messages;
   }
 
-  public List<? extends Msg> messages() {
+  public List<? extends Resolvable<? extends Msg>> messages() {
     return messages;
   }
 
@@ -77,12 +81,16 @@ public final class MsgList implements Msg {
         return resources.message(configuration.single(single), notFoundStrategy, locale);
       default:
         final String prefix = resources.message(configuration.prefix(), notFoundStrategy, locale);
-        final String delimiter = resources.message(configuration.delimiter(), notFoundStrategy, locale);
+        final String delimiter = resources.message(
+          configuration.delimiter(),
+          notFoundStrategy,
+          locale
+        );
         final String suffix = resources.message(configuration.suffix(), notFoundStrategy, locale);
         return messages
-                .stream()
-                .map(message -> resources.message(message, notFoundStrategy, locale))
-                .collect(Collectors.joining(delimiter, prefix, suffix));
+          .stream()
+          .map(message -> resources.message(message, notFoundStrategy, locale))
+          .collect(Collectors.joining(delimiter, prefix, suffix));
     }
   }
 

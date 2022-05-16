@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.core;
 
 import java.util.Arrays;
 import java.util.Objects;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Identifies a resource.
@@ -9,27 +10,40 @@ import java.util.Objects;
  * @param <TType> This can be used to give the resource some level of type safety.
  */
 @ThreadSafe
-public abstract class Res<TType> {
+public abstract class Res<TType> implements Resolvable<TType> {
 
-  private Res() {
-  }
+  private Res() {}
 
   public static <T> Res<T> from(ResInfo resInfo) {
     return new NoArgs<>(resInfo);
   }
 
   public abstract ResInfo info();
+
   public final Res<TType> withArgs(Object[] args) {
-    if (args.length==0) {
+    if (args.length == 0) {
       return new NoArgs<>(info());
     } else {
       return new WithArgs<>(info(), args);
     }
   }
+
   public abstract Object[] args();
 
+  @Override
+  public @Nullable Res<TType> resource() {
+    return this;
+  }
+
+  @Nullable
+  @Override
+  public TType resolvable() {
+    return null;
+  }
+
   private static final class NoArgs<T> extends Res<T> {
-    private static final Object[] ARGS = new Object[]{};
+
+    private static final Object[] ARGS = new Object[] {};
     private final ResInfo info;
 
     private NoArgs(ResInfo info) {
@@ -48,6 +62,7 @@ public abstract class Res<TType> {
   }
 
   private static final class WithArgs<T> extends Res<T> {
+
     private final ResInfo info;
     private final Object[] args;
 
@@ -86,6 +101,6 @@ public abstract class Res<TType> {
   public String toString() {
     var info = info();
     var args = args();
-    return "Res{"+info+" "+Arrays.toString(args)+"}";
+    return "Res{" + info + " " + Arrays.toString(args) + "}";
   }
 }

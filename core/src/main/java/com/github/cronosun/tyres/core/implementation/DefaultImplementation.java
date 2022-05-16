@@ -3,7 +3,6 @@ package com.github.cronosun.tyres.core.implementation;
 import com.github.cronosun.tyres.core.ReflectionInfo;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.TyResImplementation;
-
 import java.lang.reflect.Proxy;
 
 public final class DefaultImplementation implements TyResImplementation {

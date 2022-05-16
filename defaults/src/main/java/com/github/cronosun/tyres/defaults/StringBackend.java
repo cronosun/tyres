@@ -5,8 +5,11 @@ import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Backend for string-like sources: plain strings and messages.
+ */
 @ThreadSafe
-public interface MsgSourceBackend {
+public interface StringBackend {
   /**
    * Returns the message (if found).
    *
@@ -23,7 +26,7 @@ public interface MsgSourceBackend {
   /**
    * Returns the default implementation that uses {@link java.util.ResourceBundle}.
    */
-  static MsgSourceBackend usingResourceBundle() {
-    return DefaultMsgSourceBackend.instance();
+  static StringBackend usingResourceBundle() {
+    return DefaultStringBackend.instance();
   }
 }

@@ -3,7 +3,6 @@ package com.github.cronosun.tyres.core.implementation;
 import com.github.cronosun.tyres.core.ReflectionInfo;
 import com.github.cronosun.tyres.core.Res;
 import com.github.cronosun.tyres.core.TyResException;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -18,8 +17,10 @@ final class TyResInvocationHandler implements InvocationHandler {
     var bundleResInfo = ReflectionInfo.getFrom(bundleClass, DefaultImplementation.instance());
     var resources = bundleResInfo.resources();
     var streamOfRes = resources.stream().map(Res::from);
-    this.map = streamOfRes.collect(Collectors.toUnmodifiableMap(item ->
-            item.info().method(), item -> (Res<?>)item));
+    this.map =
+      streamOfRes.collect(
+        Collectors.toUnmodifiableMap(item -> item.info().method(), item -> (Res<?>) item)
+      );
     this.bundleResInfo = bundleResInfo;
   }
 
@@ -32,9 +33,7 @@ final class TyResInvocationHandler implements InvocationHandler {
   public Object invoke(Object proxy, Method method, Object[] args) {
     var value = map.get(method);
     if (value == null) {
-      throw new TyResException(
-        "Method not found using reflection. Method: " + method
-      );
+      throw new TyResException("Method not found using reflection. Method: " + method);
     }
     if (args == null || args.length == 0) {
       return value;
