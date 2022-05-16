@@ -1,9 +1,8 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.Msg;
-import com.github.cronosun.tyres.core.Res;
+import com.github.cronosun.tyres.core.MsgRes;
 
 public interface WorkingBundleParent {
-  Res<Msg> somethingFromParent();
-  Res<Msg> somethingFromParentWithArgument(String argument);
+  MsgRes somethingFromParent();
+  MsgRes somethingFromParentWithArgument(String argument);
 }

@@ -23,5 +23,5 @@ public interface ReflectionInfo {
    *
    * Expect the collection to be immutable.
    */
-  Collection<ResInfo> resources();
+  Collection<Res<?>> resources();
 }

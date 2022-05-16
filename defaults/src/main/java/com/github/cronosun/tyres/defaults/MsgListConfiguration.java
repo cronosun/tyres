@@ -1,10 +1,6 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.Msg;
-import com.github.cronosun.tyres.core.Res;
-import com.github.cronosun.tyres.core.Resolvable;
-import com.github.cronosun.tyres.core.TyRes;
-import java.util.List;
+import com.github.cronosun.tyres.core.*;
 
 /**
  * Configuration for {@link MsgList}.
@@ -23,25 +19,25 @@ public interface MsgListConfiguration {
   /**
    * Message to use if the list is empty.
    */
-  Res<Msg> empty();
+  MsgRes empty();
 
   /**
    * Message to use if the list has one single item.
    */
-  Res<Msg> single(Resolvable<? extends Msg> item);
+  MsgRes single(Msg item);
 
   /**
    * Prefix for non-empty lists.
    */
-  Res<Msg> prefix();
+  MsgRes prefix();
 
   /**
    * Delimiter for non-empty lists.
    */
-  Res<Msg> delimiter();
+  MsgRes delimiter();
 
   /**
    * Suffix for non-empty lists.
    */
-  Res<Msg> suffix();
+  MsgRes suffix();
 }

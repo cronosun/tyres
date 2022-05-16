@@ -16,11 +16,13 @@ final class TyResInvocationHandler implements InvocationHandler {
   public TyResInvocationHandler(Class<?> bundleClass) {
     var bundleResInfo = ReflectionInfo.getFrom(bundleClass, DefaultImplementation.instance());
     var resources = bundleResInfo.resources();
-    var streamOfRes = resources.stream().map(Res::from);
+
     this.map =
-      streamOfRes.collect(
-        Collectors.toUnmodifiableMap(item -> item.info().method(), item -> (Res<?>) item)
-      );
+      resources
+        .stream()
+        .collect(
+          Collectors.toUnmodifiableMap(item -> item.info().method(), item -> (Res<?>) item)
+        );
     this.bundleResInfo = bundleResInfo;
   }
 

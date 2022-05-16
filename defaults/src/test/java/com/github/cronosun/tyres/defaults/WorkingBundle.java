@@ -1,31 +1,24 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.Msg;
-import com.github.cronosun.tyres.core.Res;
-import com.github.cronosun.tyres.core.Resolvable;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.*;
 import java.util.Date;
 
 public interface WorkingBundle extends WorkingBundleParent {
   WorkingBundle INSTANCE = TyRes.create(WorkingBundle.class);
 
-  Res<Msg> somethingThatCannotBeFound(String argument);
+  MsgRes somethingThatCannotBeFound(String argument);
 
-  Res<Msg> saySomethingAboutDaysOfTheWeek(
-    Resolvable<Msg> firstDay,
-    Resolvable<Msg> secondDay,
-    Date date
-  );
+  MsgRes saySomethingAboutDaysOfTheWeek(Msg firstDay, Msg secondDay, Date date);
 
-  Res<Msg> monday();
+  MsgRes monday();
 
-  Res<Msg> friday();
+  MsgRes friday();
 
-  Res<Msg> somethingThatIsMissing();
+  MsgRes somethingThatIsMissing();
 
-  Res<Msg> somethingWithUmlauts();
+  MsgRes somethingWithUmlauts();
 
-  Res<Msg> colour();
+  MsgRes colour();
 
-  Res<Msg> wrapLocalizedMessage(LocalizedMsg localizedMsg);
+  MsgRes wrapLocalizedMessage(LocalizedMsg localizedMsg);
 }

@@ -1,8 +1,6 @@
 package com.github.cronosun.tyres.spring;
 
-import com.github.cronosun.tyres.core.Res;
-import com.github.cronosun.tyres.core.ResInfoDetails;
-import com.github.cronosun.tyres.core.TyResException;
+import com.github.cronosun.tyres.core.*;
 import com.github.cronosun.tyres.defaults.StringBackend;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -23,7 +21,7 @@ public final class SpringMsgSourceBackend implements StringBackend {
   public String maybeMessage(Res<?> resource, Object[] args, Locale locale, boolean throwOnError) {
     // TODO: Cache
     var resInfo = resource.info();
-    if (!isCorrectResourceType(resource, throwOnError)) {
+    if (!isCorrectResourceType(resInfo, throwOnError)) {
       return null;
     }
     var createdSource = messageSourceCreator.createMessageSource(resInfo, locale);
@@ -52,15 +50,15 @@ public final class SpringMsgSourceBackend implements StringBackend {
     }
   }
 
-  private boolean isCorrectResourceType(Res<?> resource, boolean throwOnError) {
-    var kind = resource.info().details().kind();
+  private boolean isCorrectResourceType(ResInfo resInfo, boolean throwOnError) {
+    var kind = resInfo.details().kind();
     var correctType = kind == ResInfoDetails.Kind.STRING;
     if (throwOnError && !correctType) {
       throw new TyResException(
         "Invalid resource kind (must be a string resource). It's " +
         kind +
         ". Resource '" +
-        resource +
+        resInfo.debugReference() +
         "'."
       );
     }

@@ -30,56 +30,7 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public String message(
-    Resolvable<? extends Msg> resolvable,
-    NotFoundStrategy notFoundStrategy,
-    Locale locale
-  ) {
-    var resouce = resolvable.resource();
-    if (resouce != null) {
-      return messageFromResource(resouce, notFoundStrategy, locale);
-    } else {
-      var maybeResolvable = resolvable.resolvable();
-      if (maybeResolvable != null) {
-        return maybeResolvable.message(this, notFoundStrategy, locale);
-      } else {
-        throw new TyResException(
-          "Given " +
-          Resolvable.class.getSimpleName() +
-          " (" +
-          resolvable +
-          ") is not implemented correctly. See documentation."
-        );
-      }
-    }
-  }
-
-  @Override
-  public @Nullable String maybeMessage(Resolvable<? extends Msg> resolvable, Locale locale) {
-    var resouce = resolvable.resource();
-    if (resouce != null) {
-      return maybeMessageFromResource(resouce, locale);
-    } else {
-      var maybeResolvable = resolvable.resolvable();
-      if (maybeResolvable != null) {
-        return maybeResolvable.maybeMessage(this, locale);
-      } else {
-        throw new TyResException(
-          "Given " +
-          Resolvable.class.getSimpleName() +
-          " (" +
-          resolvable +
-          ") is not implemented correctly. See documentation."
-        );
-      }
-    }
-  }
-
-  private String messageFromResource(
-    Res<? extends Msg> resource,
-    NotFoundStrategy notFoundStrategy,
-    Locale locale
-  ) {
+  public String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
     final boolean throwOnError;
     switch (notFoundStrategy) {
@@ -113,8 +64,9 @@ public final class DefaultResources implements Resources {
     }
   }
 
+  @Override
   @Nullable
-  private String maybeMessageFromResource(Res<? extends Msg> resource, Locale locale) {
+  public String maybeMessage(MsgRes resource, Locale locale) {
     var argsForMaybeMessage = processArgsForMaybeMessage(resource.args(), locale);
     final Object[] args;
     if (argsForMaybeMessage != null) {
@@ -153,7 +105,7 @@ public final class DefaultResources implements Resources {
       Object[] newArgs = null;
       for (var index = 0; index < numberOfArgs; index++) {
         var existingArg = args[index];
-        var maybeResolvable = maybeResolvable(existingArg);
+        var maybeResolvable = maybeMsg(existingArg);
         if (maybeResolvable != null) {
           if (newArgs == null) {
             newArgs = args.clone();
@@ -174,7 +126,7 @@ public final class DefaultResources implements Resources {
       ArgsForMaybeMessage argsForMaybeMessage = null;
       for (var index = 0; index < numberOfArgs; index++) {
         var existingArg = args[index];
-        var maybeResolvable = maybeResolvable(existingArg);
+        var maybeResolvable = maybeMsg(existingArg);
         if (maybeResolvable != null) {
           if (argsForMaybeMessage == null) {
             var newArgs = args.clone();
@@ -201,13 +153,13 @@ public final class DefaultResources implements Resources {
   private static final class ArgForMaybeMessage {
 
     private final ArgsForMaybeMessage argsForMaybeMessage;
-    private final Resolvable<Msg> msg;
+    private final Msg msg;
     private final Locale locale;
     private final Resources source;
 
     private ArgForMaybeMessage(
       ArgsForMaybeMessage argsForMaybeMessage,
-      Resolvable<Msg> msg,
+      Msg msg,
       Locale locale,
       Resources source
     ) {
@@ -231,13 +183,13 @@ public final class DefaultResources implements Resources {
 
   private static final class ArgForMessage {
 
-    private final Resolvable<Msg> msg;
+    private final Msg msg;
     private final Locale locale;
     private final Resources source;
     private final NotFoundStrategy notFoundStrategy;
 
     private ArgForMessage(
-      Resolvable<Msg> msg,
+      Msg msg,
       Locale locale,
       Resources source,
       NotFoundStrategy notFoundStrategy
@@ -255,21 +207,9 @@ public final class DefaultResources implements Resources {
   }
 
   @Nullable
-  private static Resolvable<Msg> maybeResolvable(Object object) {
-    if (object instanceof Resolvable) {
-      var resolvable = (Resolvable<?>) object;
-      var resource = resolvable.resource();
-      if (resource != null) {
-        if (resource.info().details().kind() == ResInfoDetails.Kind.STRING) {
-          //noinspection unchecked
-          return (Resolvable<Msg>) resolvable;
-        }
-      } else {
-        var resolvableInner = resolvable.resolvable();
-        if (resolvableInner instanceof Msg) {
-          return (Msg) resolvableInner;
-        }
-      }
+  private static Msg maybeMsg(Object object) {
+    if (object instanceof Msg) {
+      return (Msg) object;
     }
     return null;
   }

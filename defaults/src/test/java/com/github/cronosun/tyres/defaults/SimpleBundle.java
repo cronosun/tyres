@@ -5,17 +5,17 @@ import com.github.cronosun.tyres.core.*;
 public interface SimpleBundle {
   SimpleBundle INSTANCE = TyRes.create(SimpleBundle.class);
 
-  Res<Msg> voidMethod();
+  MsgRes voidMethod();
 
   @Rename("renamedMethod")
-  Res<Msg> renamedMethod();
+  MsgRes renamedMethod();
 
   @Rename("renamedMethod")
-  Res<Msg> renamedMethodTwo();
+  MsgRes renamedMethodTwo();
 
-  Res<Msg> methodWithArgument(String arg0);
-  Res<Msg> methodWithTwoArguments(String arg0, int arg1);
+  MsgRes methodWithArgument(String arg0);
+  MsgRes methodWithTwoArguments(String arg0, int arg1);
 
   @Default("the_default_value")
-  Res<Msg> methodWithDefaultValue();
+  MsgRes methodWithDefaultValue();
 }

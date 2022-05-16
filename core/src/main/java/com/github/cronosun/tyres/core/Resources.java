@@ -5,41 +5,27 @@ import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 public interface Resources {
-  String message(
-    Resolvable<? extends Msg> resolvable,
-    NotFoundStrategy notFoundStrategy,
-    Locale locale
-  );
+  String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale);
 
-  default String message(Resolvable<? extends Msg> resolvable, Locale locale) {
-    return message(resolvable, notFoundStrategy(), locale);
+  default String message(MsgRes resource, Locale locale) {
+    return message(resource, notFoundStrategy(), locale);
   }
 
   @Nullable
-  String maybeMessage(Resolvable<? extends Msg> resolvable, Locale locale);
+  String maybeMessage(MsgRes resource, Locale locale);
 
-  /*
   @Nullable
-  default String maybeMessage(Resolvable<Msg> message, Locale locale) {
-    var resource = message.resource();
-    if (resource!=null) {
-      return maybeMessage(resource, locale);
-    } else {
-      return message.resolvable().maybeMessage(this,locale);
-    }
+  default String maybeMessage(Msg message, Locale locale) {
+    return message.maybeMessage(this, locale);
   }
 
-  default String message(Resolvable<Msg> message, NotFoundStrategy notFoundStrategy, Locale locale) {
-    var resource = message.resource();
-    if (resource!=null) {
-
-    }
+  default String message(Msg message, NotFoundStrategy notFoundStrategy, Locale locale) {
     return message.message(this, notFoundStrategy, locale);
   }
 
-  default String message(Resolvable<Msg> message, Locale locale) {
+  default String message(Msg message, Locale locale) {
     return message.message(this, notFoundStrategy(), locale);
-  }*/
+  }
 
   NotFoundStrategy notFoundStrategy();
 
