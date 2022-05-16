@@ -18,14 +18,10 @@ public interface ReflectionInfo {
 
   BundleInfo bundleInfo();
 
-  Collection<ResReflectionInfo> resources();
-
-  interface ResReflectionInfo {
-    ResInfo resInfo();
-    ReturnValueConstructor returnValueConstructor();
-  }
-
-  interface ReturnValueConstructor {
-    Res<?> construct(BundleInfo bundleInfo, ResInfo resInfo);
-  }
+  /**
+   * Returns all declared resources.
+   *
+   * Expect the collection to be immutable.
+   */
+  Collection<ResInfo> resources();
 }

@@ -28,7 +28,7 @@ public final class BaseName {
   }
 
   private BaseName(String value, int packageNameLength, int nameLength) {
-    this.value = value;
+    this.value = Objects.requireNonNull(value);
     this.packageNameLength = packageNameLength;
     this.nameLength = nameLength;
   }

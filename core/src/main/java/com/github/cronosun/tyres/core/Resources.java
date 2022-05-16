@@ -4,15 +4,15 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
-public interface MsgSource {
-  String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale);
+public interface Resources {
+  String message(Res<Msg> resource, NotFoundStrategy notFoundStrategy, Locale locale);
 
-  default String message(MsgRes resource, Locale locale) {
+  default String message(Res<Msg> resource, Locale locale) {
     return message(resource, notFoundStrategy(), locale);
   }
 
   @Nullable
-  String maybeMessage(MsgRes resource, Locale locale);
+  String maybeMessage(Res<Msg> resource, Locale locale);
 
   @Nullable
   default String maybeMessage(Msg message, Locale locale) {

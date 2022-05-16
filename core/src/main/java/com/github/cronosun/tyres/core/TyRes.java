@@ -2,6 +2,8 @@ package com.github.cronosun.tyres.core;
 
 import java.util.Objects;
 import java.util.ServiceLoader;
+
+import com.github.cronosun.tyres.core.implementation.DefaultImplementation;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
@@ -60,10 +62,8 @@ public final class TyRes {
       }
       return implementation;
     } else {
-      throw new TyResException(
-        "No TyRes implementation found. Make sure exactly one implementation of " +
-        "TyRes is on the classpath (loadable by java ServiceLoader)."
-      );
+      // return the default implementation
+      return DefaultImplementation.instance();
     }
   }
 }

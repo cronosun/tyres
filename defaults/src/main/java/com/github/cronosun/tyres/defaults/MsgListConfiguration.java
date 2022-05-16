@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.MsgRes;
+import com.github.cronosun.tyres.core.Msg;
+import com.github.cronosun.tyres.core.Res;
 import com.github.cronosun.tyres.core.TyRes;
 
 /**
@@ -20,20 +21,25 @@ public interface MsgListConfiguration {
   /**
    * Message to use if the list is empty.
    */
-  MsgRes empty();
+  Res<Msg> empty();
+
+  /**
+   * Message to use if the list has one single item.
+   */
+  Res<Msg> single(Msg item);
 
   /**
    * Prefix for non-empty lists.
    */
-  MsgRes prefix();
+  Res<Msg> prefix();
 
   /**
    * Delimiter for non-empty lists.
    */
-  MsgRes delimiter();
+  Res<Msg> delimiter();
 
   /**
    * Suffix for non-empty lists.
    */
-  MsgRes suffix();
+  Res<Msg> suffix();
 }

@@ -7,7 +7,9 @@ import java.lang.annotation.*;
  * <p>
  * Note: You should not use this to change naming conventions, still adhere to the java method naming, such as
  * <pre>myMethodName</pre>, don't rewrite that to <pre>my_method_name</pre> or <pre>my-method-name</pre>. It's
- * up to the implementation (such as {@link MsgSource}) to convert names.
+ * up to the implementation (such as {@link Resources}) to convert names.
+ *
+ * @see ResInfoDetails.StringResource#name()
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

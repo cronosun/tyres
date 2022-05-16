@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.implementation;
+package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.BaseName;
 import org.junit.jupiter.api.Assertions;

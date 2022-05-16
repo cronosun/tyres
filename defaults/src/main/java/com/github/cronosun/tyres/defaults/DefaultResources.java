@@ -5,21 +5,21 @@ import java.util.Locale;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
-public final class DefaultMsgSource implements MsgSource {
+public final class DefaultResources implements Resources {
 
   private final NotFoundStrategy notFoundStrategy;
   private final FallbackGenerator fallbackGenerator;
   private final MsgSourceBackend backend;
 
-  public static DefaultMsgSource newDefaultImplementation(NotFoundStrategy notFoundStrategy) {
-    return new DefaultMsgSource(
+  public static DefaultResources newDefaultImplementation(NotFoundStrategy notFoundStrategy) {
+    return new DefaultResources(
       notFoundStrategy,
       FallbackGenerator.defaultImplementation(),
       MsgSourceBackend.usingResourceBundle()
     );
   }
 
-  public DefaultMsgSource(
+  public DefaultResources(
     NotFoundStrategy notFoundStrategy,
     FallbackGenerator fallbackGenerator,
     MsgSourceBackend backend
@@ -30,7 +30,7 @@ public final class DefaultMsgSource implements MsgSource {
   }
 
   @Override
-  public String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale) {
+  public String message(Res<Msg> resource, NotFoundStrategy notFoundStrategy, Locale locale) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
     final boolean throwOnError;
     switch (notFoundStrategy) {
@@ -66,7 +66,7 @@ public final class DefaultMsgSource implements MsgSource {
 
   @Nullable
   @Override
-  public String maybeMessage(MsgRes resource, Locale locale) {
+  public String maybeMessage(Res<Msg> resource, Locale locale) {
     var argsForMaybeMessage = processArgsForMaybeMessage(resource.args(), locale);
     final Object[] args;
     if (argsForMaybeMessage != null) {
@@ -84,7 +84,7 @@ public final class DefaultMsgSource implements MsgSource {
   }
 
   @Override
-  public final NotFoundStrategy notFoundStrategy() {
+  public NotFoundStrategy notFoundStrategy() {
     return notFoundStrategy;
   }
 
@@ -153,13 +153,13 @@ public final class DefaultMsgSource implements MsgSource {
     private final ArgsForMaybeMessage argsForMaybeMessage;
     private final Msg msg;
     private final Locale locale;
-    private final MsgSource source;
+    private final Resources source;
 
     private ArgForMaybeMessage(
       ArgsForMaybeMessage argsForMaybeMessage,
       Msg msg,
       Locale locale,
-      MsgSource source
+      Resources source
     ) {
       this.argsForMaybeMessage = argsForMaybeMessage;
       this.msg = msg;
@@ -183,13 +183,13 @@ public final class DefaultMsgSource implements MsgSource {
 
     private final Msg msg;
     private final Locale locale;
-    private final MsgSource source;
+    private final Resources source;
     private final NotFoundStrategy notFoundStrategy;
 
     private ArgForMessage(
       Msg msg,
       Locale locale,
-      MsgSource source,
+      Resources source,
       NotFoundStrategy notFoundStrategy
     ) {
       this.msg = msg;

@@ -1,54 +1,77 @@
 package com.github.cronosun.tyres.core;
 
 import java.lang.reflect.Method;
-import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
 
 @ThreadSafe
-public interface ResInfo {
+public final class ResInfo {
+  private final BundleInfo bundleInfo;
+  private final Method method;
+  private final ResInfoDetails details;
+
+  public ResInfo(BundleInfo bundleInfo, Method method, ResInfoDetails details) {
+    this.bundleInfo = Objects.requireNonNull(bundleInfo);
+    this.method = Objects.requireNonNull(method);
+    this.details = Objects.requireNonNull(details);
+  }
+
   /**
    * Information about the bundle.
    */
-  BundleInfo bundle();
-
-  Method method();
-
-  /**
-   * The name. This is either {@link Method#getName()} or the name from the {@link Rename}-annotation (if
-   * this annotation is present).
-   */
-  String name();
+  public BundleInfo bundle() {
+    return bundleInfo;
+  }
 
   /**
-   * The default value from the {@link Default}-annotation or null if there's no such annotation.
-   * <p>
-   * Note: The default value is not the same as the fallback value. The default value is a "normal" value that
-   * is considered to be OK. This default value can be used instead of writing a message bundle for the default
-   * locale.
-   * <p>
-   * Example with default values in the bundle:
-   * <pre>
-   *     messages.properties    -> values for the default locale
-   *     messages_de.properties -> german translation
-   * </pre>
-   * <p>
-   * Instead of doing that, you can use the {@link Default}-annotation instead of <code>messages.properties</code>.
+   * The method that has been used to get those {@link ResInfo} from.
    */
-  @Nullable
-  String defaultValue();
+  public Method method() {
+    return method;
+  }
 
-  /**
-   * Returns information about this instance for debugging.
-   */
-  @Override
-  String toString();
+  public ResInfoDetails details() {
+    return details;
+  }
 
   /**
    * Returns information for debugging information: Gives enough information so a developer can identify this
    * resource. This can also be used to generate the fallback message.
    */
-  default String debugReference() {
+  public String debugReference() {
     var baseName = bundle().baseName().value();
-    var name = name();
-    return "{" + baseName + "::" + name + "}";
+    var details = details();
+    var kind = details.kind();
+    switch (kind) {
+      case STRING:
+        var stringResouce = details.asStringResouce();
+        return "{" + baseName + "::" + stringResouce.name() + "}";
+      case FILE:
+        var fileResource = details.asFileResource();
+        return "{" + baseName + " FILE " + fileResource.filename() + "}";
+      default:
+        throw new TyResException("Unknown resource kind: " + kind);
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ResInfo resInfo = (ResInfo) o;
+    return bundleInfo.equals(resInfo.bundleInfo) && method.equals(resInfo.method) && details.equals(resInfo.details);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(bundleInfo, method, details);
+  }
+
+  @Override
+  public String toString() {
+    return "ResInfo{" +
+            "bundleInfo=" + bundleInfo +
+            ", method=" + method +
+            ", details=" + details +
+            '}';
   }
 }

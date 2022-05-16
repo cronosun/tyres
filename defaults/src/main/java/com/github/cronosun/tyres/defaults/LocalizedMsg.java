@@ -1,7 +1,7 @@
 package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.Msg;
-import com.github.cronosun.tyres.core.MsgSource;
+import com.github.cronosun.tyres.core.Resources;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.core.TyResException;
 import java.util.*;
@@ -48,11 +48,11 @@ public final class LocalizedMsg implements Msg {
 
   @Override
   public String message(
-    MsgSource source,
-    MsgSource.NotFoundStrategy notFoundStrategy,
+    Resources resources,
+    Resources.NotFoundStrategy notFoundStrategy,
     Locale locale
   ) {
-    var message = maybeMessage(source, locale);
+    var message = maybeMessage(resources, locale);
     if (message == null) {
       switch (notFoundStrategy) {
         case THROW:
@@ -69,7 +69,7 @@ public final class LocalizedMsg implements Msg {
 
   @Nullable
   @Override
-  public String maybeMessage(MsgSource source, Locale locale) {
+  public String maybeMessage(Resources resources, Locale locale) {
     return message(locale, true);
   }
 
