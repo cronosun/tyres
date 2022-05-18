@@ -1,7 +1,5 @@
 package com.github.cronosun.tyres.defaults;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.github.cronosun.tyres.core.Resources;
 import java.util.List;
 import java.util.Locale;
