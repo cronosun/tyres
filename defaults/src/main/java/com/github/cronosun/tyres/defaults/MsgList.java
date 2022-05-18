@@ -71,21 +71,21 @@ public final class MsgList implements Msg {
     var numberOfMessages = messages.size();
     switch (numberOfMessages) {
       case 0:
-        return resources.message(configuration.empty(), notFoundStrategy, locale);
+        return resources.msg(configuration.empty(), notFoundStrategy, locale);
       case 1:
         var single = messages.get(0);
-        return resources.message(configuration.single(single), notFoundStrategy, locale);
+        return resources.msg(configuration.single(single), notFoundStrategy, locale);
       default:
-        final String prefix = resources.message(configuration.prefix(), notFoundStrategy, locale);
-        final String delimiter = resources.message(
+        final String prefix = resources.msg(configuration.prefix(), notFoundStrategy, locale);
+        final String delimiter = resources.msg(
           configuration.delimiter(),
           notFoundStrategy,
           locale
         );
-        final String suffix = resources.message(configuration.suffix(), notFoundStrategy, locale);
+        final String suffix = resources.msg(configuration.suffix(), notFoundStrategy, locale);
         return messages
           .stream()
-          .map(message -> resources.message(message, notFoundStrategy, locale))
+          .map(message -> resources.resolveMsg(message, notFoundStrategy, locale))
           .collect(Collectors.joining(delimiter, prefix, suffix));
     }
   }
@@ -95,11 +95,11 @@ public final class MsgList implements Msg {
   public String maybeMessage(Resources resources, Locale locale) {
     var messages = this.messages;
     if (messages.isEmpty()) {
-      return resources.maybeMessage(configuration.empty(), locale);
+      return resources.maybeMsg(configuration.empty(), locale);
     } else {
-      final String prefix = resources.maybeMessage(configuration.prefix(), locale);
-      final String delimiter = resources.maybeMessage(configuration.delimiter(), locale);
-      final String suffix = resources.maybeMessage(configuration.suffix(), locale);
+      final String prefix = resources.maybeMsg(configuration.prefix(), locale);
+      final String delimiter = resources.maybeMsg(configuration.delimiter(), locale);
+      final String suffix = resources.maybeMsg(configuration.suffix(), locale);
       if (prefix == null || delimiter == null || suffix == null) {
         return null;
       }
@@ -111,7 +111,7 @@ public final class MsgList implements Msg {
           if (atLeastOneIsMissing[0]) {
             return "";
           }
-          var maybeMessage = resources.maybeMessage(message, locale);
+          var maybeMessage = resources.maybeResolveMsg(message, locale);
           if (maybeMessage == null) {
             atLeastOneIsMissing[0] = true;
             return "";

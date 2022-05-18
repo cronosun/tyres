@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
-public abstract class MsgRes implements Res<MsgRes>, Msg {
+public abstract class MsgRes implements Res<MsgRes, MsgMarker>, Msg {
 
   private MsgRes() {}
 
@@ -31,12 +31,12 @@ public abstract class MsgRes implements Res<MsgRes>, Msg {
     Resources.NotFoundStrategy notFoundStrategy,
     Locale locale
   ) {
-    return resources.message(this, notFoundStrategy, locale);
+    return resources.msg(this, notFoundStrategy, locale);
   }
 
   @Override
   public @Nullable String maybeMessage(Resources resources, Locale locale) {
-    return resources.maybeMessage(this, locale);
+    return resources.maybeMsg(this, locale);
   }
 
   private static final class NoArgs extends MsgRes {

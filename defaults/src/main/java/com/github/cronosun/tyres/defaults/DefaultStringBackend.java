@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.Res;
+import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ResInfoDetails;
 import com.github.cronosun.tyres.core.TyResException;
 import java.util.Locale;
@@ -49,8 +49,8 @@ final class DefaultStringBackend implements StringBackend {
 
   @Nullable
   @Override
-  public String maybeMessage(Res<?> resource, Object[] args, Locale locale, boolean throwOnError) {
-    var pattern = getStringOrDefault(resource, locale, throwOnError);
+  public String maybeMessage(ResInfo resInfo, Object[] args, Locale locale, boolean throwOnError) {
+    var pattern = getStringOrDefault(resInfo, locale, throwOnError);
     if (pattern != null) {
       return messageFormatter.format(pattern, args, locale, throwOnError);
     } else {
@@ -59,34 +59,34 @@ final class DefaultStringBackend implements StringBackend {
   }
 
   @Override
-  public @Nullable String maybeString(Res<?> resource, Locale locale, boolean throwOnError) {
-    return getStringOrDefault(resource, locale, throwOnError);
+  public @Nullable String maybeString(ResInfo resInfo, Locale locale, boolean throwOnError) {
+    return getStringOrDefault(resInfo, locale, throwOnError);
   }
 
   @Nullable
-  private String getStringOrDefault(Res<?> resource, Locale locale, boolean throwOnError) {
-    if (!isCorrectResourceType(resource, throwOnError)) {
+  private String getStringOrDefault(ResInfo resInfo, Locale locale, boolean throwOnError) {
+    if (!isCorrectResourceType(resInfo, throwOnError)) {
       return null;
     }
-    var bundle = getResourceBundleForMessages(resource, locale);
-    var string = getString(bundle, resource);
+    var bundle = getResourceBundleForMessages(resInfo, locale);
+    var string = getString(bundle, resInfo);
     if (string == null) {
       // try the default
-      return resource.info().details().asStringResouce().defaultValue();
+      return resInfo.details().asStringResouce().defaultValue();
     } else {
       return string;
     }
   }
 
-  private boolean isCorrectResourceType(Res<?> resource, boolean throwOnError) {
-    var kind = resource.info().details().kind();
+  private boolean isCorrectResourceType(ResInfo resInfo, boolean throwOnError) {
+    var kind = resInfo.details().kind();
     var correctType = kind == ResInfoDetails.Kind.STRING;
     if (throwOnError && !correctType) {
       throw new TyResException(
         "Invalid resource kind (must be a string resource). It's " +
         kind +
         ". Resource '" +
-        resource +
+        resInfo.debugReference() +
         "'."
       );
     }
@@ -94,9 +94,8 @@ final class DefaultStringBackend implements StringBackend {
   }
 
   @Nullable
-  private String getString(@Nullable ResourceBundle bundle, Res<?> resource) {
+  private String getString(@Nullable ResourceBundle bundle, ResInfo resInfo) {
     if (bundle != null) {
-      var resInfo = resource.info();
       var key = resInfo.details().asStringResouce().name();
       if (bundle.containsKey(key)) {
         return bundle.getString(key);
@@ -109,8 +108,8 @@ final class DefaultStringBackend implements StringBackend {
   }
 
   @Nullable
-  private ResourceBundle getResourceBundleForMessages(Res<?> resource, Locale locale) {
-    var bundleInfo = resource.info().bundle();
+  private ResourceBundle getResourceBundleForMessages(ResInfo resInfo, Locale locale) {
+    var bundleInfo = resInfo.bundle();
     var baseName = bundleInfo.baseName().value();
     try {
       return ResourceBundle.getBundle(baseName, locale);

@@ -6,42 +6,42 @@ import org.jetbrains.annotations.Nullable;
 // TODO: Sollten mit marker zeugs arbeiten... MsgMarker, StrMarker (also 2. Generisches argument bei Res<TSelf, Marker>
 @ThreadSafe
 public interface Resources {
-  String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale);
+  String msg(Res<?, MsgMarker> resource, NotFoundStrategy notFoundStrategy, Locale locale);
 
-  default String message(MsgRes resource, Locale locale) {
-    return message(resource, notFoundStrategy(), locale);
+  default String msg(Res<?, MsgMarker> resource, Locale locale) {
+    return msg(resource, msgNotFoundStrategy(), locale);
   }
 
   @Nullable
-  String maybeMessage(MsgRes resource, Locale locale);
+  String maybeMsg(Res<?, MsgMarker> resource, Locale locale);
 
   @Nullable
-  default String maybeMessage(Msg message, Locale locale) {
+  default String maybeResolveMsg(Msg message, Locale locale) {
     return message.maybeMessage(this, locale);
   }
 
-  default String message(Msg message, NotFoundStrategy notFoundStrategy, Locale locale) {
+  default String resolveMsg(Msg message, NotFoundStrategy notFoundStrategy, Locale locale) {
     return message.message(this, notFoundStrategy, locale);
   }
 
-  default String message(Msg message, Locale locale) {
-    return message.message(this, notFoundStrategy(), locale);
+  default String resolveMsg(Msg message, Locale locale) {
+    return message.message(this, msgNotFoundStrategy(), locale);
   }
 
-  NotFoundStrategy notFoundStrategy();
+  NotFoundStrategy msgNotFoundStrategy();
 
   /**
    * Returns the string from the resources if found. Returns <code>null</code> if given string resource cannot
    * be found.
    */
   @Nullable
-  String maybeString(StrRes resource, Locale locale);
+  String maybeStr(Res<?, StrMarker> resource, Locale locale);
 
   /**
    * Returns the string from the resources, if found. Throws a {@link TyResException} if the given string resource
    * cannot be resolved.
    */
-  String string(StrRes resource, Locale locale);
+  String str(Res<?, StrMarker> resource, Locale locale);
 
   /**
    * Generates the fallback message (note, this is not to be confused with the default message,

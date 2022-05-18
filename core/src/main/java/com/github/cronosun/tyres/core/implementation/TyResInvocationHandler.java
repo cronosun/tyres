@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 final class TyResInvocationHandler implements InvocationHandler {
 
-  private final Map<Method, ? extends Res<?>> map;
+  private final Map<Method, ? extends Res<?, ?>> map;
   private final ReflectionInfo bundleResInfo;
 
   public TyResInvocationHandler(Class<?> bundleClass) {
@@ -21,7 +21,7 @@ final class TyResInvocationHandler implements InvocationHandler {
       resources
         .stream()
         .collect(
-          Collectors.toUnmodifiableMap(item -> item.info().method(), item -> (Res<?>) item)
+          Collectors.toUnmodifiableMap(item -> item.info().method(), item -> (Res<?, ?>) item)
         );
     this.bundleResInfo = bundleResInfo;
   }

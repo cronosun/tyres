@@ -14,7 +14,7 @@ public class DefaultTest {
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInTheProperties() {
     var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
-    var msg = resources.message(
+    var msg = resources.msg(
       DefaultTestBundle.INSTANCE.somethingThatIsAlsoFoundInProperty(),
       Locale.ENGLISH
     );
@@ -24,7 +24,7 @@ public class DefaultTest {
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInThePropertiesForStringRes() {
     var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
-    var msg = resources.string(
+    var msg = resources.str(
       DefaultTestBundle.INSTANCE.stringResourceThatIsAlsoFoundInProperty(),
       Locale.ENGLISH
     );
@@ -34,7 +34,7 @@ public class DefaultTest {
   @Test
   void defaultValueIsUsedIfMissingInProperties() {
     var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
-    var msg = resources.message(
+    var msg = resources.msg(
       DefaultTestBundle.INSTANCE.withConfiguredDefault("ABC"),
       Locale.ENGLISH
     );
@@ -44,7 +44,7 @@ public class DefaultTest {
   @Test
   void defaultValueIsUsedIfMissingInPropertiesForString() {
     var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
-    var msg = resources.string(
+    var msg = resources.str(
       DefaultTestBundle.INSTANCE.stringResWithConfiguredDefault(),
       Locale.ENGLISH
     );

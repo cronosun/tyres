@@ -16,11 +16,14 @@ public final class SpringMsgSourceBackend implements StringBackend {
     this.messageSourceCreator = messageSourceCreator;
   }
 
-  @Nullable
   @Override
-  public String maybeMessage(Res<?> resource, Object[] args, Locale locale, boolean throwOnError) {
+  public @Nullable String maybeMessage(
+    ResInfo resInfo,
+    Object[] args,
+    Locale locale,
+    boolean throwOnError
+  ) {
     // TODO: Cache
-    var resInfo = resource.info();
     if (!isCorrectResourceType(resInfo, throwOnError)) {
       return null;
     }
@@ -51,7 +54,7 @@ public final class SpringMsgSourceBackend implements StringBackend {
   }
 
   @Override
-  public @Nullable String maybeString(Res<?> resource, Locale locale, boolean throwOnError) {
+  public @Nullable String maybeString(ResInfo resInfo, Locale locale, boolean throwOnError) {
     // TODO: Implement me
     return null;
   }

@@ -30,7 +30,7 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale) {
+  public String msg(Res<?, MsgMarker> resource, NotFoundStrategy notFoundStrategy, Locale locale) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
     final boolean throwOnError;
     switch (notFoundStrategy) {
@@ -43,7 +43,7 @@ public final class DefaultResources implements Resources {
       default:
         throw new TyResException("Unknown not found strategy: " + notFoundStrategy);
     }
-    var message = this.backend.maybeMessage(resource, args, locale, throwOnError);
+    var message = this.backend.maybeMessage(resource.info(), args, locale, throwOnError);
     if (message != null) {
       return message;
     } else {
@@ -60,8 +60,7 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  @Nullable
-  public String maybeMessage(MsgRes resource, Locale locale) {
+  public @Nullable String maybeMsg(Res<?, MsgMarker> resource, Locale locale) {
     var argsForMaybeMessage = processArgsForMaybeMessage(resource.args(), locale);
     final Object[] args;
     if (argsForMaybeMessage != null) {
@@ -69,7 +68,7 @@ public final class DefaultResources implements Resources {
     } else {
       args = resource.args();
     }
-    var message = this.backend.maybeMessage(resource, args, locale, false);
+    var message = this.backend.maybeMessage(resource.info(), args, locale, false);
     if (argsForMaybeMessage != null && argsForMaybeMessage.notFound) {
       // if one of the arguments cannot be resolved, the entire message cannot be resolved
       return null;
@@ -79,18 +78,18 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public NotFoundStrategy notFoundStrategy() {
+  public NotFoundStrategy msgNotFoundStrategy() {
     return notFoundStrategy;
   }
 
   @Override
-  public @Nullable String maybeString(StrRes resource, Locale locale) {
-    return this.backend.maybeString(resource, locale, false);
+  public @Nullable String maybeStr(Res<?, StrMarker> resource, Locale locale) {
+    return this.backend.maybeString(resource.info(), locale, false);
   }
 
   @Override
-  public String string(StrRes resource, Locale locale) {
-    var maybeString = this.backend.maybeString(resource, locale, true);
+  public String str(Res<?, StrMarker> resource, Locale locale) {
+    var maybeString = this.backend.maybeString(resource.info(), locale, true);
     if (maybeString != null) {
       return maybeString;
     } else {
@@ -190,7 +189,7 @@ public final class DefaultResources implements Resources {
 
     @Override
     public String toString() {
-      var maybeMsg = source.maybeMessage(msg, locale);
+      var maybeMsg = source.maybeResolveMsg(msg, locale);
       if (maybeMsg != null) {
         return maybeMsg;
       } else {
@@ -221,7 +220,7 @@ public final class DefaultResources implements Resources {
 
     @Override
     public String toString() {
-      return source.message(msg, notFoundStrategy, locale);
+      return source.resolveMsg(msg, notFoundStrategy, locale);
     }
   }
 

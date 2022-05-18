@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @ThreadSafe
-public final class StrRes implements Res<StrRes> {
+public final class StrRes implements Res<StrRes, StrMarker> {
 
   private static final Object[] NO_ARGS = new Object[] {};
   private final ResInfo resInfo;

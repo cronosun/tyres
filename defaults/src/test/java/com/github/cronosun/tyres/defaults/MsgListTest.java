@@ -18,7 +18,7 @@ class MsgListTest {
       WorkingBundle.INSTANCE.somethingFromParentWithArgument("TheArgument")
     );
     var list = MsgList.fromList(messages);
-    var messageString = source.message(list, Locale.UK);
+    var messageString = source.resolveMsg(list, Locale.UK);
 
     Assertions.assertEquals(
       "Colour, Message from parent interface, Hello, TheArgument!",
@@ -31,7 +31,7 @@ class MsgListTest {
     var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
 
     var list = MsgList.empty();
-    var messageString = source.message(list, Locale.UK);
+    var messageString = source.resolveMsg(list, Locale.UK);
 
     Assertions.assertEquals("", messageString);
   }
@@ -47,13 +47,13 @@ class MsgListTest {
     );
     var list = MsgList.fromList(CustomMsgListConfiguration.INSTANCE, messages);
 
-    var messageEn = source.message(list, Locale.UK);
+    var messageEn = source.resolveMsg(list, Locale.UK);
     Assertions.assertEquals(
       "\"Colour, Message from parent interface, Hello, TheArgument!\"",
       messageEn
     );
 
-    var messageDe = source.message(list, Locale.GERMAN);
+    var messageDe = source.resolveMsg(list, Locale.GERMAN);
     Assertions.assertEquals(
       "<<Farbe; Meldung vom Elter-Interface; Hallo, TheArgument!>>",
       messageDe

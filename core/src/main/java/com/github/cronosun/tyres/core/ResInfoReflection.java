@@ -9,7 +9,7 @@ final class ResInfoReflection {
 
   private static final String CREATE_METHOD_NAME = "create";
 
-  public static Res<?> reflect(BundleInfo bundleInfo, Method method) {
+  public static Res<?, ?> reflect(BundleInfo bundleInfo, Method method) {
     var createMethod = getReturnTypeCreateMethod(method);
     var fileAnnotation = method.getAnnotation(File.class);
     var renameAnnotation = method.getAnnotation(Rename.class);
@@ -53,7 +53,7 @@ final class ResInfoReflection {
     }
   }
 
-  private static Res<?> createReturnValue(Method createMethod, ResInfo resInfo) {
+  private static Res<?, ?> createReturnValue(Method createMethod, ResInfo resInfo) {
     try {
       var returnValue = createMethod.invoke(null, resInfo);
       if (!(returnValue instanceof Res)) {
@@ -67,7 +67,7 @@ final class ResInfoReflection {
           "'."
         );
       }
-      return (Res<?>) returnValue;
+      return (Res<?, ?>) returnValue;
     } catch (Exception exception) {
       throw new TyResException(
         "Unable to create return value using method '" + createMethod + "'.",

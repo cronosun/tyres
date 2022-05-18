@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.Res;
+import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.core.TyResException;
 import java.util.Locale;
@@ -26,7 +27,7 @@ public interface StringBackend {
    *             implementations MUST NOT try to resolve them.
    */
   @Nullable
-  String maybeMessage(Res<?> resource, Object[] args, Locale locale, boolean throwOnError);
+  String maybeMessage(ResInfo resInfo, Object[] args, Locale locale, boolean throwOnError);
 
   /**
    * Returns the plain string (not formatted) - if found. If there's no such resource, returns <code>null</code>.
@@ -36,7 +37,7 @@ public interface StringBackend {
    * resource (in that case, a {@link TyResException} is thrown).
    */
   @Nullable
-  String maybeString(Res<?> resource, Locale locale, boolean throwOnError);
+  String maybeString(ResInfo resInfo, Locale locale, boolean throwOnError);
 
   /**
    * Returns the default implementation that uses {@link java.util.ResourceBundle}.

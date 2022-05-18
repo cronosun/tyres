@@ -20,7 +20,7 @@ class MessageSourceCreatorTest {
       backend
     );
 
-    var msg = source.message(TestBundle.INSTANCE.sayHello(), Locale.ENGLISH);
+    var msg = source.msg(TestBundle.INSTANCE.sayHello(), Locale.ENGLISH);
     assertEquals("Hello, world!", msg);
   }
 }
