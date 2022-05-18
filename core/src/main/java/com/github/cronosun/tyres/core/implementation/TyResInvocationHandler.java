@@ -30,7 +30,6 @@ final class TyResInvocationHandler implements InvocationHandler {
     return bundleResInfo;
   }
 
-  @SuppressWarnings("SuspiciousInvocationHandlerImplementation")
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) {
     var value = map.get(method);
