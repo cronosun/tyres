@@ -3,6 +3,7 @@ package com.github.cronosun.tyres.core;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: Sollten mit marker zeugs arbeiten... MsgMarker, StrMarker (also 2. Generisches argument bei Res<TSelf, Marker>
 @ThreadSafe
 public interface Resources {
   String message(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale);
@@ -28,6 +29,19 @@ public interface Resources {
   }
 
   NotFoundStrategy notFoundStrategy();
+
+  /**
+   * Returns the string from the resources if found. Returns <code>null</code> if given string resource cannot
+   * be found.
+   */
+  @Nullable
+  String maybeString(StrRes resource, Locale locale);
+
+  /**
+   * Returns the string from the resources, if found. Throws a {@link TyResException} if the given string resource
+   * cannot be resolved.
+   */
+  String string(StrRes resource, Locale locale);
 
   /**
    * Generates the fallback message (note, this is not to be confused with the default message,

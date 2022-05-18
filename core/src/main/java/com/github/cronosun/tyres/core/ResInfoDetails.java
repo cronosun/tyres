@@ -16,7 +16,7 @@ public abstract class ResInfoDetails {
      */
     STRING,
     /**
-     * A resouce that produces a file.
+     * A resource that produces a file.
      */
     FILE,
   }

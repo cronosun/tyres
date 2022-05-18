@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.core;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
@@ -15,7 +16,7 @@ public abstract class MsgRes implements Res<MsgRes>, Msg {
       return new NoArgs(resInfo);
     } else {
       throw new TyResException(
-        "Message resouce is not compatible with " +
+        "Message resource is not compatible with " +
         kind +
         ". Must be of kind " +
         ResInfoDetails.Kind.STRING +
@@ -64,11 +65,6 @@ public abstract class MsgRes implements Res<MsgRes>, Msg {
       }
       return new WithArgs(info, args);
     }
-
-    @Override
-    public String toString() {
-      return "NoArgs{" + "info=" + info + '}';
-    }
   }
 
   private static final class WithArgs extends MsgRes {
@@ -99,10 +95,29 @@ public abstract class MsgRes implements Res<MsgRes>, Msg {
         return new WithArgs(info, args);
       }
     }
+  }
 
-    @Override
-    public String toString() {
-      return "WithArgs{" + "info=" + info + ", args=" + Arrays.toString(args) + '}';
+  @Override
+  public final String toString() {
+    return "MsgRes{" + "info=" + info() + ", args=" + Arrays.toString(args()) + '}';
+  }
+
+  @Override
+  public final boolean equals(Object other) {
+    if (this == other) return true;
+    if (other instanceof MsgRes) {
+      var castOther = (MsgRes) other;
+      return info().equals(castOther.info()) && Arrays.equals(args(), castOther.args());
+    } else {
+      return false;
     }
+  }
+
+  @Override
+  public final int hashCode() {
+    int result = Objects.hash(info());
+    result = 31 * result + Arrays.hashCode(args());
+    result = 31 * result + MsgRes.class.hashCode();
+    return result;
   }
 }

@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.Default;
 import com.github.cronosun.tyres.core.MsgRes;
+import com.github.cronosun.tyres.core.StrRes;
 import com.github.cronosun.tyres.core.TyRes;
 
 public interface DefaultTestBundle {
@@ -12,4 +13,10 @@ public interface DefaultTestBundle {
 
   @Default("No, this default is not taken, since it's also in the properties.")
   MsgRes somethingThatIsAlsoFoundInProperty();
+
+  @Default("Yes, this is the string to use")
+  StrRes stringResWithConfiguredDefault();
+
+  @Default("No, this value is not used")
+  StrRes stringResourceThatIsAlsoFoundInProperty();
 }

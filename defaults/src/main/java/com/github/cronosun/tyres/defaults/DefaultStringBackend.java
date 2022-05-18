@@ -5,21 +5,42 @@ import com.github.cronosun.tyres.core.ResInfoDetails;
 import com.github.cronosun.tyres.core.TyResException;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.spi.ResourceBundleProvider;
 import org.jetbrains.annotations.Nullable;
 
 final class DefaultStringBackend implements StringBackend {
 
+  @Nullable
+  private final ResourceBundleProvider resourceBundleProvider;
+
   private static final DefaultStringBackend INSTANCE = new DefaultStringBackend(
+    null,
     MessageFormatter.defaultImplementaion()
   );
   private static final Logger LOGGER = Logger.getLogger(DefaultStringBackend.class.getName());
   private final MessageFormatter messageFormatter;
 
-  private DefaultStringBackend(MessageFormatter messageFormatter) {
-    this.messageFormatter = messageFormatter;
+  private DefaultStringBackend(
+    @Nullable ResourceBundleProvider resourceBundleProvider,
+    @Nullable MessageFormatter messageFormatter
+  ) {
+    this.resourceBundleProvider = resourceBundleProvider;
+    this.messageFormatter =
+      Objects.requireNonNullElse(messageFormatter, MessageFormatter.defaultImplementaion());
+  }
+
+  public DefaultStringBackend withResourceBundleProvider(
+    ResourceBundleProvider resourceBundleProvider
+  ) {
+    return new DefaultStringBackend(resourceBundleProvider, this.messageFormatter);
+  }
+
+  public DefaultStringBackend withMessageFormatter(MessageFormatter messageFormatter) {
+    return new DefaultStringBackend(this.resourceBundleProvider, messageFormatter);
   }
 
   public static DefaultStringBackend instance() {
@@ -29,14 +50,7 @@ final class DefaultStringBackend implements StringBackend {
   @Nullable
   @Override
   public String maybeMessage(Res<?> resource, Object[] args, Locale locale, boolean throwOnError) {
-    var maybePattern = maybeGetPattern(resource, locale, throwOnError);
-    final String pattern;
-    if (maybePattern == null) {
-      // try the default pattern
-      pattern = resource.info().details().asStringResouce().defaultValue();
-    } else {
-      pattern = maybePattern;
-    }
+    var pattern = getStringOrDefault(resource, locale, throwOnError);
     if (pattern != null) {
       return messageFormatter.format(pattern, args, locale, throwOnError);
     } else {
@@ -44,13 +58,24 @@ final class DefaultStringBackend implements StringBackend {
     }
   }
 
+  @Override
+  public @Nullable String maybeString(Res<?> resource, Locale locale, boolean throwOnError) {
+    return getStringOrDefault(resource, locale, throwOnError);
+  }
+
   @Nullable
-  private String maybeGetPattern(Res<?> resource, Locale locale, boolean throwOnError) {
+  private String getStringOrDefault(Res<?> resource, Locale locale, boolean throwOnError) {
     if (!isCorrectResourceType(resource, throwOnError)) {
       return null;
     }
     var bundle = getResourceBundleForMessages(resource, locale);
-    return getString(bundle, resource);
+    var string = getString(bundle, resource);
+    if (string == null) {
+      // try the default
+      return resource.info().details().asStringResouce().defaultValue();
+    } else {
+      return string;
+    }
   }
 
   private boolean isCorrectResourceType(Res<?> resource, boolean throwOnError) {
@@ -92,6 +117,20 @@ final class DefaultStringBackend implements StringBackend {
     } catch (MissingResourceException missingResourceException) {
       LOGGER.log(Level.INFO, "Missing resource bundle", missingResourceException);
       return null;
+    }
+  }
+
+  private ResourceBundle getBundle(String baseName, Locale locale) {
+    var resourceBundleProvider = this.resourceBundleProvider;
+    if (resourceBundleProvider == null) {
+      try {
+        return ResourceBundle.getBundle(baseName, locale);
+      } catch (MissingResourceException missingResourceException) {
+        LOGGER.log(Level.INFO, "Missing resource bundle", missingResourceException);
+        return null;
+      }
+    } else {
+      return resourceBundleProvider.getBundle(baseName, locale);
     }
   }
 }

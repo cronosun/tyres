@@ -52,12 +52,7 @@ public final class DefaultResources implements Resources {
         case FALLBACK:
           return fallbackFor(resInfo, args);
         case THROW:
-          var bundle = resInfo.bundle();
-          var debugReference = resInfo.debugReference();
-          var bundleDebugReference = bundle.baseName();
-          throw new TyResException(
-            "Resource " + debugReference + " not found in bundle " + bundleDebugReference + "."
-          );
+          throw exceptionResourceNotFound(resInfo);
         default:
           throw new TyResException("Unknown not found strategy: " + notFoundStrategy);
       }
@@ -89,8 +84,32 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
+  public @Nullable String maybeString(StrRes resource, Locale locale) {
+    return this.backend.maybeString(resource, locale, false);
+  }
+
+  @Override
+  public String string(StrRes resource, Locale locale) {
+    var maybeString = this.backend.maybeString(resource, locale, true);
+    if (maybeString != null) {
+      return maybeString;
+    } else {
+      throw exceptionResourceNotFound(resource.info());
+    }
+  }
+
+  @Override
   public String fallbackFor(ResInfo resInfo, Object[] args) {
     return fallbackGenerator.generateFallbackMessageFor(resInfo, args);
+  }
+
+  private TyResException exceptionResourceNotFound(ResInfo resInfo) {
+    var bundle = resInfo.bundle();
+    var debugReference = resInfo.debugReference();
+    var bundleDebugReference = bundle.baseName();
+    return new TyResException(
+      "Resource " + debugReference + " not found in bundle " + bundleDebugReference + "."
+    );
   }
 
   private Object[] processArgsForMessage(

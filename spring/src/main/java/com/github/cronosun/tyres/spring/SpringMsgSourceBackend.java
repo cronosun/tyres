@@ -50,6 +50,12 @@ public final class SpringMsgSourceBackend implements StringBackend {
     }
   }
 
+  @Override
+  public @Nullable String maybeString(Res<?> resource, Locale locale, boolean throwOnError) {
+    // TODO: Implement me
+    return null;
+  }
+
   private boolean isCorrectResourceType(ResInfo resInfo, boolean throwOnError) {
     var kind = resInfo.details().kind();
     var correctType = kind == ResInfoDetails.Kind.STRING;
