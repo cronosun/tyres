@@ -20,17 +20,17 @@
         <dependency>
             <groupId>com.github.cronosun.tyres</groupId>
             <artifactId>core</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.cronosun.tyres</groupId>
             <artifactId>defaults</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.3.19</version>
+            <version>5.3.20</version>
             <scope>provided</scope>
         </dependency>
         <!-- Testing -->
@@ -41,9 +41,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cronosun.tyres</groupId>
-            <artifactId>implementation</artifactId>
-            <version>${parent.version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
