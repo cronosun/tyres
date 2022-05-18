@@ -3,7 +3,6 @@ package com.github.cronosun.tyres.defaults;
 import com.github.cronosun.tyres.core.Res;
 import com.github.cronosun.tyres.core.ResInfoDetails;
 import com.github.cronosun.tyres.core.TyResException;
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -13,10 +12,15 @@ import org.jetbrains.annotations.Nullable;
 
 final class DefaultStringBackend implements StringBackend {
 
-  private static final DefaultStringBackend INSTANCE = new DefaultStringBackend();
+  private static final DefaultStringBackend INSTANCE = new DefaultStringBackend(
+    MessageFormatter.defaultImplementaion()
+  );
   private static final Logger LOGGER = Logger.getLogger(DefaultStringBackend.class.getName());
+  private final MessageFormatter messageFormatter;
 
-  private DefaultStringBackend() {}
+  private DefaultStringBackend(MessageFormatter messageFormatter) {
+    this.messageFormatter = messageFormatter;
+  }
 
   public static DefaultStringBackend instance() {
     return INSTANCE;
@@ -25,29 +29,28 @@ final class DefaultStringBackend implements StringBackend {
   @Nullable
   @Override
   public String maybeMessage(Res<?> resource, Object[] args, Locale locale, boolean throwOnError) {
+    var maybePattern = maybeGetPattern(resource, locale, throwOnError);
+    final String pattern;
+    if (maybePattern == null) {
+      // try the default pattern
+      pattern = resource.info().details().asStringResouce().defaultValue();
+    } else {
+      pattern = maybePattern;
+    }
+    if (pattern != null) {
+      return messageFormatter.format(pattern, args, locale, throwOnError);
+    } else {
+      return null;
+    }
+  }
+
+  @Nullable
+  private String maybeGetPattern(Res<?> resource, Locale locale, boolean throwOnError) {
     if (!isCorrectResourceType(resource, throwOnError)) {
       return null;
     }
     var bundle = getResourceBundleForMessages(resource, locale);
-    var string = getString(bundle, resource);
-    if (string != null) {
-      try {
-        var format = new MessageFormat(string, locale);
-        return format.format(args);
-      } catch (IllegalArgumentException iae) {
-        if (throwOnError) {
-          throw new TyResException(
-            "Invalid format / cannot parse: '" + string + "' (locale " + locale + ").",
-            iae
-          );
-        } else {
-          LOGGER.log(Level.INFO, "Invalid format", iae);
-          return null;
-        }
-      }
-    } else {
-      return null;
-    }
+    return getString(bundle, resource);
   }
 
   private boolean isCorrectResourceType(Res<?> resource, boolean throwOnError) {

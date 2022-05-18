@@ -6,12 +6,15 @@ import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests for the {@link com.github.cronosun.tyres.core.Default} annotation.
+ */
 public class DefaultTest {
 
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInTheProperties() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
-    var msg = source.message(
+    var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var msg = resources.message(
       DefaultTestBundle.INSTANCE.somethingThatIsAlsoFoundInProperty(),
       Locale.ENGLISH
     );
@@ -20,8 +23,8 @@ public class DefaultTest {
 
   @Test
   void defaultValueIsUsedIfMissingInProperties() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
-    var msg = source.message(
+    var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var msg = resources.message(
       DefaultTestBundle.INSTANCE.withConfiguredDefault("ABC"),
       Locale.ENGLISH
     );

@@ -11,14 +11,18 @@ import org.jetbrains.annotations.Nullable;
 @ThreadSafe
 public interface StringBackend {
   /**
-   * Returns the message (if found).
+   * Returns the formatted message (if found).
    *
    * Error handling:
    * <ul>
    *     <li>If resource cannot be found: Method returns <code>null</code>.</li>
-   *     <li>If resouce is invalid (invalid format / invalid number of arguments): Depending on throwOnError,
-   *     either throws an error or returns <code>null</code></li>
+   *     <li>If resouce is invalid (invalid format / invalid arguments): Depending on throwOnError,
+   *     either throws an error or returns <code>null</code>. If the implementation is unable to detect
+   *     errors, it can (but should not) return a broken message.</li>
    * </ul>
+   *
+   * @param args The arguments (never null; but can be empty): The arguments are already resolved,
+   *             implementations MUST NOT try to resolve them.
    */
   @Nullable
   String maybeMessage(Res<?> resource, Object[] args, Locale locale, boolean throwOnError);
