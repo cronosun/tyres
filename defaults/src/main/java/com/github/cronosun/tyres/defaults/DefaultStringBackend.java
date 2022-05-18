@@ -49,25 +49,23 @@ final class DefaultStringBackend implements StringBackend {
 
   @Nullable
   @Override
-  public String maybeMessage(ResInfo resInfo, Object[] args, Locale locale, boolean throwOnError) {
-    var pattern = getStringOrDefault(resInfo, locale, throwOnError);
+  public String maybeMessage(ResInfo resInfo, Object[] args, Locale locale) {
+    var pattern = getStringOrDefault(resInfo, locale);
     if (pattern != null) {
-      return messageFormatter.format(pattern, args, locale, throwOnError);
+      return messageFormatter.format(pattern, args, locale);
     } else {
       return null;
     }
   }
 
   @Override
-  public @Nullable String maybeString(ResInfo resInfo, Locale locale, boolean throwOnError) {
-    return getStringOrDefault(resInfo, locale, throwOnError);
+  public @Nullable String maybeString(ResInfo resInfo, Locale locale) {
+    return getStringOrDefault(resInfo, locale);
   }
 
   @Nullable
-  private String getStringOrDefault(ResInfo resInfo, Locale locale, boolean throwOnError) {
-    if (!isCorrectResourceType(resInfo, throwOnError)) {
-      return null;
-    }
+  private String getStringOrDefault(ResInfo resInfo, Locale locale) {
+    assertCorrectResourceKind(resInfo);
     var bundle = getResourceBundleForMessages(resInfo, locale);
     var string = getString(bundle, resInfo);
     if (string == null) {
@@ -78,10 +76,10 @@ final class DefaultStringBackend implements StringBackend {
     }
   }
 
-  private boolean isCorrectResourceType(ResInfo resInfo, boolean throwOnError) {
+  private void assertCorrectResourceKind(ResInfo resInfo) {
     var kind = resInfo.details().kind();
     var correctType = kind == ResInfoDetails.Kind.STRING;
-    if (throwOnError && !correctType) {
+    if (!correctType) {
       throw new TyResException(
         "Invalid resource kind (must be a string resource). It's " +
         kind +
@@ -90,7 +88,6 @@ final class DefaultStringBackend implements StringBackend {
         "'."
       );
     }
-    return correctType;
   }
 
   @Nullable

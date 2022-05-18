@@ -26,7 +26,7 @@ public abstract class MsgRes implements Res<MsgRes, MsgMarker>, Msg {
   }
 
   @Override
-  public String message(
+  public String msg(
     Resources resources,
     Resources.NotFoundStrategy notFoundStrategy,
     Locale locale
@@ -35,7 +35,7 @@ public abstract class MsgRes implements Res<MsgRes, MsgMarker>, Msg {
   }
 
   @Override
-  public @Nullable String maybeMessage(Resources resources, Locale locale) {
+  public @Nullable String maybeMsg(Resources resources, Locale locale) {
     return resources.maybeMsg(this, locale);
   }
 

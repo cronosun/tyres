@@ -46,8 +46,8 @@ public final class ResInfo {
       case STRING:
         var stringResouce = details.asStringResouce();
         return "{" + baseName + "::" + stringResouce.name() + "}";
-      case FILE:
-        var fileResource = details.asFileResource();
+      case BINARY:
+        var fileResource = details.asBinResource();
         return "{" + baseName + " FILE " + fileResource.filename() + "}";
       default:
         throw new TyResException("Unknown resource kind: " + kind);

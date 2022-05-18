@@ -44,12 +44,12 @@ public final class LocalizedMsg implements Msg {
   }
 
   @Override
-  public String message(
+  public String msg(
     Resources resources,
     Resources.NotFoundStrategy notFoundStrategy,
     Locale locale
   ) {
-    var message = maybeMessage(resources, locale);
+    var message = maybeMsg(resources, locale);
     if (message == null) {
       switch (notFoundStrategy) {
         case THROW:
@@ -66,7 +66,7 @@ public final class LocalizedMsg implements Msg {
 
   @Nullable
   @Override
-  public String maybeMessage(Resources resources, Locale locale) {
+  public String maybeMsg(Resources resources, Locale locale) {
     return message(locale, true);
   }
 
@@ -165,7 +165,7 @@ public final class LocalizedMsg implements Msg {
   private String messageFromParentLocaleNoCache(Locale locale) {
     Locale currentLocale = locale;
     while (true) {
-      currentLocale = getParent(currentLocale);
+      currentLocale = LocaleUtil.getParent(currentLocale);
       if (currentLocale == null) {
         return null;
       }
@@ -174,27 +174,6 @@ public final class LocalizedMsg implements Msg {
         return message;
       }
     }
-  }
-
-  @Nullable
-  private static Locale getParent(Locale locale) {
-    // language + "_" + country + "_" + (variant + "_#" | "#") + script + "_" + extensions
-    if (locale.hasExtensions()) {
-      return locale.stripExtensions();
-    }
-    if (!locale.getScript().isEmpty()) {
-      return new Locale(locale.getLanguage(), locale.getCountry(), locale.getVariant());
-    }
-    if (!locale.getVariant().isEmpty()) {
-      return new Locale(locale.getLanguage(), locale.getCountry());
-    }
-    if (!locale.getCountry().isEmpty()) {
-      return new Locale(locale.getLanguage());
-    }
-    if (!locale.getLanguage().isEmpty()) {
-      return Locale.ROOT;
-    }
-    return null;
   }
 
   private static final class CacheMarkerNotFound {

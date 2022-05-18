@@ -62,7 +62,7 @@ public final class MsgList implements Msg {
   }
 
   @Override
-  public String message(
+  public String msg(
     Resources resources,
     Resources.NotFoundStrategy notFoundStrategy,
     Locale locale
@@ -92,7 +92,7 @@ public final class MsgList implements Msg {
 
   @Nullable
   @Override
-  public String maybeMessage(Resources resources, Locale locale) {
+  public String maybeMsg(Resources resources, Locale locale) {
     var messages = this.messages;
     if (messages.isEmpty()) {
       return resources.maybeMsg(configuration.empty(), locale);

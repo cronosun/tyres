@@ -3,6 +3,7 @@ package com.github.cronosun.tyres.spring;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.cronosun.tyres.core.Resources;
+import com.github.cronosun.tyres.defaults.BinBackend;
 import com.github.cronosun.tyres.defaults.DefaultResources;
 import com.github.cronosun.tyres.defaults.FallbackGenerator;
 import java.util.Locale;
@@ -17,7 +18,8 @@ class MessageSourceCreatorTest {
     var source = new DefaultResources(
       Resources.NotFoundStrategy.THROW,
       FallbackGenerator.defaultImplementation(),
-      backend
+      backend,
+      BinBackend.usingResources()
     );
 
     var msg = source.msg(TestBundle.INSTANCE.sayHello(), Locale.ENGLISH);

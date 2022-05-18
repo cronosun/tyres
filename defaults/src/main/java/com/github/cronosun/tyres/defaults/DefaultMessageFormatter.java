@@ -21,31 +21,21 @@ final class DefaultMessageFormatter implements MessageFormatter {
   }
 
   @Override
-  public @Nullable String format(
-    String pattern,
-    Object[] args,
-    Locale locale,
-    boolean throwOnError
-  ) {
+  public String format(String pattern, Object[] args, Locale locale) {
     try {
       var format = new MessageFormat(pattern, locale);
       return format.format(args);
-    } catch (IllegalArgumentException iae) {
-      if (throwOnError) {
-        throw new TyResException(
-          "Invalid pattern or arguments, cannot format '" +
-          pattern +
-          "' (locale " +
-          locale +
-          ", arguments " +
-          Arrays.toString(args) +
-          ").",
-          iae
-        );
-      } else {
-        LOGGER.log(Level.INFO, "Invalid format", iae);
-        return null;
-      }
+    } catch (Exception exception) {
+      throw new TyResException(
+        "Invalid pattern or arguments, cannot format '" +
+        pattern +
+        "' (locale " +
+        locale +
+        ", arguments " +
+        Arrays.toString(args) +
+        ").",
+        exception
+      );
     }
   }
 }

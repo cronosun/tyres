@@ -14,30 +14,23 @@ import org.jetbrains.annotations.Nullable;
 public interface StringBackend {
   /**
    * Returns the formatted message (if found).
-   * <p>
-   * Error handling:
-   * <ul>
-   *     <li>If resource cannot be found: Method returns <code>null</code>.</li>
-   *     <li>If resource is invalid (invalid format / invalid arguments / not a string resource): Depending on
-   *     throwOnError, either throws an error or returns <code>null</code>. If the implementation is unable to detect
-   *     errors, it can (but should not) return a broken message.</li>
-   * </ul>
+   *
+   * Does not throw if the resource cannot be found - but expect the implementaton to throw @{@link TyResException} if
+   * something else is wrong, like invalid arguments or an invalid message (a message that cannot be parsed).
    *
    * @param args The arguments (never null; but can be empty): The arguments are already resolved,
    *             implementations MUST NOT try to resolve them.
    */
   @Nullable
-  String maybeMessage(ResInfo resInfo, Object[] args, Locale locale, boolean throwOnError);
+  String maybeMessage(ResInfo resInfo, Object[] args, Locale locale);
 
   /**
    * Returns the plain string (not formatted) - if found. If there's no such resource, returns <code>null</code>.
    * <p>
-   * Error handling: In general, returns <code>null</code> if the resource cannot be retrieved, except when
-   * throwOnError is true and the resource is not a {@link com.github.cronosun.tyres.core.ResInfoDetails.Kind#STRING}
-   * resource (in that case, a {@link TyResException} is thrown).
+   * Does not throw if the resouce cannot be found.
    */
   @Nullable
-  String maybeString(ResInfo resInfo, Locale locale, boolean throwOnError);
+  String maybeString(ResInfo resInfo, Locale locale);
 
   /**
    * Returns the default implementation that uses {@link java.util.ResourceBundle}.

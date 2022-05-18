@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.*;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
@@ -9,41 +10,34 @@ public final class DefaultResources implements Resources {
 
   private final NotFoundStrategy notFoundStrategy;
   private final FallbackGenerator fallbackGenerator;
-  private final StringBackend backend;
+  private final StringBackend stringBackend;
+  private final BinBackend binBackend;
 
   public static DefaultResources newDefaultImplementation(NotFoundStrategy notFoundStrategy) {
     return new DefaultResources(
       notFoundStrategy,
       FallbackGenerator.defaultImplementation(),
-      StringBackend.usingResourceBundle()
+      StringBackend.usingResourceBundle(),
+      BinBackend.usingResources()
     );
   }
 
   public DefaultResources(
     NotFoundStrategy notFoundStrategy,
     FallbackGenerator fallbackGenerator,
-    StringBackend backend
+    StringBackend stringBackend,
+    BinBackend binBackend
   ) {
     this.notFoundStrategy = notFoundStrategy;
     this.fallbackGenerator = fallbackGenerator;
-    this.backend = backend;
+    this.stringBackend = stringBackend;
+    this.binBackend = binBackend;
   }
 
   @Override
   public String msg(Res<?, MsgMarker> resource, NotFoundStrategy notFoundStrategy, Locale locale) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
-    final boolean throwOnError;
-    switch (notFoundStrategy) {
-      case FALLBACK:
-        throwOnError = false;
-        break;
-      case THROW:
-        throwOnError = true;
-        break;
-      default:
-        throw new TyResException("Unknown not found strategy: " + notFoundStrategy);
-    }
-    var message = this.backend.maybeMessage(resource.info(), args, locale, throwOnError);
+    var message = this.stringBackend.maybeMessage(resource.info(), args, locale);
     if (message != null) {
       return message;
     } else {
@@ -68,7 +62,7 @@ public final class DefaultResources implements Resources {
     } else {
       args = resource.args();
     }
-    var message = this.backend.maybeMessage(resource.info(), args, locale, false);
+    var message = this.stringBackend.maybeMessage(resource.info(), args, locale);
     if (argsForMaybeMessage != null && argsForMaybeMessage.notFound) {
       // if one of the arguments cannot be resolved, the entire message cannot be resolved
       return null;
@@ -84,14 +78,29 @@ public final class DefaultResources implements Resources {
 
   @Override
   public @Nullable String maybeStr(Res<?, StrMarker> resource, Locale locale) {
-    return this.backend.maybeString(resource.info(), locale, false);
+    return this.stringBackend.maybeString(resource.info(), locale);
   }
 
   @Override
   public String str(Res<?, StrMarker> resource, Locale locale) {
-    var maybeString = this.backend.maybeString(resource.info(), locale, true);
+    var maybeString = this.stringBackend.maybeString(resource.info(), locale);
     if (maybeString != null) {
       return maybeString;
+    } else {
+      throw exceptionResourceNotFound(resource.info());
+    }
+  }
+
+  @Override
+  public @Nullable InputStream maybeBin(Res<?, BinMarker> resource, Locale locale) {
+    return binBackend.maybeBin(resource.info(), locale);
+  }
+
+  @Override
+  public InputStream bin(Res<?, BinMarker> resource, Locale locale) {
+    var maybeInputStream = maybeBin(resource, locale);
+    if (maybeInputStream != null) {
+      return maybeInputStream;
     } else {
       throw exceptionResourceNotFound(resource.info());
     }

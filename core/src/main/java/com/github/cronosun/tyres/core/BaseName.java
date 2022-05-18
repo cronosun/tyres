@@ -5,9 +5,12 @@ import java.util.Objects;
 @ThreadSafe
 public final class BaseName {
 
+  private static final char DOT_SEPARATOR = '.';
+  private static final char PATH_SEPARATOR = '/';
   private final String value;
   private final int nameLength;
   private final int packageNameLength;
+  private final String path;
 
   public static BaseName fromClass(Class<?> cls) {
     var packageName = cls.getPackageName();
@@ -24,13 +27,18 @@ public final class BaseName {
     }
     var packageNameLength = packageName.length();
     var nameLength = name.length();
-    return new BaseName(baseName, packageNameLength, nameLength);
+    return new BaseName(baseName, packageNameLength, nameLength, convertToPath(baseName));
   }
 
-  private BaseName(String value, int packageNameLength, int nameLength) {
+  private static String convertToPath(String name) {
+    return name.replace(DOT_SEPARATOR, PATH_SEPARATOR);
+  }
+
+  private BaseName(String value, int packageNameLength, int nameLength, String path) {
     this.value = Objects.requireNonNull(value);
     this.packageNameLength = packageNameLength;
     this.nameLength = nameLength;
+    this.path = path;
   }
 
   /**
@@ -43,6 +51,16 @@ public final class BaseName {
    */
   public String value() {
     return value;
+  }
+
+  /**
+   * Returns {@link #value} as path (using '/' instead of '.' as separator).
+   *
+   * Instead of something like <pre>com.org.package.ClassName</pre>,
+   * returns <pre>com/org/package/ClassName</pre>.
+   */
+  public String path() {
+    return path;
   }
 
   /**

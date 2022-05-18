@@ -10,7 +10,7 @@ class MsgListTest {
 
   @Test
   void simpleMessageList() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
 
     var messages = List.of(
       WorkingBundle.INSTANCE.colour(),
@@ -18,7 +18,7 @@ class MsgListTest {
       WorkingBundle.INSTANCE.somethingFromParentWithArgument("TheArgument")
     );
     var list = MsgList.fromList(messages);
-    var messageString = source.resolveMsg(list, Locale.UK);
+    var messageString = resources.resolveMsg(list, Locale.UK);
 
     Assertions.assertEquals(
       "Colour, Message from parent interface, Hello, TheArgument!",

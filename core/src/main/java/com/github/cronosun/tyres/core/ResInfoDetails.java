@@ -16,14 +16,14 @@ public abstract class ResInfoDetails {
      */
     STRING,
     /**
-     * A resource that produces a file.
+     * A resource that produces a binary stream (usually from a file).
      */
-    FILE,
+    BINARY,
   }
 
   public abstract StringResource asStringResouce();
 
-  public abstract FileResouce asFileResource();
+  public abstract FileResouce asBinResource();
 
   public static final class StringResource extends ResInfoDetails {
 
@@ -48,7 +48,7 @@ public abstract class ResInfoDetails {
     }
 
     @Override
-    public FileResouce asFileResource() {
+    public FileResouce asBinResource() {
       throw new TyResException("This is not a file resouce.");
     }
 
@@ -103,15 +103,15 @@ public abstract class ResInfoDetails {
 
   public static final class FileResouce extends ResInfoDetails {
 
-    private final String filename;
+    private final Filename filename;
 
     public FileResouce(String filename) {
-      this.filename = Objects.requireNonNull(filename);
+      this.filename = Filename.from(Objects.requireNonNull(filename));
     }
 
     @Override
     public Kind kind() {
-      return Kind.FILE;
+      return Kind.BINARY;
     }
 
     @Override
@@ -120,11 +120,11 @@ public abstract class ResInfoDetails {
     }
 
     @Override
-    public FileResouce asFileResource() {
+    public FileResouce asBinResource() {
       return this;
     }
 
-    public String filename() {
+    public Filename filename() {
       return filename;
     }
 

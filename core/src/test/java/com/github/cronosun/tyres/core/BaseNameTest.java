@@ -10,6 +10,7 @@ class BaseNameTest {
   public void testWithPackage() {
     var baseName = BaseName.fromPackageAndName("com.company.project", "MyClass");
     assertEquals("com.company.project.MyClass", baseName.value());
+    assertEquals("com/company/project/MyClass", baseName.path());
     assertEquals("com.company.project", baseName.packageName());
     assertEquals("MyClass", baseName.name());
   }
@@ -18,6 +19,7 @@ class BaseNameTest {
   public void testWithoutPackage() {
     var baseName = BaseName.fromPackageAndName("", "MyClass");
     assertEquals("MyClass", baseName.value());
+    assertEquals("MyClass", baseName.path());
     assertEquals("", baseName.packageName());
     assertEquals("MyClass", baseName.name());
   }
@@ -34,6 +36,7 @@ class BaseNameTest {
   public void testWithEmptyName() {
     var baseName = BaseName.fromPackageAndName("", "");
     assertEquals("", baseName.value());
+    assertEquals("", baseName.path());
     assertEquals("", baseName.packageName());
     assertEquals("", baseName.name());
   }

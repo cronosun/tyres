@@ -1,34 +1,67 @@
 package com.github.cronosun.tyres.core;
 
+import java.io.InputStream;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: Sollten mit marker zeugs arbeiten... MsgMarker, StrMarker (also 2. Generisches argument bei Res<TSelf, Marker>
 @ThreadSafe
 public interface Resources {
+  /**
+   * Returns the message.
+   *
+   * If there's no such resouce: Depending on {@link NotFoundStrategy}, either returns the fallback message
+   * or throws {@link TyResException}.
+   */
   String msg(Res<?, MsgMarker> resource, NotFoundStrategy notFoundStrategy, Locale locale);
 
+  /**
+   * Calls {@link #msg(Res, NotFoundStrategy, Locale)} with {@link #msgNotFoundStrategy()}.
+   */
   default String msg(Res<?, MsgMarker> resource, Locale locale) {
     return msg(resource, msgNotFoundStrategy(), locale);
   }
 
+  /**
+   * Returns the message (if the resource can be found) or <code>null</code> if there's no such message.
+   *
+   * Note: Expect the implementation to throw {@link TyResException} if something is wrong (such as an invalid
+   * message format or invalid arguments).
+   */
   @Nullable
   String maybeMsg(Res<?, MsgMarker> resource, Locale locale);
 
+  /**
+   * Calls {@link Msg#maybeMsg(Resources, Locale)}.
+   */
   @Nullable
   default String maybeResolveMsg(Msg message, Locale locale) {
-    return message.maybeMessage(this, locale);
+    return message.maybeMsg(this, locale);
   }
 
+  /**
+   * Calls {@link Msg#msg(Resources, NotFoundStrategy, Locale)}.
+   */
   default String resolveMsg(Msg message, NotFoundStrategy notFoundStrategy, Locale locale) {
-    return message.message(this, notFoundStrategy, locale);
+    return message.msg(this, notFoundStrategy, locale);
   }
 
+  /**
+   * Calls {@link Msg#msg(Resources, NotFoundStrategy, Locale)} with {@link #msgNotFoundStrategy()}.
+   */
   default String resolveMsg(Msg message, Locale locale) {
-    return message.message(this, msgNotFoundStrategy(), locale);
+    return message.msg(this, msgNotFoundStrategy(), locale);
   }
 
+  /**
+   * What {@link #msg(Res, Locale)} should do if the resouce cannot be found.
+   */
   NotFoundStrategy msgNotFoundStrategy();
+
+  /**
+   * Generates the fallback message (note, this is not to be confused with the default message,
+   * see {@link ResInfoDetails.StringResource#defaultValue()}).
+   */
+  String fallbackFor(ResInfo resInfo, Object[] args);
 
   /**
    * Returns the string from the resources if found. Returns <code>null</code> if given string resource cannot
@@ -44,10 +77,12 @@ public interface Resources {
   String str(Res<?, StrMarker> resource, Locale locale);
 
   /**
-   * Generates the fallback message (note, this is not to be confused with the default message,
-   * see {@link ResInfoDetails.StringResource#defaultValue()}).
+   * Returns the binary as input stream or <code>null</code> if resource cannot be found.
    */
-  String fallbackFor(ResInfo resInfo, Object[] args);
+  @Nullable
+  InputStream maybeBin(Res<?, BinMarker> resource, Locale locale);
+
+  InputStream bin(Res<?, BinMarker> resource, Locale locale);
 
   enum NotFoundStrategy {
     /**

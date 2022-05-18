@@ -131,7 +131,7 @@ final class ResInfoReflection {
     Method method,
     File fileAnnotation
   ) {
-    var filename = fileAnnotation.filename();
+    var filename = fileAnnotation.value();
     var details = new ResInfoDetails.FileResouce(filename);
     return new ResInfo(bundleInfo, method, details);
   }
