@@ -1,18 +1,18 @@
 package com.github.cronosun.tyres.core;
 
-public abstract class TextRes implements Res<TextRes> {
+public abstract class MsgRes implements Res<MsgRes> {
 
   private static final Object[] NO_ARGS = new Object[] {};
 
-  private TextRes() {}
+  private MsgRes() {}
 
-  public static final TextRes create(BundleInfo _ignored, ResInfo info) {
+  public static final MsgRes create(BundleInfo _ignored, ResInfo info) {
     return new NoArgs(info);
   }
 
-  public abstract TextRes withArgs(Object[] args);
+  public abstract MsgRes withArgs(Object[] args);
 
-  private static final class NoArgs extends TextRes {
+  private static final class NoArgs extends MsgRes {
 
     private final ResInfo resInfo;
 
@@ -31,12 +31,12 @@ public abstract class TextRes implements Res<TextRes> {
     }
 
     @Override
-    public TextRes withArgs(Object[] args) {
+    public MsgRes withArgs(Object[] args) {
       return new WithArgs(resInfo, args);
     }
   }
 
-  private static final class WithArgs extends TextRes {
+  private static final class WithArgs extends MsgRes {
 
     private final ResInfo resInfo;
     private final Object[] args;
@@ -57,7 +57,7 @@ public abstract class TextRes implements Res<TextRes> {
     }
 
     @Override
-    public TextRes withArgs(Object[] args) {
+    public MsgRes withArgs(Object[] args) {
       return new WithArgs(resInfo, args);
     }
   }

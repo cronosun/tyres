@@ -26,4 +26,9 @@ public interface BundleInfo {
    * Returns the implementation that has been used to create this.
    */
   TyResImplementation implementation();
+
+  /**
+   * Returns information about this instance for debugging.
+   */
+  String toString();
 }

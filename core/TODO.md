@@ -7,6 +7,11 @@
  * TODO: Exclude things from Object (like equals)
  * ---> for reflection
  * ---> but also for proxy
+* Noch was machen mit dynamischen properties... z.b. generieren von listen...
+* Glaube das interface MsgSource müssten wir noch besser machen... glaube es braucht 2 interfaces,
+  wohl noch eines wo die "default"-strategie kriegt... Throw oder default... Villeicht so was:
+   -> MsgSource -> Hier kann ich nichts kontrollieren. Das wird dann aber dem dynamichen property gegeben.
+   -> AdvancedMsgSource -> da kann ich kontrollieren was passiert (null, throw und so...)
 
 https://codereview.stackexchange.com/questions/182713/a-fast-integer-key-map-in-java-via-a-van-emde-boas-tree
 https://github.com/MDhondt/vEB

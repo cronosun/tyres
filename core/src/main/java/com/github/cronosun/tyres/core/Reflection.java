@@ -276,6 +276,12 @@ final class Reflection {
     public TyResImplementation implementation() {
       return implementation;
     }
+
+    @Override
+    public String toString() {
+      return "DefaultBundleInfo [bundleClass=" + bundleClass + ", customPackage=" + customPackage + ", implementation="
+          + implementation + "]";
+    }    
   }
 
   private static final class DefaultResInfo implements ResInfo {
@@ -318,6 +324,12 @@ final class Reflection {
     @Override
     public String defaultValue() {
       return defaultValue;
+    }
+
+    @Override
+    public String toString() {
+      return "DefaultResInfo [bundleInfo=" + bundleInfo + ", defaultValue=" + defaultValue + ", method=" + method
+          + ", name=" + name + "]";
     }
   }
 

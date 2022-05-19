@@ -22,4 +22,9 @@ public interface ResInfo {
    */
   @Nullable
   String defaultValue();
+
+  /**
+   * Returns information about this instance for debugging.
+   */
+  String toString();
 }
