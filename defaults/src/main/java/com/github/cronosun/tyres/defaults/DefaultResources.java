@@ -35,7 +35,7 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public String msg(Res<?, MsgMarker> resource, NotFoundStrategy notFoundStrategy, Locale locale) {
+  public String msg(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
     var message = this.stringBackend.maybeMessage(resource.info(), args, locale);
     if (message != null) {
@@ -54,7 +54,7 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public @Nullable String maybeMsg(Res<?, MsgMarker> resource, Locale locale) {
+  public @Nullable String maybeMsg(MsgRes resource, Locale locale) {
     var argsForMaybeMessage = processArgsForMaybeMessage(resource.args(), locale);
     final Object[] args;
     if (argsForMaybeMessage != null) {
@@ -77,12 +77,12 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public @Nullable String maybeStr(Res<?, StrMarker> resource, Locale locale) {
+  public @Nullable String maybeStr(StrRes resource, Locale locale) {
     return this.stringBackend.maybeString(resource.info(), locale);
   }
 
   @Override
-  public String str(Res<?, StrMarker> resource, Locale locale) {
+  public String str(StrRes resource, Locale locale) {
     var maybeString = this.stringBackend.maybeString(resource.info(), locale);
     if (maybeString != null) {
       return maybeString;
@@ -92,12 +92,12 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public @Nullable InputStream maybeBin(Res<?, BinMarker> resource, Locale locale) {
+  public @Nullable InputStream maybeBin(BinRes resource, Locale locale) {
     return binBackend.maybeBin(resource.info(), locale);
   }
 
   @Override
-  public InputStream bin(Res<?, BinMarker> resource, Locale locale) {
+  public InputStream bin(BinRes resource, Locale locale) {
     var maybeInputStream = maybeBin(resource, locale);
     if (maybeInputStream != null) {
       return maybeInputStream;

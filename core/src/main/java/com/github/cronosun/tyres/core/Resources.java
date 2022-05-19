@@ -12,12 +12,12 @@ public interface Resources {
    * If there's no such resouce: Depending on {@link NotFoundStrategy}, either returns the fallback message
    * or throws {@link TyResException}.
    */
-  String msg(Res<?, MsgMarker> resource, NotFoundStrategy notFoundStrategy, Locale locale);
+  String msg(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale);
 
   /**
-   * Calls {@link #msg(Res, NotFoundStrategy, Locale)} with {@link #msgNotFoundStrategy()}.
+   * Calls {@link #msg(MsgRes, NotFoundStrategy, Locale)} with {@link #msgNotFoundStrategy()}.
    */
-  default String msg(Res<?, MsgMarker> resource, Locale locale) {
+  default String msg(MsgRes resource, Locale locale) {
     return msg(resource, msgNotFoundStrategy(), locale);
   }
 
@@ -28,7 +28,7 @@ public interface Resources {
    * message format or invalid arguments).
    */
   @Nullable
-  String maybeMsg(Res<?, MsgMarker> resource, Locale locale);
+  String maybeMsg(MsgRes resource, Locale locale);
 
   /**
    * Calls {@link Msg#maybeMsg(Resources, Locale)}.
@@ -53,7 +53,7 @@ public interface Resources {
   }
 
   /**
-   * What {@link #msg(Res, Locale)} should do if the resouce cannot be found.
+   * What {@link #msg(MsgRes, Locale)} should do if the resouce cannot be found.
    */
   NotFoundStrategy msgNotFoundStrategy();
 
@@ -68,21 +68,21 @@ public interface Resources {
    * be found.
    */
   @Nullable
-  String maybeStr(Res<?, StrMarker> resource, Locale locale);
+  String maybeStr(StrRes resource, Locale locale);
 
   /**
    * Returns the string from the resources, if found. Throws a {@link TyResException} if the given string resource
    * cannot be resolved.
    */
-  String str(Res<?, StrMarker> resource, Locale locale);
+  String str(StrRes resource, Locale locale);
 
   /**
    * Returns the binary as input stream or <code>null</code> if resource cannot be found.
    */
   @Nullable
-  InputStream maybeBin(Res<?, BinMarker> resource, Locale locale);
+  InputStream maybeBin(BinRes resource, Locale locale);
 
-  InputStream bin(Res<?, BinMarker> resource, Locale locale);
+  InputStream bin(BinRes resource, Locale locale);
 
   enum NotFoundStrategy {
     /**

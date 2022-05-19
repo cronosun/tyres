@@ -16,7 +16,7 @@ final class Reflection {
     var bundleInfo = BundleInfoReflection.reflect(bundleClass, implementation);
     // note: we also include inherited methods.
     var methods = bundleClass.getMethods();
-    final Stream<Res<?, ?>> stream = Arrays
+    final Stream<Res<?>> stream = Arrays
       .stream(methods)
       .map(method -> ResInfoReflection.reflect(bundleInfo, method));
     var resources = stream.collect(Collectors.toUnmodifiableList());
@@ -26,9 +26,9 @@ final class Reflection {
   private static final class DefaultReflectionInfo implements ReflectionInfo {
 
     private final BundleInfo bundleInfo;
-    private final Collection<Res<?, ?>> resources;
+    private final Collection<Res<?>> resources;
 
-    private DefaultReflectionInfo(Collection<Res<?, ?>> resources, BundleInfo bundleInfo) {
+    private DefaultReflectionInfo(Collection<Res<?>> resources, BundleInfo bundleInfo) {
       this.resources = resources;
       this.bundleInfo = bundleInfo;
     }
@@ -39,7 +39,7 @@ final class Reflection {
     }
 
     @Override
-    public Collection<Res<?, ?>> resources() {
+    public Collection<Res<?>> resources() {
       return resources;
     }
   }
