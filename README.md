@@ -8,13 +8,13 @@ Provides functionality for typed resources (such as messages) for [spring](https
  
  * Typed resources using interfaces.
  * Supports arguments for messages.
- * Multiple backend implementations possible (such as Spring `MessageSource` or plain Java `ResourceBundle`).
+ * Supports multiple backend implementations: Spring `MessageSource` and Java `ResourceBundle` are included - or write your own.
  * Lightweight & small.
- * Validation: Missing translations or unused translations.
- * Testing: Easy to test whether services return correct messages.
+ * Validation: Detect missing translations or unused translations.
+ * Testing: Easy to test whether services return correct messages (messages can be referenced in tests).
  * Globally configurable what to do if a resource is missing (return a fallback message or throw an exception).
 
-### How does it look like?
+### What does it look like?
 
 Write a message bundle (it's just an interface):
 
