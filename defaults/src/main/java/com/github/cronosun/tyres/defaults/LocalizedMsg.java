@@ -20,27 +20,37 @@ public final class LocalizedMsg implements Msg {
   private final Map<Locale, String> localizations;
 
   @Nullable
-  private transient volatile Map<Locale, Object> parentCache;
+  private transient volatile Map<Locale, Object> resultCache;
+
+  private final transient Object resultCacheLock = new Object();
 
   private LocalizedMsg(Map<Locale, String> localizations) {
     this.localizations = localizations;
   }
 
-  @Nullable
-  public String message(Locale locale, boolean includeParent) {
-    var msg = localizations.get(locale);
-    if (msg != null) {
-      return msg;
-    }
-    if (includeParent) {
-      return messageFromParentLocaleWithCache(locale);
-    } else {
-      return null;
-    }
-  }
-
   public Set<Locale> availableLocales() {
     return localizations.keySet();
+  }
+
+  /**
+   * Get the message for given locale.
+   *
+   * Note: Also includes candidates, as defined by
+   * {@link java.util.ResourceBundle.Control#getCandidateLocales(String, Locale)}.
+   */
+  @Nullable
+  public String message(Locale locale) {
+    return messageWithCandidates(locale);
+  }
+
+  /**
+   * Get the message for given locale.
+   *
+   * Note: Unlike {@link #message(Locale)}, this only results a result if the locale matches exactly.
+   */
+  @Nullable
+  public String messageExact(Locale locale) {
+    return this.localizations.get(locale);
   }
 
   @Override
@@ -67,7 +77,7 @@ public final class LocalizedMsg implements Msg {
   @Nullable
   @Override
   public String maybeMsg(Resources resources, Locale locale) {
-    return message(locale, true);
+    return messageWithCandidates(locale);
   }
 
   public static Builder builder() {
@@ -125,55 +135,67 @@ public final class LocalizedMsg implements Msg {
   }
 
   @Nullable
-  private String messageFromParentLocaleWithCache(Locale locale) {
-    // note: it can happen that the parent is computed multiple times (if accessed from multiple
-    // threads, but we accept this and don't need synchronization here).
-    var parentCache = this.parentCache;
-    if (parentCache != null) {
-      var valueFromCache = parentCache.get(locale);
-      if (valueFromCache != null) {
-        if (valueFromCache instanceof String) {
-          return (String) valueFromCache;
-        } else if (valueFromCache == CacheMarkerNotFound.INSTANCE) {
-          return null;
-        } else {
-          throw new TyResException("Unvalid / unknown value in cache: " + valueFromCache);
-        }
+  private String messageWithCandidates(Locale locale) {
+    var localizations = this.localizations;
+    // fast path
+    var directResult = localizations.get(locale);
+    if (directResult != null) {
+      return directResult;
+    }
+    if (localizations.isEmpty()) {
+      return null;
+    }
+
+    // try from cache
+    var cache = this.resultCache;
+    if (cache != null) {
+      var resultFromCache = cache.get(locale);
+      if (resultFromCache instanceof String) {
+        return (String) resultFromCache;
+      } else if (CacheMarkerNotFound.INSTANCE == resultFromCache) {
+        // never have a result
+        return null;
       }
     }
 
-    // ok, nothing in cache, we compute it
-    if (parentCache == null) {
-      synchronized (this) {
-        parentCache = this.parentCache;
-        if (parentCache == null) {
-          parentCache = new ConcurrentHashMap<>();
-          this.parentCache = parentCache;
+    var computedResult = getMessageWithCandidatesNotIncludingGivenLocale(locale);
+
+    // add to cache (note: it might happen that the result that we just computed has been computed in another
+    // thread too: I think it's better to compute a result twice from time to tome instead of holding a lock for
+    // too long).
+    if (cache != null) {
+      addToCache(cache, locale, computedResult);
+    } else {
+      synchronized (this.resultCacheLock) {
+        cache = this.resultCache;
+        if (cache == null) {
+          cache = new ConcurrentHashMap<>();
+          this.resultCache = cache;
         }
       }
+      addToCache(cache, locale, computedResult);
     }
 
-    var computedValue = messageFromParentLocaleNoCache(locale);
-    parentCache.put(
-      locale,
-      Objects.requireNonNullElse(computedValue, CacheMarkerNotFound.INSTANCE)
-    );
-    return computedValue;
+    return computedResult;
+  }
+
+  private void addToCache(Map<Locale, Object> cache, Locale locale, @Nullable String result) {
+    cache.put(locale, Objects.requireNonNullElse(result, CacheMarkerNotFound.INSTANCE));
   }
 
   @Nullable
-  private String messageFromParentLocaleNoCache(Locale locale) {
-    Locale currentLocale = locale;
-    while (true) {
-      currentLocale = LocaleUtil.getParent(currentLocale);
-      if (currentLocale == null) {
-        return null;
+  private String getMessageWithCandidatesNotIncludingGivenLocale(Locale locale) {
+    var candidateLocales = LocaleUtil.getCandidateLocales(locale);
+    for (var candidateLocale : candidateLocales) {
+      if (candidateLocale.equals(locale)) {
+        continue;
       }
-      var message = this.localizations.get(currentLocale);
-      if (message != null) {
-        return message;
+      var maybeResult = this.localizations.get(candidateLocale);
+      if (maybeResult != null) {
+        return maybeResult;
       }
     }
+    return null;
   }
 
   private static final class CacheMarkerNotFound {
