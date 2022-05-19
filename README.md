@@ -53,11 +53,19 @@ class TranslateTest {
 }
 ```
 
+## Modules
+
+ * `core`: Contains the API and a default implementation of `TyResImplementation`. You always need this dependency.
+ * `defaults`: Contains the default implementation - you most likely want this dependency too (unless you write your own implementation from scratch). Also contains:
+   * Validation
+   * Some utilities, like message list and localized messages.
+ * `spring`: Contains an implementation for spring. You only need this implementation if you use spring.
+
 ## Common errors
 
 ### Resource not found
 
-Depending on the implementation, the `.properties`-file must be located in different locations. Say the bundle interface is called `com.company.MyBundle`, the `.properties`-file must be located here:
+Depending on the implementation, the `.properties`-files must be located in different locations. Say the bundle interface is called `com.company.MyBundle`, the `.properties`-file must be located here:
 
  * For JVM resource bundle implementation: It must be called `MyBundle.properties` and must be placed inside the **directory** `com/company` in the `resources` directory.
- * For the Spring implementation: Spring wants the file to be in the `resources`-directory, called `com.company.MyBundle.properties`.
+ * For the Spring implementation: Some spring backends (the `ReloadableResourceBundleMessageSource`) wants the file to be in the `resources`-directory, called `com.company.MyBundle.properties`.
