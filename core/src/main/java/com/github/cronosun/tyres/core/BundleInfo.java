@@ -11,7 +11,8 @@ public interface BundleInfo {
      * see {@link TyResImplementation#createInstance(Class)}).
      * <p>
      * Note: This is not neccesarily the same as the class from method ({@link Method#getDeclaringClass()},
-     * see {@link ResInfo#method()}), since the method might have been declared on one of the inherited interfaces.
+     * see {@link ResInfo#method()}), since the method might have been declared on one of the 
+     * inherited interfaces.
      */
     Class<?> bundleClass();
 
@@ -21,4 +22,9 @@ public interface BundleInfo {
      */
     @Nullable
     List<String> customPackage();
+
+    /**
+     * Returns the implementation that has been used to create this.
+     */
+    TyResImplementation implementation();
 }

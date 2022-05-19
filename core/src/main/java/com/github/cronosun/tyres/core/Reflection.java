@@ -12,8 +12,8 @@ final class Reflection {
     private Reflection() {
     }
 
-    public static BundleResInfo reflect(Class<?> bundleClass) {
-        var bundleInfo = reflectBundle(bundleClass);
+    public static BundleResInfo reflect(TyResImplementation implementation, Class<?> bundleClass) {
+        var bundleInfo = reflectBundle(implementation, bundleClass);
         // note: we also include inherited methods.
         var methods = bundleClass.getMethods();
         return new DefaultBundleResInfo(methods, bundleInfo);
@@ -26,9 +26,9 @@ final class Reflection {
         return new DefaultResInfo(bundle, method, name, defaultValue);
     }
 
-    private static DefaultBundleInfo reflectBundle(Class<?> bundleClass) {
+    private static DefaultBundleInfo reflectBundle(TyResImplementation implementation, Class<?> bundleClass) {
         var customPackage = customPackage(bundleClass);
-        return new DefaultBundleInfo(bundleClass, customPackage);
+        return new DefaultBundleInfo(bundleClass, customPackage, implementation);
     }
 
     private static void assertReturnTypeIsValid(Method method) {
@@ -105,10 +105,12 @@ final class Reflection {
     private static final class DefaultBundleInfo implements BundleInfo {
         private final Class<?> bundleClass;
         private final List<String> customPackage;
+        private final TyResImplementation implementation;
 
-        private DefaultBundleInfo(Class<?> bundleClass, List<String> customPackage) {
+        private DefaultBundleInfo(Class<?> bundleClass, List<String> customPackage, TyResImplementation implementation) {
             this.bundleClass = bundleClass;
             this.customPackage = customPackage;
+            this.implementation = implementation;
         }
 
         @Override
@@ -120,6 +122,11 @@ final class Reflection {
         @Override
         public List<String> customPackage() {
             return customPackage;
+        }
+
+        @Override
+        public TyResImplementation implementation() {
+            return implementation;
         }
     }
 
