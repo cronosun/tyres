@@ -11,6 +11,7 @@ import java.util.Map;
 final class TyResInvocationHandler implements InvocationHandler {
 
     private final Map<Method, ResNoArgs<?>> map;
+    private final BundleResInfo bundleResInfo;
 
     public TyResInvocationHandler(Class<?> bundleClass) {
         var bundleResInfo = BundleResInfo.getFrom(bundleClass, DefaultImplementation.instance());
@@ -22,6 +23,11 @@ final class TyResInvocationHandler implements InvocationHandler {
             map.put(key, value);
         }
        this.map = map;
+       this.bundleResInfo = bundleResInfo;
+    }
+
+    public BundleResInfo bundleResInfo() {
+        return bundleResInfo;
     }
 
     @Override

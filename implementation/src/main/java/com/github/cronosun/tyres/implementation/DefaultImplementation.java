@@ -1,5 +1,7 @@
 package com.github.cronosun.tyres.implementation;
 
+import com.github.cronosun.tyres.core.BundleResInfo;
+import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.TyResImplementation;
 
 import java.lang.reflect.Proxy;
@@ -12,6 +14,7 @@ public final class DefaultImplementation implements TyResImplementation {
         return INSTANCE;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T createInstance(Class<T> bundleClass) {
         //noinspection unchecked
@@ -19,5 +22,17 @@ public final class DefaultImplementation implements TyResImplementation {
                 bundleClass.getClassLoader(),
                 new Class[] {bundleClass},
                 new TyResInvocationHandler(bundleClass));
+    }
+
+    @Override
+    public BundleResInfo bundleResInfo(Object instance) {
+        var invicationHandler = Proxy.getInvocationHandler(instance);
+        if (invicationHandler instanceof TyResInvocationHandler) {
+            var handler = (TyResInvocationHandler)invicationHandler;
+            return handler.bundleResInfo();
+        } else {
+            throw new TyResException("The given instance " + instance +
+             " seems to be something that has not been created by this instance (read the docs!).");
+        }
     }
 }
