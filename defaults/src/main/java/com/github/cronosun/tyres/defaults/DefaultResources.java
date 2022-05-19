@@ -8,34 +8,39 @@ import org.jetbrains.annotations.Nullable;
 
 public final class DefaultResources implements Resources {
 
-  private final NotFoundStrategy notFoundStrategy;
+  private final MsgNotFoundStrategy notFoundStrategy;
   private final FallbackGenerator fallbackGenerator;
   private final StringBackend stringBackend;
   private final BinBackend binBackend;
 
-  public static DefaultResources newDefaultImplementation(NotFoundStrategy notFoundStrategy) {
-    return new DefaultResources(
-      notFoundStrategy,
-      FallbackGenerator.defaultImplementation(),
-      StringBackend.usingResourceBundle(),
-      BinBackend.usingResources()
-    );
+  public DefaultResources(
+    MsgNotFoundStrategy notFoundStrategy,
+    @Nullable FallbackGenerator fallbackGenerator,
+    @Nullable StringBackend stringBackend,
+    @Nullable BinBackend binBackend
+  ) {
+    this.notFoundStrategy = Objects.requireNonNull(notFoundStrategy);
+    this.fallbackGenerator =
+      Objects.requireNonNullElse(fallbackGenerator, FallbackGenerator.defaultImplementation());
+    this.stringBackend =
+      Objects.requireNonNullElse(stringBackend, StringBackend.usingResourceBundle());
+    this.binBackend = Objects.requireNonNullElse(binBackend, BinBackend.usingResources());
   }
 
-  public DefaultResources(
-    NotFoundStrategy notFoundStrategy,
-    FallbackGenerator fallbackGenerator,
-    StringBackend stringBackend,
-    BinBackend binBackend
-  ) {
-    this.notFoundStrategy = notFoundStrategy;
-    this.fallbackGenerator = fallbackGenerator;
-    this.stringBackend = stringBackend;
-    this.binBackend = binBackend;
+  public static DefaultResources newDefault(MsgNotFoundStrategy notFoundStrategy) {
+    return new DefaultResources(notFoundStrategy, null, null, null);
+  }
+
+  @Nullable
+  private static Msg maybeMsg(Object object) {
+    if (object instanceof Msg) {
+      return (Msg) object;
+    }
+    return null;
   }
 
   @Override
-  public String msg(MsgRes resource, NotFoundStrategy notFoundStrategy, Locale locale) {
+  public String msg(MsgRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
     var message = this.stringBackend.maybeMessage(resource.info(), args, locale);
     if (message != null) {
@@ -72,7 +77,7 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public NotFoundStrategy msgNotFoundStrategy() {
+  public MsgNotFoundStrategy msgNotFoundStrategy() {
     return notFoundStrategy;
   }
 
@@ -123,7 +128,7 @@ public final class DefaultResources implements Resources {
   private Object[] processArgsForMessage(
     Object[] args,
     Locale locale,
-    NotFoundStrategy notFoundStrategy
+    MsgNotFoundStrategy notFoundStrategy
   ) {
     var numberOfArgs = args.length;
     if (numberOfArgs == 0) {
@@ -213,13 +218,13 @@ public final class DefaultResources implements Resources {
     private final Msg msg;
     private final Locale locale;
     private final Resources source;
-    private final NotFoundStrategy notFoundStrategy;
+    private final MsgNotFoundStrategy notFoundStrategy;
 
     private ArgForMessage(
       Msg msg,
       Locale locale,
       Resources source,
-      NotFoundStrategy notFoundStrategy
+      MsgNotFoundStrategy notFoundStrategy
     ) {
       this.msg = msg;
       this.locale = locale;
@@ -231,13 +236,5 @@ public final class DefaultResources implements Resources {
     public String toString() {
       return source.resolveMsg(msg, notFoundStrategy, locale);
     }
-  }
-
-  @Nullable
-  private static Msg maybeMsg(Object object) {
-    if (object instanceof Msg) {
-      return (Msg) object;
-    }
-    return null;
   }
 }

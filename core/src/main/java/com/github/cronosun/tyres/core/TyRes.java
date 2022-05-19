@@ -17,6 +17,11 @@ public final class TyRes {
 
   /**
    * Creates a bundle from the given bundle class.
+   * <p>
+   * The implementation (see {@link TyResImplementation}) is determined only once: First asks the service loader
+   * ({@link ServiceLoader}), if the service loader returns exactly one implementation, takes that implementation.
+   * If the {@link ServiceLoader} returns multiple implementations: throws an exception. If the {@link ServiceLoader}
+   * returns no implementations, takes {@link DefaultImplementation#instance()}.
    */
   @ThreadSafe
   public static <T> T create(Class<T> bundleClass) {

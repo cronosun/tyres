@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @ThreadSafe
 public interface Msg {
-  String msg(Resources resources, Resources.NotFoundStrategy notFoundStrategy, Locale locale);
+  String msg(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale);
 
   @Nullable
   String maybeMsg(Resources resources, Locale locale);

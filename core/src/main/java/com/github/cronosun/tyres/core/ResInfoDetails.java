@@ -10,6 +10,10 @@ public abstract class ResInfoDetails {
 
   public abstract Kind kind();
 
+  public abstract StringResource asStringResource();
+
+  public abstract FileResouce asBinResource();
+
   public enum Kind {
     /**
      * A resource that produces a string (when formatted possibly a message).
@@ -20,10 +24,6 @@ public abstract class ResInfoDetails {
      */
     BINARY,
   }
-
-  public abstract StringResource asStringResouce();
-
-  public abstract FileResouce asBinResource();
 
   public static final class StringResource extends ResInfoDetails {
 
@@ -43,7 +43,7 @@ public abstract class ResInfoDetails {
     }
 
     @Override
-    public StringResource asStringResouce() {
+    public StringResource asStringResource() {
       return this;
     }
 
@@ -115,7 +115,7 @@ public abstract class ResInfoDetails {
     }
 
     @Override
-    public StringResource asStringResouce() {
+    public StringResource asStringResource() {
       throw new TyResException("This is not a string resouce");
     }
 

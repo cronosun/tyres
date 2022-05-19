@@ -6,10 +6,10 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 public interface BinBackend {
-  @Nullable
-  InputStream maybeBin(ResInfo resInfo, Locale locale);
-
   static BinBackend usingResources() {
     return DefaultBinBackend.instance();
   }
+
+  @Nullable
+  InputStream maybeBin(ResInfo resInfo, Locale locale);
 }

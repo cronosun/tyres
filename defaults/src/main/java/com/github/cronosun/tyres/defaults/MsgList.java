@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.Msg;
+import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.Collections;
 import java.util.List;
@@ -14,9 +15,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class MsgList implements Msg {
 
+  private static final MsgList EMPTY = new MsgList(MsgListConfiguration.INSTANCE, List.of());
   private final MsgListConfiguration configuration;
   private final List<? extends Msg> messages;
-  private static final MsgList EMPTY = new MsgList(MsgListConfiguration.INSTANCE, List.of());
+
+  private MsgList(MsgListConfiguration configuration, List<? extends Msg> messages) {
+    this.configuration = configuration;
+    this.messages = messages;
+  }
 
   public static MsgList fromStream(
     MsgListConfiguration configuration,
@@ -48,11 +54,6 @@ public final class MsgList implements Msg {
     return EMPTY;
   }
 
-  private MsgList(MsgListConfiguration configuration, List<? extends Msg> messages) {
-    this.configuration = configuration;
-    this.messages = messages;
-  }
-
   public List<? extends Msg> messages() {
     return messages;
   }
@@ -62,11 +63,7 @@ public final class MsgList implements Msg {
   }
 
   @Override
-  public String msg(
-    Resources resources,
-    Resources.NotFoundStrategy notFoundStrategy,
-    Locale locale
-  ) {
+  public String msg(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var messages = this.messages;
     var numberOfMessages = messages.size();
     switch (numberOfMessages) {

@@ -1,6 +1,9 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.Default;
+import com.github.cronosun.tyres.core.MsgRes;
+import com.github.cronosun.tyres.core.Rename;
+import com.github.cronosun.tyres.core.TyRes;
 
 public interface SimpleBundle {
   SimpleBundle INSTANCE = TyRes.create(SimpleBundle.class);
@@ -14,6 +17,7 @@ public interface SimpleBundle {
   MsgRes renamedMethodTwo();
 
   MsgRes methodWithArgument(String arg0);
+
   MsgRes methodWithTwoArguments(String arg0, int arg1);
 
   @Default("the_default_value")

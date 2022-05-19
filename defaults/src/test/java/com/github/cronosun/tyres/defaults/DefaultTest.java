@@ -2,7 +2,7 @@ package com.github.cronosun.tyres.defaults;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.github.cronosun.tyres.core.Resources;
+import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ public class DefaultTest {
 
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInTheProperties() {
-    var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources.msg(
       DefaultTestBundle.INSTANCE.somethingThatIsAlsoFoundInProperty(),
       Locale.ENGLISH
@@ -23,7 +23,7 @@ public class DefaultTest {
 
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInThePropertiesForStringRes() {
-    var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources.str(
       DefaultTestBundle.INSTANCE.stringResourceThatIsAlsoFoundInProperty(),
       Locale.ENGLISH
@@ -33,7 +33,7 @@ public class DefaultTest {
 
   @Test
   void defaultValueIsUsedIfMissingInProperties() {
-    var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources.msg(
       DefaultTestBundle.INSTANCE.withConfiguredDefault("ABC"),
       Locale.ENGLISH
@@ -43,7 +43,7 @@ public class DefaultTest {
 
   @Test
   void defaultValueIsUsedIfMissingInPropertiesForString() {
-    var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources.str(
       DefaultTestBundle.INSTANCE.stringResWithConfiguredDefault(),
       Locale.ENGLISH

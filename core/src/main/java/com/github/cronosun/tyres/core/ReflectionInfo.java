@@ -20,7 +20,7 @@ public interface ReflectionInfo {
 
   /**
    * Returns all declared resources.
-   *
+   * <p>
    * Expect the collection to be immutable.
    */
   Collection<Res<?>> resources();

@@ -1,6 +1,8 @@
 package com.github.cronosun.tyres.spring;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.ResInfo;
+import com.github.cronosun.tyres.core.ResInfoDetails;
+import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.defaults.StringBackend;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +22,7 @@ public final class SpringMsgSourceBackend implements StringBackend {
     var createdSource = messageSourceCreator.createMessageSource(resInfo, locale);
     var msgSource = createdSource.messageSource();
 
-    var name = resInfo.details().asStringResouce().name();
+    var name = resInfo.details().asStringResource().name();
     try {
       return msgSource.getMessage(name, args, null, locale);
     } catch (IllegalArgumentException iae) {

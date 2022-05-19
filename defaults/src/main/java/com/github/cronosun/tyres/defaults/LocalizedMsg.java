@@ -12,20 +12,22 @@ import org.jetbrains.annotations.Nullable;
 public final class LocalizedMsg implements Msg {
 
   private static final LocalizedMsg EMPTY = new LocalizedMsg(Map.of());
+  private final Map<Locale, String> localizations;
+  private final transient Object resultCacheLock = new Object();
+
+  @Nullable
+  private transient volatile Map<Locale, Object> resultCache;
+
+  private LocalizedMsg(Map<Locale, String> localizations) {
+    this.localizations = localizations;
+  }
 
   public static LocalizedMsg empty() {
     return EMPTY;
   }
 
-  private final Map<Locale, String> localizations;
-
-  @Nullable
-  private transient volatile Map<Locale, Object> resultCache;
-
-  private final transient Object resultCacheLock = new Object();
-
-  private LocalizedMsg(Map<Locale, String> localizations) {
-    this.localizations = localizations;
+  public static Builder builder() {
+    return new Builder();
   }
 
   public Set<Locale> availableLocales() {
@@ -34,7 +36,7 @@ public final class LocalizedMsg implements Msg {
 
   /**
    * Get the message for given locale.
-   *
+   * <p>
    * Note: Also includes candidates, as defined by
    * {@link java.util.ResourceBundle.Control#getCandidateLocales(String, Locale)}.
    */
@@ -45,7 +47,7 @@ public final class LocalizedMsg implements Msg {
 
   /**
    * Get the message for given locale.
-   *
+   * <p>
    * Note: Unlike {@link #message(Locale)}, this only results a result if the locale matches exactly.
    */
   @Nullable
@@ -54,11 +56,7 @@ public final class LocalizedMsg implements Msg {
   }
 
   @Override
-  public String msg(
-    Resources resources,
-    Resources.NotFoundStrategy notFoundStrategy,
-    Locale locale
-  ) {
+  public String msg(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var message = maybeMsg(resources, locale);
     if (message == null) {
       switch (notFoundStrategy) {
@@ -80,10 +78,6 @@ public final class LocalizedMsg implements Msg {
     return messageWithCandidates(locale);
   }
 
-  public static Builder builder() {
-    return new Builder();
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -100,38 +94,6 @@ public final class LocalizedMsg implements Msg {
   @Override
   public String toString() {
     return "LocalizedMsg{" + localizations + '}';
-  }
-
-  public static final class Builder {
-
-    private Builder() {}
-
-    @Nullable
-    private Map<Locale, String> localizations;
-
-    public void add(Locale locale, String message) {
-      var localizations = this.localizations;
-      if (localizations == null) {
-        localizations = new HashMap<>();
-        this.localizations = localizations;
-      }
-      localizations.put(locale, message);
-    }
-
-    public Builder with(Locale locale, String message) {
-      add(locale, message);
-      return this;
-    }
-
-    public LocalizedMsg build() {
-      var takenLocalizations = this.localizations;
-      this.localizations = null;
-      if (takenLocalizations != null) {
-        return new LocalizedMsg(Collections.unmodifiableMap(takenLocalizations));
-      } else {
-        return LocalizedMsg.empty();
-      }
-    }
   }
 
   @Nullable
@@ -196,6 +158,38 @@ public final class LocalizedMsg implements Msg {
       }
     }
     return null;
+  }
+
+  public static final class Builder {
+
+    @Nullable
+    private Map<Locale, String> localizations;
+
+    private Builder() {}
+
+    public void add(Locale locale, String message) {
+      var localizations = this.localizations;
+      if (localizations == null) {
+        localizations = new HashMap<>();
+        this.localizations = localizations;
+      }
+      localizations.put(locale, message);
+    }
+
+    public Builder with(Locale locale, String message) {
+      add(locale, message);
+      return this;
+    }
+
+    public LocalizedMsg build() {
+      var takenLocalizations = this.localizations;
+      this.localizations = null;
+      if (takenLocalizations != null) {
+        return new LocalizedMsg(Collections.unmodifiableMap(takenLocalizations));
+      } else {
+        return LocalizedMsg.empty();
+      }
+    }
   }
 
   private static final class CacheMarkerNotFound {

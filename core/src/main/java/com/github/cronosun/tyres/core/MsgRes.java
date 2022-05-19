@@ -9,11 +9,7 @@ public interface MsgRes extends Res<MsgRes>, Msg {
   }
 
   @Override
-  default String msg(
-    Resources resources,
-    Resources.NotFoundStrategy notFoundStrategy,
-    Locale locale
-  ) {
+  default String msg(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     return resources.msg(this, notFoundStrategy, locale);
   }
 

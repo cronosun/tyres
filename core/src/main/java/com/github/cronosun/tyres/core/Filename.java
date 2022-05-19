@@ -12,6 +12,12 @@ public final class Filename {
   @Nullable
   private final String extension;
 
+  private Filename(String value, String base, @Nullable String extension) {
+    this.value = value;
+    this.base = base;
+    this.extension = extension;
+  }
+
   public static Filename from(String name) {
     var extensionSeparatorPos = name.lastIndexOf(EXTENSION_SEPARATOR);
     if (extensionSeparatorPos == -1) {
@@ -21,12 +27,6 @@ public final class Filename {
       var base = name.substring(0, extensionSeparatorPos);
       return new Filename(name, base, extension);
     }
-  }
-
-  private Filename(String value, String base, @Nullable String extension) {
-    this.value = value;
-    this.base = base;
-    this.extension = extension;
   }
 
   public String value() {

@@ -1,8 +1,8 @@
 package com.github.cronosun.tyres.spring;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.github.cronosun.tyres.core.Resources;
+import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.defaults.BinBackend;
 import com.github.cronosun.tyres.defaults.DefaultResources;
 import com.github.cronosun.tyres.defaults.FallbackGenerator;
@@ -16,7 +16,7 @@ class MessageSourceCreatorTest {
     var xy = new DefaultMessageSourceCreator();
     var backend = new SpringMsgSourceBackend(xy);
     var source = new DefaultResources(
-      Resources.NotFoundStrategy.THROW,
+      MsgNotFoundStrategy.THROW,
       FallbackGenerator.defaultImplementation(),
       backend,
       BinBackend.usingResources()

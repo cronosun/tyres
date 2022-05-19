@@ -15,22 +15,20 @@ import org.jetbrains.annotations.Nullable;
 
 class DefaultBinBackend implements BinBackend {
 
-  private final ResourceBundle.Control control;
   private static final Object NOT_FOUND = new Object();
-
-  private final Map<CacheKey, Object> notFoundCache = new ConcurrentHashMap<>();
-  private final Map<CacheKey, CacheKey> foundResults = new ConcurrentHashMap<>();
-
   private static final DefaultBinBackend INSTANCE = new DefaultBinBackend(
     ResourceBundle.Control.getControl(FORMAT_PROPERTIES)
   );
-
-  public static DefaultBinBackend instance() {
-    return INSTANCE;
-  }
+  private final ResourceBundle.Control control;
+  private final Map<CacheKey, Object> notFoundCache = new ConcurrentHashMap<>();
+  private final Map<CacheKey, CacheKey> foundResults = new ConcurrentHashMap<>();
 
   private DefaultBinBackend(ResourceBundle.Control control) {
     this.control = control;
+  }
+
+  public static DefaultBinBackend instance() {
+    return INSTANCE;
   }
 
   @Override

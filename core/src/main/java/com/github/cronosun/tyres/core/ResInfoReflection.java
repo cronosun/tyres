@@ -5,9 +5,9 @@ import org.jetbrains.annotations.Nullable;
 
 final class ResInfoReflection {
 
-  private ResInfoReflection() {}
-
   private static final String CREATE_METHOD_NAME = "create";
+
+  private ResInfoReflection() {}
 
   public static Res<?> reflect(BundleInfo bundleInfo, Method method) {
     var createMethod = getReturnTypeCreateMethod(method);

@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.Resources;
+import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -10,9 +10,14 @@ import org.junit.jupiter.api.Test;
 
 class WorkingBundleTest {
 
+  private static Date convertLocalDateToDateUtc(LocalDate localDate) {
+    var utc = ZoneId.of("UTC");
+    return Date.from(localDate.atStartOfDay(utc).toInstant());
+  }
+
   @Test
   void basicTestsWithDifferentLocales() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var msgColourUk = source.msg(WorkingBundle.INSTANCE.colour(), Locale.UK);
     Assertions.assertEquals("Colour", msgColourUk);
@@ -24,7 +29,7 @@ class WorkingBundleTest {
 
   @Test
   void inheritance() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var msg = source.msg(WorkingBundle.INSTANCE.somethingFromParent(), Locale.UK);
     Assertions.assertEquals("Message from parent interface", msg);
@@ -32,7 +37,7 @@ class WorkingBundleTest {
 
   @Test
   void inheritanceWithArg() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var msg = source.msg(
       WorkingBundle.INSTANCE.somethingFromParentWithArgument("Albert"),
@@ -43,7 +48,7 @@ class WorkingBundleTest {
 
   @Test
   void fallbackMessage() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.FALLBACK);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.FALLBACK);
 
     var msg = source.msg(
       WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"),
@@ -57,7 +62,7 @@ class WorkingBundleTest {
 
   @Test
   void returnsNullIfCannotBeFound() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var msg = source.maybeMsg(
       WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"),
@@ -68,7 +73,7 @@ class WorkingBundleTest {
 
   @Test
   void msgAsArgumentIsResolved() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var monday = WorkingBundle.INSTANCE.monday();
     var friday = WorkingBundle.INSTANCE.friday();
@@ -87,7 +92,7 @@ class WorkingBundleTest {
 
   @Test
   void ifAnArgumentCannotBeResolvedTheEntireMessageCannotBeResolved() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var monday = WorkingBundle.INSTANCE.monday();
     var doesNotExist = WorkingBundle.INSTANCE.somethingThatIsMissing();
@@ -106,7 +111,7 @@ class WorkingBundleTest {
 
   @Test
   void umlautsWork() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var somethingWithUmlauts = WorkingBundle.INSTANCE.somethingWithUmlauts();
     var msgEn = source.msg(somethingWithUmlauts, Locale.UK);
@@ -118,7 +123,7 @@ class WorkingBundleTest {
 
   @Test
   void testLocalizedMsg() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var localizedMsg = LocalizedMsg
       .builder()
       .with(Locale.GERMAN, "ein farbenfrohes Bier")
@@ -140,10 +145,5 @@ class WorkingBundleTest {
     Assertions.assertEquals("The text 'a colorful beer' has already been localized.", msgUs);
     Assertions.assertEquals("The text 'a colourful beer' has already been localized.", msgCa);
     Assertions.assertNull(msgFr);
-  }
-
-  private static Date convertLocalDateToDateUtc(LocalDate localDate) {
-    var utc = ZoneId.of("UTC");
-    return Date.from(localDate.atStartOfDay(utc).toInstant());
   }
 }

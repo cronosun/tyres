@@ -7,11 +7,11 @@ final class DefaultFallbackGenerator implements FallbackGenerator {
 
   private static final DefaultFallbackGenerator INSTANCE = new DefaultFallbackGenerator();
 
+  private DefaultFallbackGenerator() {}
+
   public static DefaultFallbackGenerator instance() {
     return INSTANCE;
   }
-
-  private DefaultFallbackGenerator() {}
 
   @Override
   public String generateFallbackMessageFor(ResInfo resInfo, Object[] args) {

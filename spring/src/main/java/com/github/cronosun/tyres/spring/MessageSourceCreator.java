@@ -13,6 +13,7 @@ public interface MessageSourceCreator {
 
   interface CreatedMessageSource {
     MessageSource messageSource();
+
     Object cacheKey();
   }
 }

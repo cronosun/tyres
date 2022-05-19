@@ -12,6 +12,13 @@ public final class BaseName {
   private final int packageNameLength;
   private final String path;
 
+  private BaseName(String value, int packageNameLength, int nameLength, String path) {
+    this.value = Objects.requireNonNull(value);
+    this.packageNameLength = packageNameLength;
+    this.nameLength = nameLength;
+    this.path = path;
+  }
+
   public static BaseName fromClass(Class<?> cls) {
     var packageName = cls.getPackageName();
     var name = cls.getSimpleName();
@@ -34,13 +41,6 @@ public final class BaseName {
     return name.replace(DOT_SEPARATOR, PATH_SEPARATOR);
   }
 
-  private BaseName(String value, int packageNameLength, int nameLength, String path) {
-    this.value = Objects.requireNonNull(value);
-    this.packageNameLength = packageNameLength;
-    this.nameLength = nameLength;
-    this.path = path;
-  }
-
   /**
    * Returns the base name in this format:
    *
@@ -55,7 +55,7 @@ public final class BaseName {
 
   /**
    * Returns {@link #value} as path (using '/' instead of '.' as separator).
-   *
+   * <p>
    * Instead of something like <pre>com.org.package.ClassName</pre>,
    * returns <pre>com/org/package/ClassName</pre>.
    */

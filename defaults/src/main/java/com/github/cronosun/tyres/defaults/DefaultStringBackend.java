@@ -14,14 +14,15 @@ import org.jetbrains.annotations.Nullable;
 
 final class DefaultStringBackend implements StringBackend {
 
+  private static final DefaultStringBackend INSTANCE = new DefaultStringBackend(
+    null,
+    MessageFormatter.defaultImplementation()
+  );
+  private static final Logger LOGGER = Logger.getLogger(DefaultStringBackend.class.getName());
+
   @Nullable
   private final ResourceBundleProvider resourceBundleProvider;
 
-  private static final DefaultStringBackend INSTANCE = new DefaultStringBackend(
-    null,
-    MessageFormatter.defaultImplementaion()
-  );
-  private static final Logger LOGGER = Logger.getLogger(DefaultStringBackend.class.getName());
   private final MessageFormatter messageFormatter;
 
   private DefaultStringBackend(
@@ -30,7 +31,11 @@ final class DefaultStringBackend implements StringBackend {
   ) {
     this.resourceBundleProvider = resourceBundleProvider;
     this.messageFormatter =
-      Objects.requireNonNullElse(messageFormatter, MessageFormatter.defaultImplementaion());
+      Objects.requireNonNullElse(messageFormatter, MessageFormatter.defaultImplementation());
+  }
+
+  public static DefaultStringBackend instance() {
+    return INSTANCE;
   }
 
   public DefaultStringBackend withResourceBundleProvider(
@@ -41,10 +46,6 @@ final class DefaultStringBackend implements StringBackend {
 
   public DefaultStringBackend withMessageFormatter(MessageFormatter messageFormatter) {
     return new DefaultStringBackend(this.resourceBundleProvider, messageFormatter);
-  }
-
-  public static DefaultStringBackend instance() {
-    return INSTANCE;
   }
 
   @Nullable
@@ -70,7 +71,7 @@ final class DefaultStringBackend implements StringBackend {
     var string = getString(bundle, resInfo);
     if (string == null) {
       // try the default
-      return resInfo.details().asStringResouce().defaultValue();
+      return resInfo.details().asStringResource().defaultValue();
     } else {
       return string;
     }
@@ -93,7 +94,7 @@ final class DefaultStringBackend implements StringBackend {
   @Nullable
   private String getString(@Nullable ResourceBundle bundle, ResInfo resInfo) {
     if (bundle != null) {
-      var key = resInfo.details().asStringResouce().name();
+      var key = resInfo.details().asStringResource().name();
       if (bundle.containsKey(key)) {
         return bundle.getString(key);
       } else {

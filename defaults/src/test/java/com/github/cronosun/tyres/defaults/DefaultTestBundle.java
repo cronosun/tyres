@@ -1,6 +1,9 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.Default;
+import com.github.cronosun.tyres.core.MsgRes;
+import com.github.cronosun.tyres.core.StrRes;
+import com.github.cronosun.tyres.core.TyRes;
 
 public interface DefaultTestBundle {
   DefaultTestBundle INSTANCE = TyRes.create(DefaultTestBundle.class);

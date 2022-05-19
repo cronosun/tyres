@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.Resources;
+import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +10,7 @@ class MsgListTest {
 
   @Test
   void simpleMessageList() {
-    var resources = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var messages = List.of(
       WorkingBundle.INSTANCE.colour(),
@@ -28,7 +28,7 @@ class MsgListTest {
 
   @Test
   void emptyMessageList() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var list = MsgList.empty();
     var messageString = source.resolveMsg(list, Locale.UK);
@@ -38,7 +38,7 @@ class MsgListTest {
 
   @Test
   void messageListWithCustomConfiguration() {
-    var source = DefaultResources.newDefaultImplementation(Resources.NotFoundStrategy.THROW);
+    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var messages = List.of(
       WorkingBundle.INSTANCE.colour(),

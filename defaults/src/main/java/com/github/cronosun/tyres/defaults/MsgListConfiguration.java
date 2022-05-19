@@ -1,17 +1,18 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.Msg;
+import com.github.cronosun.tyres.core.MsgRes;
+import com.github.cronosun.tyres.core.TyRes;
 
 /**
  * Configuration for {@link MsgList}.
- *
+ * <p>
  * A message list is formatted like this:
  *
  * <ul>
  *     <li>Empty list: {@link #empty()}</li>
  *     <li>Non-empty list: {@link #prefix()} ITEM1 {@link #delimiter()} ITEM2 {@link #suffix()}</li>
  * </ul>
- *
  */
 public interface MsgListConfiguration {
   MsgListConfiguration INSTANCE = TyRes.create(MsgListConfiguration.class);

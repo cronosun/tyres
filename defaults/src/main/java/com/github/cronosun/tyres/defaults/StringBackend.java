@@ -1,6 +1,5 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.Res;
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.core.TyResException;
@@ -13,8 +12,15 @@ import org.jetbrains.annotations.Nullable;
 @ThreadSafe
 public interface StringBackend {
   /**
+   * Returns the default implementation that uses {@link java.util.ResourceBundle}.
+   */
+  static StringBackend usingResourceBundle() {
+    return DefaultStringBackend.instance();
+  }
+
+  /**
    * Returns the formatted message (if found).
-   *
+   * <p>
    * Does not throw if the resource cannot be found - but expect the implementaton to throw @{@link TyResException} if
    * something else is wrong, like invalid arguments or an invalid message (a message that cannot be parsed).
    *
@@ -31,11 +37,4 @@ public interface StringBackend {
    */
   @Nullable
   String maybeString(ResInfo resInfo, Locale locale);
-
-  /**
-   * Returns the default implementation that uses {@link java.util.ResourceBundle}.
-   */
-  static StringBackend usingResourceBundle() {
-    return DefaultStringBackend.instance();
-  }
 }

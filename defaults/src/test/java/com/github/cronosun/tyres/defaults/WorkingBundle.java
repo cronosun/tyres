@@ -1,6 +1,8 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.Msg;
+import com.github.cronosun.tyres.core.MsgRes;
+import com.github.cronosun.tyres.core.TyRes;
 import java.util.Date;
 
 public interface WorkingBundle extends WorkingBundleParent {

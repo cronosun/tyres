@@ -23,6 +23,30 @@ abstract class MsgResDefault implements Res<MsgRes>, MsgRes {
     }
   }
 
+  @Override
+  public final String toString() {
+    return "MsgRes{" + "info=" + info() + ", args=" + Arrays.toString(args()) + '}';
+  }
+
+  @Override
+  public final boolean equals(Object other) {
+    if (this == other) return true;
+    if (other instanceof MsgResDefault) {
+      var castOther = (MsgResDefault) other;
+      return info().equals(castOther.info()) && Arrays.equals(args(), castOther.args());
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public final int hashCode() {
+    int result = Objects.hash(info());
+    result = 31 * result + Arrays.hashCode(args());
+    result = 31 * result + MsgResDefault.class.hashCode();
+    return result;
+  }
+
   private static final class NoArgs extends MsgResDefault {
 
     private static final Object[] NO_ARGS = new Object[] {};
@@ -79,29 +103,5 @@ abstract class MsgResDefault implements Res<MsgRes>, MsgRes {
         return new WithArgs(info, args);
       }
     }
-  }
-
-  @Override
-  public final String toString() {
-    return "MsgRes{" + "info=" + info() + ", args=" + Arrays.toString(args()) + '}';
-  }
-
-  @Override
-  public final boolean equals(Object other) {
-    if (this == other) return true;
-    if (other instanceof MsgResDefault) {
-      var castOther = (MsgResDefault) other;
-      return info().equals(castOther.info()) && Arrays.equals(args(), castOther.args());
-    } else {
-      return false;
-    }
-  }
-
-  @Override
-  public final int hashCode() {
-    int result = Objects.hash(info());
-    result = 31 * result + Arrays.hashCode(args());
-    result = 31 * result + MsgResDefault.class.hashCode();
-    return result;
   }
 }
