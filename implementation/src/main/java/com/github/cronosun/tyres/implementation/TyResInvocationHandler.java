@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.implementation;
 
-import com.github.cronosun.tyres.core.BundleResInfo;
+import com.github.cronosun.tyres.core.NewRes;
+import com.github.cronosun.tyres.core.ReflectionInfo;
 import com.github.cronosun.tyres.core.TyResException;
 
 import java.lang.reflect.InvocationHandler;
@@ -10,23 +11,25 @@ import java.util.Map;
 
 final class TyResInvocationHandler implements InvocationHandler {
 
-    private final Map<Method, ResNoArgs<?>> map;
-    private final BundleResInfo bundleResInfo;
+    private final Map<Method, NewRes<?>> map;
+    private final ReflectionInfo bundleResInfo;
 
     public TyResInvocationHandler(Class<?> bundleClass) {
-        var bundleResInfo = BundleResInfo.getFrom(bundleClass, DefaultImplementation.instance());
+        var bundleResInfo = ReflectionInfo.getFrom(bundleClass, DefaultImplementation.instance());
         var length = bundleResInfo.resources().size();
-        var map = new HashMap<Method, ResNoArgs<?>>(length);
-        for (var resInfo : bundleResInfo.resources()) {
+        var map = new HashMap<Method, NewRes<?>>(length);
+        var bundleInfo = bundleResInfo.bundleInfo();
+        for (var resource : bundleResInfo.resources()) {
+            var resInfo = resource.resInfo();
             var key = resInfo.method();
-            var value = new ResNoArgs<>(resInfo);
+            var value = resource.returnValueConstructor().construct(bundleInfo, resInfo);
             map.put(key, value);
         }
        this.map = map;
        this.bundleResInfo = bundleResInfo;
     }
 
-    public BundleResInfo bundleResInfo() {
+    public ReflectionInfo bundleResInfo() {
         return bundleResInfo;
     }
 
@@ -39,7 +42,7 @@ final class TyResInvocationHandler implements InvocationHandler {
         if (args==null || args.length==0) {
             return value;
         } else {
-            return new ResWithArgs<>(value.info(), args);
+            return value.withArgs(args);
         }
     }
 }

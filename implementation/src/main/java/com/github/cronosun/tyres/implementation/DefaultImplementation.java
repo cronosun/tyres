@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.implementation;
 
-import com.github.cronosun.tyres.core.BundleResInfo;
+import com.github.cronosun.tyres.core.ReflectionInfo;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.TyResImplementation;
 
@@ -25,7 +25,7 @@ public final class DefaultImplementation implements TyResImplementation {
     }
 
     @Override
-    public BundleResInfo bundleResInfo(Object instance) {
+    public ReflectionInfo bundleResInfo(Object instance) {
         var invicationHandler = Proxy.getInvocationHandler(instance);
         if (invicationHandler instanceof TyResInvocationHandler) {
             var handler = (TyResInvocationHandler)invicationHandler;

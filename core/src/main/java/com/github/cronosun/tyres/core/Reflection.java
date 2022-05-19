@@ -2,25 +2,43 @@ package com.github.cronosun.tyres.core;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.cronosun.tyres.core.ReflectionInfo.ResReflectionInfo;
+import com.github.cronosun.tyres.core.ReflectionInfo.ReturnValueConstructor;
+
 final class Reflection {
+
+    private static final String CREATE_METHOD_NAME = "create";
+    private static final String WITH_ARGS_METHOD_NAME = "withArgs";
+    private static final Class<?> OBJECT_ARRAY_CLASS = new Object[]{}.getClass();
+
     private Reflection() {
     }
 
-    public static BundleResInfo reflect(TyResImplementation implementation, Class<?> bundleClass) {
+    public static ReflectionInfo reflect(TyResImplementation implementation, Class<?> bundleClass) {
         var bundleInfo = reflectBundle(implementation, bundleClass);
         // note: we also include inherited methods.
         var methods = bundleClass.getMethods();
-        return new DefaultBundleResInfo(methods, bundleInfo);
+        var resources = resReflectionInfoFromMethods(bundleInfo, methods);
+        return new DefaultReflectionInfo(resources, bundleInfo);
     }
 
+    private static Collection<ResReflectionInfo> resReflectionInfoFromMethods(DefaultBundleInfo bundle, Method[] methods) {
+        var stream = Arrays.stream(methods).<ResReflectionInfo>map(method -> {
+            var resInfo = reflectMethod(bundle, method);
+            final ReturnValueConstructor returnValueConstructor = createDefaultReturnTypeConstructor(bundle, resInfo); // TODO
+            return new DefaultResReflectionInfo(resInfo, returnValueConstructor);
+        });
+        return stream.toList();
+     }
+
     private static ResInfo reflectMethod(DefaultBundleInfo bundle, Method method) {
-        assertReturnTypeIsValid(method);
         var name = getNameFrom(method);
         var defaultValue = getDefaultValueFrom(method);
         return new DefaultResInfo(bundle, method, name, defaultValue);
@@ -31,16 +49,54 @@ final class Reflection {
         return new DefaultBundleInfo(bundleClass, customPackage, implementation);
     }
 
-    private static void assertReturnTypeIsValid(Method method) {
+    private static DefaultReturnTypeConstructor createDefaultReturnTypeConstructor(BundleInfo bundleInfo, ResInfo resInfo) {
+        var method = resInfo.method();
+        // make sure the return type is of correct type
+        assertNewResIsAssignableFromReturnType(method);
+        return createReturnTypeCreator(method);
+    }
+
+    private static void assertNewResIsAssignableFromReturnType(Method method) {
         var returnType = method.getReturnType();
-        if (!returnType.isAssignableFrom(Res.class)) {
+        if (!NewRes.class.isAssignableFrom(returnType)) {
             var methodName = method.getName();
             var declaringClass = method.getDeclaringClass();
             throw new TyResException("Invalid return type for method '" + methodName + "' (declaring class '"+
                     declaringClass.getName()+"'). Return type must be " +
-                    "either of class " + Res.class.getSimpleName() + " or of class " +
-                    Resource.class.getSimpleName() + ". Got '" + returnType.getName() + "'.");
+                    "of a class that implements " + NewRes.class.getSimpleName() + ". Got '" + 
+                    returnType.getName() + "'.");
         }
+    }
+
+    private static DefaultReturnTypeConstructor createReturnTypeCreator(Method method) {
+        var returnType = method.getReturnType();
+        final Method createMethod;
+        try {
+            createMethod = returnType.getDeclaredMethod(CREATE_METHOD_NAME, BundleInfo.class, ResInfo.class);
+        } catch (Exception exception) {
+        throw new TyResException("Class '" + returnType + "' does not implement static method called " +
+        CREATE_METHOD_NAME + " (arguments " + BundleInfo.class.getSimpleName() + ", " + ResInfo.class.getSimpleName() + ") - or it's not accesible by reflection.", exception);
+        } 
+        var createMethodReturnType = createMethod.getReturnType();
+        if (!returnType.isAssignableFrom(createMethodReturnType)) {
+            throw new TyResException("Method " + CREATE_METHOD_NAME + " in '" + returnType + "'' must return a type where '" + returnType 
+            + "' is assignable from; It's not assignable from the given type '" + createMethodReturnType + "'." );
+        }
+        // also make sure that the 'withArgs' method is correct
+        final Method withArgsMethod;
+        try {
+            withArgsMethod = returnType.getDeclaredMethod(WITH_ARGS_METHOD_NAME, OBJECT_ARRAY_CLASS);
+        } catch (Exception exception) {
+            throw new TyResException("Class '" + returnType + "' has missing or inaccessible method '" +
+            WITH_ARGS_METHOD_NAME + "'. Note: if the class '" + returnType.getSimpleName() + "' is abstract, it must declare this method as abstract with the correct return type (inherited methods from the interface are not included in this check).", exception);
+        }
+        var withArgsMethodReturnType = withArgsMethod.getReturnType();
+        if (!withArgsMethodReturnType.isAssignableFrom(withArgsMethodReturnType)) {
+            throw new TyResException("Method " + WITH_ARGS_METHOD_NAME + " in '" + returnType + "'' must return a type where '" + returnType 
+            + "' is assignable from; It's not assignable from the given type '" + withArgsMethodReturnType + "'." );
+        }
+        // everything is ok
+        return new DefaultReturnTypeConstructor(createMethod);
     }
 
     private static String getNameFrom(Method method) {
@@ -82,12 +138,12 @@ final class Reflection {
         }
     }
 
-    private static final class DefaultBundleResInfo implements BundleResInfo {
+    private static final class DefaultReflectionInfo implements ReflectionInfo {
         private final DefaultBundleInfo bundleInfo;
-        private final Collection<ResInfo> resources;
+        private final Collection<ResReflectionInfo> resources;
 
-        private DefaultBundleResInfo(Method[] methods, DefaultBundleInfo bundleInfo) {
-            this.resources = Arrays.stream(methods).map(method -> reflectMethod(bundleInfo, method)).collect(Collectors.toUnmodifiableList());
+        private DefaultReflectionInfo(Collection<ResReflectionInfo> resources, DefaultBundleInfo bundleInfo) {
+            this.resources = resources;
             this.bundleInfo = bundleInfo;
         }
 
@@ -97,9 +153,30 @@ final class Reflection {
         }
 
         @Override
-        public Collection<ResInfo> resources() {
+        public Collection<ResReflectionInfo> resources() {
             return resources;
         }
+    }
+
+    private static final class DefaultResReflectionInfo implements ResReflectionInfo {
+        private final ResInfo resInfo;
+        
+        public DefaultResReflectionInfo(ResInfo resInfo, ReturnValueConstructor returnValueConstructor) {
+            this.resInfo = resInfo;
+            this.returnValueConstructor = returnValueConstructor;
+        }
+
+        private final ReturnValueConstructor returnValueConstructor;
+
+        @Override
+        public ResInfo resInfo() {
+            return resInfo;
+        }
+
+        @Override
+        public ReturnValueConstructor returnValueConstructor() {
+            return returnValueConstructor;
+        }       
     }
 
     private static final class DefaultBundleInfo implements BundleInfo {
@@ -165,4 +242,23 @@ final class Reflection {
             return defaultValue;
         }
     }
+
+    private static final class DefaultReturnTypeConstructor implements ReturnValueConstructor {
+
+        public DefaultReturnTypeConstructor(Method createMethod) {
+            this.createMethod = createMethod;
+        }
+
+        private final Method createMethod;
+
+        @Override
+        public NewRes<?> construct(BundleInfo bundleInfo, ResInfo resInfo) {
+            try {
+                return (NewRes<?>)this.createMethod.invoke(null, bundleInfo, resInfo);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+               throw new TyResException("Unable to invoke the '" + CREATE_METHOD_NAME + "' on the return type. Method is '" + createMethod + "'.", e);
+            }
+        }
+    }
+
 }

@@ -11,5 +11,5 @@ public interface TyResImplementation {
      * Performance: Implementations are encouraged to store the bundle res info and return
      * a stored instance here rather than creating a new instance.
      */
-    BundleResInfo bundleResInfo(Object instance);
+    ReflectionInfo bundleResInfo(Object instance);
 }   
