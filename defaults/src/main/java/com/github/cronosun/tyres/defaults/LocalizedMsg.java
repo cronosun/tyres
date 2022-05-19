@@ -55,7 +55,7 @@ public final class LocalizedMsg implements Msg {
         case THROW:
           throw new TyResException("Text for locale " + locale + " not found in '" + this + "'.");
         case FALLBACK:
-          return "{localized_text:" + locale.toLanguageTag() + "}";
+          return "{localized_msg:" + locale.toLanguageTag() + "}";
         default:
           throw new TyResException("Unknown not found strategy: " + notFoundStrategy);
       }

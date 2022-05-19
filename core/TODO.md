@@ -15,3 +15,10 @@
 
 https://codereview.stackexchange.com/questions/182713/a-fast-integer-key-map-in-java-via-a-van-emde-boas-tree
 https://github.com/MDhondt/vEB
+
+# Marker
+
+Glaube es braucht nicht zwinend nen marker. Man könnte wohl auch so:
+ - MsgRes ist ein Interface mit einer "construct" methode (erweitert "Res")
+ - Heutige MsgRes klasse ist ne versteckte inner klasse von MsgRes.
+ - MsgMarker könnte dann weg.
