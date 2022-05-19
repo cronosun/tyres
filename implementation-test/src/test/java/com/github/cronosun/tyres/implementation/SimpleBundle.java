@@ -3,13 +3,19 @@ package com.github.cronosun.tyres.implementation;
 import com.github.cronosun.tyres.core.*;
 
 public interface SimpleBundle {
-    SimpleBundle INSTANCE = TyRes.create(SimpleBundle.class);
+  SimpleBundle INSTANCE = TyRes.create(SimpleBundle.class);
 
-    NewText voidMethod();
-    @Name("renamed_method")
-    NewText renamedMethod();
-    @Name("renamed_method")
-    NewText renamedMethodTwo();
-    NewText methodWithArgument(String arg0);
-    NewText methodWithTwoArguments(String arg0, int arg1);
+  TextRes voidMethod();
+
+  @Name("renamed_method")
+  TextRes renamedMethod();
+
+  @Name("renamed_method")
+  TextRes renamedMethodTwo();
+
+  TextRes methodWithArgument(String arg0);
+  TextRes methodWithTwoArguments(String arg0, int arg1);
+
+  @Default("the_default_value")
+  TextRes methodWithDefaultValue();
 }

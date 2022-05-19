@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 public @interface Package {
-    String[] value();
+  String[] value();
 }

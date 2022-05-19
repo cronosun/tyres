@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.METHOD)
 public @interface Name {
-    String value();
+  String value();
 }
