@@ -5,6 +5,8 @@ import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
 import com.github.cronosun.tyres.core.BaseName;
 import com.github.cronosun.tyres.core.Filename;
 import com.github.cronosun.tyres.core.ResInfo;
+import com.github.cronosun.tyres.core.TyResException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +38,15 @@ class DefaultBinBackend implements BinBackend {
     var binResource = resInfo.details().asBinResource();
     var filename = binResource.filename();
     return maybeGet(resInfo, filename, locale);
+  }
+
+  @Override
+  public boolean validateExists(ResInfo resInfo, Locale locale) {
+    try (var maybeBin = maybeBin(resInfo, locale)) {
+      return maybeBin != null;
+    } catch (IOException e) {
+      throw new TyResException("Unable to close resource file (this should not happen)", e);
+    }
   }
 
   @Nullable

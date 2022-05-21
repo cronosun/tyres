@@ -3,7 +3,6 @@ package com.github.cronosun.tyres.defaults;
 import com.github.cronosun.tyres.core.Msg;
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.MsgResources;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;

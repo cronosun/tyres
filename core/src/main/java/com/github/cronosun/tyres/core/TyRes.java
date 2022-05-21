@@ -1,6 +1,5 @@
 package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.implementation.DefaultImplementation;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import org.jetbrains.annotations.Nullable;
@@ -18,10 +17,7 @@ public final class TyRes {
   /**
    * Creates a bundle from the given bundle class.
    * <p>
-   * The implementation (see {@link TyResImplementation}) is determined only once: First asks the service loader
-   * ({@link ServiceLoader}), if the service loader returns exactly one implementation, takes that implementation.
-   * If the {@link ServiceLoader} returns multiple implementations: throws an exception. If the {@link ServiceLoader}
-   * returns no implementations, takes {@link DefaultImplementation#instance()}.
+   * See {@link #implementation()} / {@link TyResImplementation#createInstance(Class)}.
    */
   @ThreadSafe
   public static <T> T create(Class<T> bundleClass) {
@@ -29,7 +25,15 @@ public final class TyRes {
     return implementation.createInstance(bundleClass);
   }
 
-  private static TyResImplementation implementation() {
+  /**
+   * Gets the implementation.
+   *
+   * The implementation (see {@link TyResImplementation}) is determined only once: First asks the service loader
+   * ({@link ServiceLoader}), if the service loader returns exactly one implementation, takes that implementation.
+   * If the {@link ServiceLoader} returns multiple implementations: throws an exception. If the {@link ServiceLoader}
+   * returns no implementations, takes {@link DefaultImplementation#instance()}.
+   */
+  public static TyResImplementation implementation() {
     var implementation = IMPLEMENTATION;
     if (implementation != null) {
       return implementation;

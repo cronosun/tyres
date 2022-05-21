@@ -1,8 +1,5 @@
-package com.github.cronosun.tyres.core.implementation;
+package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.ReflectionInfo;
-import com.github.cronosun.tyres.core.Res;
-import com.github.cronosun.tyres.core.TyResException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;

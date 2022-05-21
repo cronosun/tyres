@@ -10,9 +10,9 @@ public abstract class ResInfoDetails {
 
   public abstract Kind kind();
 
-  public abstract StringResource asStringResource();
+  public abstract StrResource asStringResource();
 
-  public abstract FileResouce asBinResource();
+  public abstract BinResource asBinResource();
 
   public enum Kind {
     /**
@@ -25,14 +25,14 @@ public abstract class ResInfoDetails {
     BINARY,
   }
 
-  public static final class StringResource extends ResInfoDetails {
+  public static final class StrResource extends ResInfoDetails {
 
     private final String name;
 
     @Nullable
     private final String defaultValue;
 
-    public StringResource(String name, @Nullable String defaultValue) {
+    public StrResource(String name, @Nullable String defaultValue) {
       this.name = Objects.requireNonNull(name);
       this.defaultValue = defaultValue;
     }
@@ -43,13 +43,13 @@ public abstract class ResInfoDetails {
     }
 
     @Override
-    public StringResource asStringResource() {
+    public StrResource asStringResource() {
       return this;
     }
 
     @Override
-    public FileResouce asBinResource() {
-      throw new TyResException("This is not a file resouce.");
+    public BinResource asBinResource() {
+      throw new TyResException("This is not a binary resource.");
     }
 
     /**
@@ -84,7 +84,7 @@ public abstract class ResInfoDetails {
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      StringResource that = (StringResource) o;
+      StrResource that = (StrResource) o;
       return name.equals(that.name) && Objects.equals(defaultValue, that.defaultValue);
     }
 
@@ -101,11 +101,11 @@ public abstract class ResInfoDetails {
     }
   }
 
-  public static final class FileResouce extends ResInfoDetails {
+  public static final class BinResource extends ResInfoDetails {
 
     private final Filename filename;
 
-    public FileResouce(String filename) {
+    public BinResource(String filename) {
       this.filename = Filename.from(Objects.requireNonNull(filename));
     }
 
@@ -115,12 +115,12 @@ public abstract class ResInfoDetails {
     }
 
     @Override
-    public StringResource asStringResource() {
-      throw new TyResException("This is not a string resouce");
+    public StrResource asStringResource() {
+      throw new TyResException("This is not a string resource.");
     }
 
     @Override
-    public FileResouce asBinResource() {
+    public BinResource asBinResource() {
       return this;
     }
 
@@ -132,7 +132,7 @@ public abstract class ResInfoDetails {
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      FileResouce that = (FileResouce) o;
+      BinResource that = (BinResource) o;
       return filename.equals(that.filename);
     }
 
@@ -143,7 +143,7 @@ public abstract class ResInfoDetails {
 
     @Override
     public String toString() {
-      return "FileResouce{" + "filename='" + filename + '\'' + '}';
+      return "BinResource{" + "filename='" + filename + '\'' + '}';
     }
   }
 }

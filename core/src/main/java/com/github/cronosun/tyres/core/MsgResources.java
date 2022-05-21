@@ -3,6 +3,13 @@ package com.github.cronosun.tyres.core;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Message resources.
+ * <p>
+ * Note: Message resources internally are based on {@link StrResources}: This means that if you get a string from
+ * {@link StrResources} with a {@link ResInfo} that's a {@link ResInfo} from a message, you'll get a result too
+ * (the message pattern).
+ */
 public interface MsgResources {
   /**
    * Returns the message.
@@ -57,7 +64,7 @@ public interface MsgResources {
 
   /**
    * Generates the fallback message (note, this is not to be confused with the default message,
-   * see {@link ResInfoDetails.StringResource#defaultValue()}).
+   * see {@link ResInfoDetails.StrResource#defaultValue()}).
    */
   String fallbackFor(ResInfo resInfo, Object[] args);
 }

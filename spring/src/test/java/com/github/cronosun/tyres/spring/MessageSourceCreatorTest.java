@@ -19,10 +19,11 @@ class MessageSourceCreatorTest {
       MsgNotFoundStrategy.THROW,
       FallbackGenerator.defaultImplementation(),
       backend,
-      BinBackend.usingResources()
+      BinBackend.usingResources(),
+      null
     );
 
-    var msg = source.get(TestBundle.INSTANCE.sayHello(), Locale.ENGLISH);
+    var msg = source.msg().get(TestBundle.INSTANCE.sayHello(), Locale.ENGLISH);
     assertEquals("Hello, world!", msg);
   }
 }

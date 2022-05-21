@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.defaults;
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.Resources;
 
-final class Implementation {
+public final class Implementation {
 
   private Implementation() {}
 

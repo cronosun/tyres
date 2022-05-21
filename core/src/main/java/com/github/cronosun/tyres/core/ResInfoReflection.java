@@ -122,7 +122,7 @@ final class ResInfoReflection {
     } else {
       defaultValue = null;
     }
-    var details = new ResInfoDetails.StringResource(name, defaultValue);
+    var details = new ResInfoDetails.StrResource(name, defaultValue);
     return new ResInfo(bundleInfo, method, details);
   }
 
@@ -132,7 +132,7 @@ final class ResInfoReflection {
     File fileAnnotation
   ) {
     var filename = fileAnnotation.value();
-    var details = new ResInfoDetails.FileResouce(filename);
+    var details = new ResInfoDetails.BinResource(filename);
     return new ResInfo(bundleInfo, method, details);
   }
 }

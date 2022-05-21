@@ -1,13 +1,15 @@
 package com.github.cronosun.tyres.spring;
 
+import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ResInfoDetails;
 import com.github.cronosun.tyres.core.TyResException;
-import com.github.cronosun.tyres.defaults.StringBackend;
+import com.github.cronosun.tyres.defaults.StrBackend;
 import java.util.Locale;
+import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
-public final class SpringMsgSourceBackend implements StringBackend {
+public final class SpringMsgSourceBackend implements StrBackend {
 
   private final MessageSourceCreator messageSourceCreator;
 
@@ -43,6 +45,14 @@ public final class SpringMsgSourceBackend implements StringBackend {
   @Override
   public @Nullable String maybeString(ResInfo resInfo, Locale locale) {
     // TODO: Implement me
+    return null;
+  }
+
+  @Override
+  public @Nullable Set<String> resourceNamesInBundleForValidation(
+    BundleInfo bundleInfo,
+    Locale locale
+  ) {
     return null;
   }
 

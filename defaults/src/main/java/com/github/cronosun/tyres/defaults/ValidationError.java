@@ -2,23 +2,21 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
+import java.util.Locale;
 import java.util.Objects;
 
 public abstract class ValidationError {
 
   private ValidationError() {}
 
-  public final class ResourceNotFound extends ValidationError {
+  public static final class ResourceNotFound extends ValidationError {
 
     private final ResInfo resInfo;
+    private final Locale locale;
 
-    public ResourceNotFound(ResInfo resInfo) {
+    public ResourceNotFound(ResInfo resInfo, Locale locale) {
       this.resInfo = resInfo;
-    }
-
-    @Override
-    public String toString() {
-      return "ResourceNotFound{" + "resInfo=" + resInfo + '}';
+      this.locale = locale;
     }
 
     @Override
@@ -26,28 +24,140 @@ public abstract class ValidationError {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       ResourceNotFound that = (ResourceNotFound) o;
-      return resInfo.equals(that.resInfo);
+      return resInfo.equals(that.resInfo) && locale.equals(that.locale);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(resInfo);
-    }
-  }
-
-  public final class SuperfluousResource extends ValidationError {
-
-    private final BundleInfo bundle;
-    private final String name;
-
-    public SuperfluousResource(BundleInfo bundle, String name) {
-      this.bundle = bundle;
-      this.name = name;
+      return Objects.hash(resInfo, locale);
     }
 
     @Override
     public String toString() {
-      return "SuperfluousResource{" + "bundle=" + bundle + ", name='" + name + '\'' + '}';
+      return "ResourceNotFound{" + "resInfo=" + resInfo + ", locale=" + locale + '}';
+    }
+  }
+
+  public static final class InvalidMsgPattern extends ValidationError {
+
+    private final ResInfo resInfo;
+    private final Locale locale;
+    private final String pattern;
+
+    public InvalidMsgPattern(ResInfo resInfo, Locale locale, String pattern) {
+      this.resInfo = resInfo;
+      this.locale = locale;
+      this.pattern = pattern;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      InvalidMsgPattern that = (InvalidMsgPattern) o;
+      return (
+        resInfo.equals(that.resInfo) && locale.equals(that.locale) && pattern.equals(that.pattern)
+      );
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(resInfo, locale, pattern);
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "InvalidMsgPattern{" +
+        "resInfo=" +
+        resInfo +
+        ", locale=" +
+        locale +
+        ", pattern='" +
+        pattern +
+        '\'' +
+        '}'
+      );
+    }
+  }
+
+  public static final class InvalidNumberOfArguments extends ValidationError {
+
+    private final ResInfo resInfo;
+    private final Locale locale;
+    private final String pattern;
+    private final int numberOfArgumentsInMethod;
+    private final int numberOfArgumentsAccordingToPattern;
+
+    public InvalidNumberOfArguments(
+      ResInfo resInfo,
+      Locale locale,
+      String pattern,
+      int numberOfArgumentsInMethod,
+      int numberOfArgumentsAccordingToPattern
+    ) {
+      this.resInfo = resInfo;
+      this.locale = locale;
+      this.pattern = pattern;
+      this.numberOfArgumentsInMethod = numberOfArgumentsInMethod;
+      this.numberOfArgumentsAccordingToPattern = numberOfArgumentsAccordingToPattern;
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "InvalidNumberOfArguments{" +
+        "resInfo=" +
+        resInfo +
+        ", locale=" +
+        locale +
+        ", pattern='" +
+        pattern +
+        '\'' +
+        ", numberOfArgumentsInMethod=" +
+        numberOfArgumentsInMethod +
+        ", numberOfArgumentsAccordingToPattern=" +
+        numberOfArgumentsAccordingToPattern +
+        '}'
+      );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      InvalidNumberOfArguments that = (InvalidNumberOfArguments) o;
+      return (
+        numberOfArgumentsInMethod == that.numberOfArgumentsInMethod &&
+        numberOfArgumentsAccordingToPattern == that.numberOfArgumentsAccordingToPattern &&
+        resInfo.equals(that.resInfo) &&
+        locale.equals(that.locale) &&
+        pattern.equals(that.pattern)
+      );
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(
+        resInfo,
+        locale,
+        pattern,
+        numberOfArgumentsInMethod,
+        numberOfArgumentsAccordingToPattern
+      );
+    }
+  }
+
+  public static final class SuperfluousResource extends ValidationError {
+
+    private final BundleInfo bundle;
+    private final Locale locale;
+    private final String name;
+
+    public SuperfluousResource(BundleInfo bundle, Locale locale, String name) {
+      this.bundle = bundle;
+      this.locale = locale;
+      this.name = name;
     }
 
     @Override
@@ -55,12 +165,27 @@ public abstract class ValidationError {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       SuperfluousResource that = (SuperfluousResource) o;
-      return bundle.equals(that.bundle) && name.equals(that.name);
+      return bundle.equals(that.bundle) && locale.equals(that.locale) && name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(bundle, name);
+      return Objects.hash(bundle, locale, name);
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "SuperfluousResource{" +
+        "bundle=" +
+        bundle +
+        ", locale=" +
+        locale +
+        ", name='" +
+        name +
+        '\'' +
+        '}'
+      );
     }
   }
 }

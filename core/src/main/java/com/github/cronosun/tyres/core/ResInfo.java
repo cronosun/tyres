@@ -44,8 +44,8 @@ public final class ResInfo {
     var kind = details.kind();
     switch (kind) {
       case STRING:
-        var stringResouce = details.asStringResource();
-        return "{" + baseName + "::" + stringResouce.name() + "}";
+        var stringResource = details.asStringResource();
+        return "{" + baseName + "::" + stringResource.name() + "}";
       case BINARY:
         var fileResource = details.asBinResource();
         return "{" + baseName + " FILE " + fileResource.filename() + "}";

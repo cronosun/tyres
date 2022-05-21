@@ -1,11 +1,8 @@
-package com.github.cronosun.tyres.core.implementation;
+package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.ReflectionInfo;
-import com.github.cronosun.tyres.core.TyResException;
-import com.github.cronosun.tyres.core.TyResImplementation;
 import java.lang.reflect.Proxy;
 
-public final class DefaultImplementation implements TyResImplementation {
+final class DefaultImplementation implements TyResImplementation {
 
   private static final TyResImplementation INSTANCE = new DefaultImplementation();
 
@@ -25,10 +22,10 @@ public final class DefaultImplementation implements TyResImplementation {
   }
 
   @Override
-  public ReflectionInfo bundleResInfo(Object instance) {
-    var invicationHandler = Proxy.getInvocationHandler(instance);
-    if (invicationHandler instanceof TyResInvocationHandler) {
-      var handler = (TyResInvocationHandler) invicationHandler;
+  public ReflectionInfo reflectionInfo(Object instance) {
+    var invocationHandler = Proxy.getInvocationHandler(instance);
+    if (invocationHandler instanceof TyResInvocationHandler) {
+      var handler = (TyResInvocationHandler) invocationHandler;
       return handler.bundleResInfo();
     } else {
       throw new TyResException(
@@ -37,5 +34,10 @@ public final class DefaultImplementation implements TyResImplementation {
         " seems to be something that has not been created by this instance (read the docs!)."
       );
     }
+  }
+
+  @Override
+  public String toString() {
+    return "DefaultImplementation";
   }
 }

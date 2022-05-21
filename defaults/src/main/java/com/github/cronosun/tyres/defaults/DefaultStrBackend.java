@@ -1,31 +1,29 @@
 package com.github.cronosun.tyres.defaults;
 
+import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
-import com.github.cronosun.tyres.core.ResInfoDetails;
-import com.github.cronosun.tyres.core.TyResException;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.spi.ResourceBundleProvider;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.Nullable;
 
-final class DefaultStringBackend implements StringBackend {
+final class DefaultStrBackend implements StrBackend {
 
-  private static final DefaultStringBackend INSTANCE = new DefaultStringBackend(
+  private static final DefaultStrBackend INSTANCE = new DefaultStrBackend(
     null,
     MessageFormatter.defaultImplementation()
   );
-  private static final Logger LOGGER = Logger.getLogger(DefaultStringBackend.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(DefaultStrBackend.class.getName());
 
   @Nullable
   private final ResourceBundleProvider resourceBundleProvider;
 
   private final MessageFormatter messageFormatter;
 
-  private DefaultStringBackend(
+  private DefaultStrBackend(
     @Nullable ResourceBundleProvider resourceBundleProvider,
     @Nullable MessageFormatter messageFormatter
   ) {
@@ -34,18 +32,8 @@ final class DefaultStringBackend implements StringBackend {
       Objects.requireNonNullElse(messageFormatter, MessageFormatter.defaultImplementation());
   }
 
-  public static DefaultStringBackend instance() {
+  public static DefaultStrBackend instance() {
     return INSTANCE;
-  }
-
-  public DefaultStringBackend withResourceBundleProvider(
-    ResourceBundleProvider resourceBundleProvider
-  ) {
-    return new DefaultStringBackend(resourceBundleProvider, this.messageFormatter);
-  }
-
-  public DefaultStringBackend withMessageFormatter(MessageFormatter messageFormatter) {
-    return new DefaultStringBackend(this.resourceBundleProvider, messageFormatter);
   }
 
   @Nullable
@@ -64,30 +52,30 @@ final class DefaultStringBackend implements StringBackend {
     return getStringOrDefault(resInfo, locale);
   }
 
+  @Override
+  public Set<String> resourceNamesInBundleForValidation(BundleInfo bundleInfo, Locale locale) {
+    var bundle = getResourceBundleForMessages(bundleInfo, locale);
+    if (bundle == null) {
+      return Set.of();
+    } else {
+      var keysIterator = bundle.getKeys().asIterator();
+      var keyStream = StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(keysIterator, Spliterator.DISTINCT),
+        false
+      );
+      return keyStream.collect(Collectors.toUnmodifiableSet());
+    }
+  }
+
   @Nullable
   private String getStringOrDefault(ResInfo resInfo, Locale locale) {
-    assertCorrectResourceKind(resInfo);
-    var bundle = getResourceBundleForMessages(resInfo, locale);
+    var bundle = getResourceBundleForMessages(resInfo.bundle(), locale);
     var string = getString(bundle, resInfo);
     if (string == null) {
       // try the default
       return resInfo.details().asStringResource().defaultValue();
     } else {
       return string;
-    }
-  }
-
-  private void assertCorrectResourceKind(ResInfo resInfo) {
-    var kind = resInfo.details().kind();
-    var correctType = kind == ResInfoDetails.Kind.STRING;
-    if (!correctType) {
-      throw new TyResException(
-        "Invalid resource kind (must be a string resource). It's " +
-        kind +
-        ". Resource '" +
-        resInfo.debugReference() +
-        "'."
-      );
     }
   }
 
@@ -106,24 +94,23 @@ final class DefaultStringBackend implements StringBackend {
   }
 
   @Nullable
-  private ResourceBundle getResourceBundleForMessages(ResInfo resInfo, Locale locale) {
-    var bundleInfo = resInfo.bundle();
+  private ResourceBundle getResourceBundleForMessages(BundleInfo bundleInfo, Locale locale) {
     var baseName = bundleInfo.baseName().value();
-    try {
-      return ResourceBundle.getBundle(baseName, locale);
-    } catch (MissingResourceException missingResourceException) {
-      LOGGER.log(Level.INFO, "Missing resource bundle", missingResourceException);
-      return null;
-    }
+    return getBundle(baseName, locale);
   }
 
+  @Nullable
   private ResourceBundle getBundle(String baseName, Locale locale) {
     var resourceBundleProvider = this.resourceBundleProvider;
     if (resourceBundleProvider == null) {
       try {
-        return ResourceBundle.getBundle(baseName, locale);
+        return ResourceBundle.getBundle(
+          baseName,
+          locale,
+          ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
+        );
       } catch (MissingResourceException missingResourceException) {
-        LOGGER.log(Level.INFO, "Missing resource bundle", missingResourceException);
+        LOGGER.log(Level.FINE, "Missing resource bundle", missingResourceException);
         return null;
       }
     } else {
