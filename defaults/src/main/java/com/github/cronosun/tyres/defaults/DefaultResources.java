@@ -6,7 +6,8 @@ import java.util.Locale;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
-public final class DefaultResources implements Resources {
+public final class DefaultResources
+  implements Resources, BinResources, StrResources, MsgResources {
 
   private final MsgNotFoundStrategy notFoundStrategy;
   private final FallbackGenerator fallbackGenerator;
@@ -172,6 +173,21 @@ public final class DefaultResources implements Resources {
     }
   }
 
+  @Override
+  public MsgResources msg() {
+    return this;
+  }
+
+  @Override
+  public StrResources str() {
+    return this;
+  }
+
+  @Override
+  public BinResources bin() {
+    return this;
+  }
+
   private static final class ArgsForMaybeMessage {
 
     private final Object[] args;
@@ -203,7 +219,7 @@ public final class DefaultResources implements Resources {
 
     @Override
     public String toString() {
-      var maybeMsg = source.maybeResolveMsg(msg, locale);
+      var maybeMsg = source.msg().maybeResolveMsg(msg, locale);
       if (maybeMsg != null) {
         return maybeMsg;
       } else {
@@ -234,7 +250,7 @@ public final class DefaultResources implements Resources {
 
     @Override
     public String toString() {
-      return source.resolveMsg(msg, notFoundStrategy, locale);
+      return source.msg().resolveMsg(msg, notFoundStrategy, locale);
     }
   }
 }

@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.Msg;
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.MsgResources;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +64,7 @@ public final class MsgList implements Msg {
   }
 
   @Override
-  public String msg(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
+  public String msg(MsgResources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var messages = this.messages;
     var numberOfMessages = messages.size();
     switch (numberOfMessages) {
@@ -89,7 +90,7 @@ public final class MsgList implements Msg {
 
   @Nullable
   @Override
-  public String maybeMsg(Resources resources, Locale locale) {
+  public String maybeMsg(MsgResources resources, Locale locale) {
     var messages = this.messages;
     if (messages.isEmpty()) {
       return resources.maybeMsg(configuration.empty(), locale);

@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: Serialize, de-serialize
 /**
  * Contains 0-n localized messages.
  */
@@ -56,7 +57,7 @@ public final class LocalizedMsg implements Msg {
   }
 
   @Override
-  public String msg(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
+  public String msg(MsgResources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var message = maybeMsg(resources, locale);
     if (message == null) {
       switch (notFoundStrategy) {
@@ -74,7 +75,7 @@ public final class LocalizedMsg implements Msg {
 
   @Nullable
   @Override
-  public String maybeMsg(Resources resources, Locale locale) {
+  public String maybeMsg(MsgResources resources, Locale locale) {
     return messageWithCandidates(locale);
   }
 

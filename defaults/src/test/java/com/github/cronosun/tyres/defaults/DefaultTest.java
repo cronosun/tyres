@@ -14,40 +14,36 @@ public class DefaultTest {
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInTheProperties() {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
-    var msg = resources.msg(
-      DefaultTestBundle.INSTANCE.somethingThatIsAlsoFoundInProperty(),
-      Locale.ENGLISH
-    );
+    var msg = resources
+      .msg()
+      .msg(DefaultTestBundle.INSTANCE.somethingThatIsAlsoFoundInProperty(), Locale.ENGLISH);
     assertEquals("This is from the property", msg);
   }
 
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInThePropertiesForStringRes() {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
-    var msg = resources.str(
-      DefaultTestBundle.INSTANCE.stringResourceThatIsAlsoFoundInProperty(),
-      Locale.ENGLISH
-    );
+    var msg = resources
+      .str()
+      .str(DefaultTestBundle.INSTANCE.stringResourceThatIsAlsoFoundInProperty(), Locale.ENGLISH);
     assertEquals("I am a string from the property file", msg);
   }
 
   @Test
   void defaultValueIsUsedIfMissingInProperties() {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
-    var msg = resources.msg(
-      DefaultTestBundle.INSTANCE.withConfiguredDefault("ABC"),
-      Locale.ENGLISH
-    );
+    var msg = resources
+      .msg()
+      .msg(DefaultTestBundle.INSTANCE.withConfiguredDefault("ABC"), Locale.ENGLISH);
     assertEquals("This is the message 'ABC'.", msg);
   }
 
   @Test
   void defaultValueIsUsedIfMissingInPropertiesForString() {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
-    var msg = resources.str(
-      DefaultTestBundle.INSTANCE.stringResWithConfiguredDefault(),
-      Locale.ENGLISH
-    );
+    var msg = resources
+      .str()
+      .str(DefaultTestBundle.INSTANCE.stringResWithConfiguredDefault(), Locale.ENGLISH);
     assertEquals("Yes, this is the string to use", msg);
   }
 }

@@ -9,12 +9,12 @@ public interface MsgRes extends Res<MsgRes>, Msg {
   }
 
   @Override
-  default String msg(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
+  default String msg(MsgResources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     return resources.msg(this, notFoundStrategy, locale);
   }
 
   @Override
-  default @Nullable String maybeMsg(Resources resources, Locale locale) {
+  default @Nullable String maybeMsg(MsgResources resources, Locale locale) {
     return resources.maybeMsg(this, locale);
   }
 }

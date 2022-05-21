@@ -8,6 +8,10 @@ Provides functionality for typed resources (such as messages) for [spring](https
  
  * Typed resources using interfaces.
  * Supports arguments for messages.
+ * Supports 3 types of resources:
+   * Messages: Messages are formatted patterns with 0-n arguments (see Java's `MessageFormat`).
+   * Strings: Similar to messages, but not formatted, without arguments.
+   * Binary resources.
  * Supports multiple backend implementations: Spring `MessageSource` and Java `ResourceBundle` are included - or write your own.
  * Lightweight & small.
  * Validation: Detect missing translations or unused translations.

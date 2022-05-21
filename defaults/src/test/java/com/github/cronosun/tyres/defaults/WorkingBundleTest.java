@@ -19,11 +19,11 @@ class WorkingBundleTest {
   void basicTestsWithDifferentLocales() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var msgColourUk = source.msg(WorkingBundle.INSTANCE.colour(), Locale.UK);
+    var msgColourUk = source.msg().msg(WorkingBundle.INSTANCE.colour(), Locale.UK);
     Assertions.assertEquals("Colour", msgColourUk);
-    var msgColourDe = source.msg(WorkingBundle.INSTANCE.colour(), Locale.GERMAN);
+    var msgColourDe = source.msg().msg(WorkingBundle.INSTANCE.colour(), Locale.GERMAN);
     Assertions.assertEquals("Farbe", msgColourDe);
-    var msgColourUs = source.msg(WorkingBundle.INSTANCE.colour(), Locale.US);
+    var msgColourUs = source.msg().msg(WorkingBundle.INSTANCE.colour(), Locale.US);
     Assertions.assertEquals("Color", msgColourUs);
   }
 
@@ -31,7 +31,7 @@ class WorkingBundleTest {
   void inheritance() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var msg = source.msg(WorkingBundle.INSTANCE.somethingFromParent(), Locale.UK);
+    var msg = source.msg().msg(WorkingBundle.INSTANCE.somethingFromParent(), Locale.UK);
     Assertions.assertEquals("Message from parent interface", msg);
   }
 
@@ -39,10 +39,9 @@ class WorkingBundleTest {
   void inheritanceWithArg() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var msg = source.msg(
-      WorkingBundle.INSTANCE.somethingFromParentWithArgument("Albert"),
-      Locale.UK
-    );
+    var msg = source
+      .msg()
+      .msg(WorkingBundle.INSTANCE.somethingFromParentWithArgument("Albert"), Locale.UK);
     Assertions.assertEquals("Hello, Albert!", msg);
   }
 
@@ -50,10 +49,9 @@ class WorkingBundleTest {
   void fallbackMessage() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.FALLBACK);
 
-    var msg = source.msg(
-      WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"),
-      Locale.UK
-    );
+    var msg = source
+      .msg()
+      .msg(WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"), Locale.UK);
     Assertions.assertEquals(
       "{{com.github.cronosun.tyres.defaults.WorkingBundle::somethingThatCannotBeFound} [The argument]}",
       msg
@@ -64,10 +62,9 @@ class WorkingBundleTest {
   void returnsNullIfCannotBeFound() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var msg = source.maybeMsg(
-      WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"),
-      Locale.UK
-    );
+    var msg = source
+      .msg()
+      .maybeMsg(WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"), Locale.UK);
     Assertions.assertNull(msg);
   }
 
@@ -80,8 +77,8 @@ class WorkingBundleTest {
     var date = convertLocalDateToDateUtc(LocalDate.of(2022, 5, 15));
     var message = WorkingBundle.INSTANCE.saySomethingAboutDaysOfTheWeek(friday, monday, date);
 
-    var msgEn = source.msg(message, Locale.UK);
-    var msgDe = source.msg(message, Locale.GERMAN);
+    var msgEn = source.msg().msg(message, Locale.UK);
+    var msgDe = source.msg().msg(message, Locale.GERMAN);
 
     Assertions.assertEquals("Friday is much better than Monday; today is 15/05/2022.", msgEn);
     Assertions.assertEquals(
@@ -103,8 +100,8 @@ class WorkingBundleTest {
       date
     );
 
-    var msgEn = source.maybeMsg(message, Locale.UK);
-    var msgDe = source.maybeMsg(message, Locale.GERMAN);
+    var msgEn = source.msg().maybeMsg(message, Locale.UK);
+    var msgDe = source.msg().maybeMsg(message, Locale.GERMAN);
     Assertions.assertNull(msgEn);
     Assertions.assertNull(msgDe);
   }
@@ -114,8 +111,8 @@ class WorkingBundleTest {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var somethingWithUmlauts = WorkingBundle.INSTANCE.somethingWithUmlauts();
-    var msgEn = source.msg(somethingWithUmlauts, Locale.UK);
-    var msgDe = source.msg(somethingWithUmlauts, Locale.GERMAN);
+    var msgEn = source.msg().msg(somethingWithUmlauts, Locale.UK);
+    var msgDe = source.msg().msg(somethingWithUmlauts, Locale.GERMAN);
 
     Assertions.assertEquals("Bigger", msgEn);
     Assertions.assertEquals("Größer", msgDe);
@@ -132,13 +129,13 @@ class WorkingBundleTest {
       .build();
     var msg = WorkingBundle.INSTANCE.wrapLocalizedMessage(localizedMsg);
 
-    var msgDe = source.msg(msg, Locale.GERMAN);
-    var msgEn = source.msg(msg, Locale.ENGLISH);
-    var msgUs = source.msg(msg, Locale.US);
+    var msgDe = source.msg().msg(msg, Locale.GERMAN);
+    var msgEn = source.msg().msg(msg, Locale.ENGLISH);
+    var msgUs = source.msg().msg(msg, Locale.US);
     // should fall back to 'ENGLISH'
-    var msgCa = source.msg(msg, Locale.CANADA);
+    var msgCa = source.msg().msg(msg, Locale.CANADA);
     // something that is not present
-    var msgFr = source.maybeMsg(msg, Locale.FRENCH);
+    var msgFr = source.msg().maybeMsg(msg, Locale.FRENCH);
 
     Assertions.assertEquals("Der Text 'ein farbenfrohes Bier' wurde schon übersetzt.", msgDe);
     Assertions.assertEquals("The text 'a colourful beer' has already been localized.", msgEn);

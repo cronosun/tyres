@@ -4,12 +4,12 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Something that can translate itself using the given {@link Resources}.
+ * Something that can translate itself using the given {@link MsgResources}.
  */
 @ThreadSafe
 public interface Msg {
-  String msg(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale);
+  String msg(MsgResources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale);
 
   @Nullable
-  String maybeMsg(Resources resources, Locale locale);
+  String maybeMsg(MsgResources resources, Locale locale);
 }
