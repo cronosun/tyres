@@ -9,9 +9,9 @@ Provides functionality for typed resources (such as messages) for [spring](https
  * Typed resources using interfaces.
  * Supports arguments for messages.
  * Supports 3 types of resources:
-   * Messages: Messages are formatted patterns with 0-n arguments (see Java's `MessageFormat`).
-   * Strings: Similar to messages, but not formatted, without arguments.
-   * Binary resources.
+   * **Messages**: Messages are formatted patterns with 0-n arguments (see Java's `MessageFormat`).
+   * **Strings**: Similar to messages, but not formatted, without arguments.
+   * **Binary** resources (localization is supported too).
  * Supports multiple backend implementations: Spring `MessageSource` and Java `ResourceBundle` are included - or write your own.
  * Lightweight & small.
  * Validation: Detect missing translations or unused translations.
@@ -48,10 +48,10 @@ class TranslateTest {
     private final Resources resources;
     
     public void testTranslations() {
-        var msg1 = resources.msg(MyMessages.missingAmount(), Locale.UK);
+        var msg1 = resources.msg().get(MyMessages.INSTANCE.missingAmount(), Locale.UK);
         assertEquals("Amount is required", msg1);
 
-        var msg2 = resources.msg(MyMessages.amountTooLarge(2232), Locale.UK);
+        var msg2 = resources.msg().get(MyMessages.INSTANCE.amountTooLarge(2232), Locale.UK);
         assertEquals("Given amount 2232 is too large!", msg2);
     }
 }
@@ -64,6 +64,10 @@ class TranslateTest {
    * Validation
    * Some utilities, like message list and localized messages.
  * `spring`: Contains an implementation for spring. You only need this implementation if you use spring.
+
+## Want to see more
+
+See the [tests](defaults/src/test/java/com/github/cronosun/tyres/defaults/README.md) in the `defaults` module.
 
 ## Common errors
 
