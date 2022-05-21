@@ -22,7 +22,7 @@ class MessageSourceCreatorTest {
       BinBackend.usingResources()
     );
 
-    var msg = source.msg(TestBundle.INSTANCE.sayHello(), Locale.ENGLISH);
+    var msg = source.get(TestBundle.INSTANCE.sayHello(), Locale.ENGLISH);
     assertEquals("Hello, world!", msg);
   }
 }

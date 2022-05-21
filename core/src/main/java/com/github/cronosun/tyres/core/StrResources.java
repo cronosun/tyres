@@ -9,11 +9,11 @@ public interface StrResources {
    * be found.
    */
   @Nullable
-  String maybeStr(StrRes resource, Locale locale);
+  String maybe(StrRes resource, Locale locale);
 
   /**
    * Returns the string from the resources, if found. Throws a {@link TyResException} if the given string resource
    * cannot be resolved.
    */
-  String str(StrRes resource, Locale locale);
+  String get(StrRes resource, Locale locale);
 }

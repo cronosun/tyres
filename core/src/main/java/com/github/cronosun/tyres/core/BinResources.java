@@ -9,7 +9,7 @@ public interface BinResources {
    * Returns the binary as input stream or <code>null</code> if resource cannot be found.
    */
   @Nullable
-  InputStream maybeBin(BinRes resource, Locale locale);
+  InputStream maybe(BinRes resource, Locale locale);
 
-  InputStream bin(BinRes resource, Locale locale);
+  InputStream get(BinRes resource, Locale locale);
 }

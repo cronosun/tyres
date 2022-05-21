@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.defaults;
 import com.github.cronosun.tyres.core.Msg;
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.MsgResources;
-import com.github.cronosun.tyres.core.Resources;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -69,21 +69,21 @@ public final class MsgList implements Msg {
     var numberOfMessages = messages.size();
     switch (numberOfMessages) {
       case 0:
-        return resources.msg(configuration.empty(), notFoundStrategy, locale);
+        return resources.get(configuration.empty(), notFoundStrategy, locale);
       case 1:
         var single = messages.get(0);
-        return resources.msg(configuration.single(single), notFoundStrategy, locale);
+        return resources.get(configuration.single(single), notFoundStrategy, locale);
       default:
-        final String prefix = resources.msg(configuration.prefix(), notFoundStrategy, locale);
-        final String delimiter = resources.msg(
+        final String prefix = resources.get(configuration.prefix(), notFoundStrategy, locale);
+        final String delimiter = resources.get(
           configuration.delimiter(),
           notFoundStrategy,
           locale
         );
-        final String suffix = resources.msg(configuration.suffix(), notFoundStrategy, locale);
+        final String suffix = resources.get(configuration.suffix(), notFoundStrategy, locale);
         return messages
           .stream()
-          .map(message -> resources.resolveMsg(message, notFoundStrategy, locale))
+          .map(message -> resources.resolve(message, notFoundStrategy, locale))
           .collect(Collectors.joining(delimiter, prefix, suffix));
     }
   }
@@ -93,11 +93,11 @@ public final class MsgList implements Msg {
   public String maybeMsg(MsgResources resources, Locale locale) {
     var messages = this.messages;
     if (messages.isEmpty()) {
-      return resources.maybeMsg(configuration.empty(), locale);
+      return resources.maybe(configuration.empty(), locale);
     } else {
-      final String prefix = resources.maybeMsg(configuration.prefix(), locale);
-      final String delimiter = resources.maybeMsg(configuration.delimiter(), locale);
-      final String suffix = resources.maybeMsg(configuration.suffix(), locale);
+      final String prefix = resources.maybe(configuration.prefix(), locale);
+      final String delimiter = resources.maybe(configuration.delimiter(), locale);
+      final String suffix = resources.maybe(configuration.suffix(), locale);
       if (prefix == null || delimiter == null || suffix == null) {
         return null;
       }
@@ -109,7 +109,7 @@ public final class MsgList implements Msg {
           if (atLeastOneIsMissing[0]) {
             return "";
           }
-          var maybeMessage = resources.maybeResolveMsg(message, locale);
+          var maybeMessage = resources.maybeResolve(message, locale);
           if (maybeMessage == null) {
             atLeastOneIsMissing[0] = true;
             return "";

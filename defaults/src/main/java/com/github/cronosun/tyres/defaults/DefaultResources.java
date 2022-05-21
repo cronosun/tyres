@@ -41,7 +41,7 @@ public final class DefaultResources
   }
 
   @Override
-  public String msg(MsgRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
+  public String get(MsgRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
     var message = this.stringBackend.maybeMessage(resource.info(), args, locale);
     if (message != null) {
@@ -60,7 +60,7 @@ public final class DefaultResources
   }
 
   @Override
-  public @Nullable String maybeMsg(MsgRes resource, Locale locale) {
+  public @Nullable String maybe(MsgRes resource, Locale locale) {
     var argsForMaybeMessage = processArgsForMaybeMessage(resource.args(), locale);
     final Object[] args;
     if (argsForMaybeMessage != null) {
@@ -78,17 +78,17 @@ public final class DefaultResources
   }
 
   @Override
-  public MsgNotFoundStrategy msgNotFoundStrategy() {
+  public MsgNotFoundStrategy notFoundStrategy() {
     return notFoundStrategy;
   }
 
   @Override
-  public @Nullable String maybeStr(StrRes resource, Locale locale) {
+  public @Nullable String maybe(StrRes resource, Locale locale) {
     return this.stringBackend.maybeString(resource.info(), locale);
   }
 
   @Override
-  public String str(StrRes resource, Locale locale) {
+  public String get(StrRes resource, Locale locale) {
     var maybeString = this.stringBackend.maybeString(resource.info(), locale);
     if (maybeString != null) {
       return maybeString;
@@ -98,13 +98,13 @@ public final class DefaultResources
   }
 
   @Override
-  public @Nullable InputStream maybeBin(BinRes resource, Locale locale) {
+  public @Nullable InputStream maybe(BinRes resource, Locale locale) {
     return binBackend.maybeBin(resource.info(), locale);
   }
 
   @Override
-  public InputStream bin(BinRes resource, Locale locale) {
-    var maybeInputStream = maybeBin(resource, locale);
+  public InputStream get(BinRes resource, Locale locale) {
+    var maybeInputStream = maybe(resource, locale);
     if (maybeInputStream != null) {
       return maybeInputStream;
     } else {
@@ -219,7 +219,7 @@ public final class DefaultResources
 
     @Override
     public String toString() {
-      var maybeMsg = source.msg().maybeResolveMsg(msg, locale);
+      var maybeMsg = source.msg().maybeResolve(msg, locale);
       if (maybeMsg != null) {
         return maybeMsg;
       } else {
@@ -250,7 +250,7 @@ public final class DefaultResources
 
     @Override
     public String toString() {
-      return source.msg().resolveMsg(msg, notFoundStrategy, locale);
+      return source.msg().resolve(msg, notFoundStrategy, locale);
     }
   }
 }

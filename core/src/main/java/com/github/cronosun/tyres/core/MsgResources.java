@@ -10,13 +10,13 @@ public interface MsgResources {
    * If there's no such resource: Depending on {@link MsgNotFoundStrategy}, either returns the fallback message
    * or throws {@link TyResException}.
    */
-  String msg(MsgRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale);
+  String get(MsgRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale);
 
   /**
-   * Calls {@link #msg(MsgRes, MsgNotFoundStrategy, Locale)} with {@link #msgNotFoundStrategy()}.
+   * Calls {@link #get(MsgRes, MsgNotFoundStrategy, Locale)} with {@link #notFoundStrategy()}.
    */
-  default String msg(MsgRes resource, Locale locale) {
-    return msg(resource, msgNotFoundStrategy(), locale);
+  default String get(MsgRes resource, Locale locale) {
+    return get(resource, notFoundStrategy(), locale);
   }
 
   /**
@@ -26,34 +26,34 @@ public interface MsgResources {
    * message format or invalid arguments).
    */
   @Nullable
-  String maybeMsg(MsgRes resource, Locale locale);
+  String maybe(MsgRes resource, Locale locale);
 
   /**
    * Calls {@link Msg#maybeMsg(MsgResources, Locale)}.
    */
   @Nullable
-  default String maybeResolveMsg(Msg message, Locale locale) {
+  default String maybeResolve(Msg message, Locale locale) {
     return message.maybeMsg(this, locale);
   }
 
   /**
    * Calls {@link Msg#msg(MsgResources, MsgNotFoundStrategy, Locale)}.
    */
-  default String resolveMsg(Msg message, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
+  default String resolve(Msg message, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     return message.msg(this, notFoundStrategy, locale);
   }
 
   /**
-   * Calls {@link Msg#msg(MsgResources, MsgNotFoundStrategy, Locale)} with {@link #msgNotFoundStrategy()}.
+   * Calls {@link Msg#msg(MsgResources, MsgNotFoundStrategy, Locale)} with {@link #notFoundStrategy()}.
    */
-  default String resolveMsg(Msg message, Locale locale) {
-    return message.msg(this, msgNotFoundStrategy(), locale);
+  default String resolve(Msg message, Locale locale) {
+    return message.msg(this, notFoundStrategy(), locale);
   }
 
   /**
-   * What {@link #msg(MsgRes, Locale)} should do if the resouce cannot be found.
+   * What {@link #get(MsgRes, Locale)} should do if the resouce cannot be found.
    */
-  MsgNotFoundStrategy msgNotFoundStrategy();
+  MsgNotFoundStrategy notFoundStrategy();
 
   /**
    * Generates the fallback message (note, this is not to be confused with the default message,

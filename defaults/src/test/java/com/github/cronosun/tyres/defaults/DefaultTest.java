@@ -16,7 +16,7 @@ public class DefaultTest {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources
       .msg()
-      .msg(DefaultTestBundle.INSTANCE.somethingThatIsAlsoFoundInProperty(), Locale.ENGLISH);
+      .get(DefaultTestBundle.INSTANCE.somethingThatIsAlsoFoundInProperty(), Locale.ENGLISH);
     assertEquals("This is from the property", msg);
   }
 
@@ -25,7 +25,7 @@ public class DefaultTest {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources
       .str()
-      .str(DefaultTestBundle.INSTANCE.stringResourceThatIsAlsoFoundInProperty(), Locale.ENGLISH);
+      .get(DefaultTestBundle.INSTANCE.stringResourceThatIsAlsoFoundInProperty(), Locale.ENGLISH);
     assertEquals("I am a string from the property file", msg);
   }
 
@@ -34,7 +34,7 @@ public class DefaultTest {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources
       .msg()
-      .msg(DefaultTestBundle.INSTANCE.withConfiguredDefault("ABC"), Locale.ENGLISH);
+      .get(DefaultTestBundle.INSTANCE.withConfiguredDefault("ABC"), Locale.ENGLISH);
     assertEquals("This is the message 'ABC'.", msg);
   }
 
@@ -43,7 +43,7 @@ public class DefaultTest {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources
       .str()
-      .str(DefaultTestBundle.INSTANCE.stringResWithConfiguredDefault(), Locale.ENGLISH);
+      .get(DefaultTestBundle.INSTANCE.stringResWithConfiguredDefault(), Locale.ENGLISH);
     assertEquals("Yes, this is the string to use", msg);
   }
 }
