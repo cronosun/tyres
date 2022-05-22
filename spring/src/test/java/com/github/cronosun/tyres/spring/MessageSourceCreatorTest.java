@@ -3,9 +3,9 @@ package com.github.cronosun.tyres.spring;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.defaults.BinBackend;
+import com.github.cronosun.tyres.defaults.backends.BinBackend;
 import com.github.cronosun.tyres.defaults.DefaultResources;
-import com.github.cronosun.tyres.defaults.FallbackGenerator;
+import com.github.cronosun.tyres.defaults.backends.FallbackGenerator;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
@@ -13,14 +13,14 @@ class MessageSourceCreatorTest {
 
   @Test
   void demo() {
-    var backend = new SpringStrBackend(
+    var backend = new SpringMsgStrBackend(
       MessageSourceProvider.cached(MessageSourceFactory.resourceBundle())
     );
     var source = new DefaultResources(
       MsgNotFoundStrategy.THROW,
       FallbackGenerator.defaultImplementation(),
       backend,
-      BinBackend.usingResources(),
+      BinBackend.backendUsingResources(),
       null,
       null
     );

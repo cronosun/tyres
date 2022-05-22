@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.defaults;
+package com.github.cronosun.tyres.defaults.backends;
 
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ResInfoDetails;
@@ -7,7 +7,10 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 public interface BinBackend {
-  static BinBackend usingResources() {
+  /**
+   * Returns the default backend that reads the binary files from resources.
+   */
+  static BinBackend backendUsingResources() {
     return DefaultBinBackend.instance();
   }
 

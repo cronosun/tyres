@@ -3,15 +3,17 @@ package com.github.cronosun.tyres.defaults;
 import com.github.cronosun.tyres.core.*;
 import java.util.Locale;
 import java.util.Objects;
+
+import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 final class DefaultMsgResources implements Resources.Messages {
 
-  private final StrBackend backend;
+  private final MsgStrBackend backend;
   private final Resources resources;
 
-  DefaultMsgResources(StrBackend backend, Resources resources) {
+  DefaultMsgResources(MsgStrBackend backend, Resources resources) {
     this.backend = backend;
     this.resources = resources;
   }

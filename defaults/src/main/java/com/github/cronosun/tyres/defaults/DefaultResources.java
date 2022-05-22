@@ -2,6 +2,11 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.*;
 import java.util.Objects;
+
+import com.github.cronosun.tyres.defaults.backends.BinBackend;
+import com.github.cronosun.tyres.defaults.backends.FallbackGenerator;
+import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
+import com.github.cronosun.tyres.defaults.validation.Validator;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
@@ -17,25 +22,25 @@ public final class DefaultResources implements Resources {
   public DefaultResources(
     MsgNotFoundStrategy notFoundStrategy,
     @Nullable FallbackGenerator fallbackGenerator,
-    @Nullable StrBackend strBackend,
+    @Nullable MsgStrBackend msgStrBackend,
     @Nullable BinBackend binBackend,
     @Nullable Resolver resolver,
     @Nullable Validator validator
   ) {
     var presentStringBackend = Objects.requireNonNullElse(
-      strBackend,
-      StrBackend.usingResourceBundle()
+            msgStrBackend,
+      MsgStrBackend.backendUsingResourceBundle()
     );
     var presentFallbackGenerator = Objects.requireNonNullElse(
       fallbackGenerator,
       FallbackGenerator.defaultImplementation()
     );
     var presentNotFoundStrategy = Objects.requireNonNull(notFoundStrategy);
-    var presentBindBackend = Objects.requireNonNullElse(binBackend, BinBackend.usingResources());
+    var presentBindBackend = Objects.requireNonNullElse(binBackend, BinBackend.backendUsingResources());
     var presentResolver = Objects.requireNonNullElseGet(resolver, () -> new DefaultResolver(this));
     var presentValidator = Objects.requireNonNullElseGet(
       validator,
-      () -> Validator.newDefaultImplementation(presentStringBackend, presentBindBackend)
+      () -> Validator.newDefaultValidator(presentStringBackend, presentBindBackend)
     );
 
     this.common =

@@ -1,31 +1,34 @@
-package com.github.cronosun.tyres.defaults;
+package com.github.cronosun.tyres.defaults.backends;
 
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
+
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.spi.ResourceBundleProvider;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
-final class DefaultStrBackend implements StrBackend {
+final class DefaultMsgStrBackend implements MsgStrBackend {
 
-  private static final DefaultStrBackend INSTANCE = new DefaultStrBackend(
+  private static final DefaultMsgStrBackend INSTANCE = new DefaultMsgStrBackend(
     null,
     MessageFormatter.defaultImplementation()
   );
-  private static final Logger LOGGER = Logger.getLogger(DefaultStrBackend.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(DefaultMsgStrBackend.class.getName());
 
   @Nullable
   private final ResourceBundleProvider resourceBundleProvider;
 
   private final MessageFormatter messageFormatter;
 
-  private DefaultStrBackend(
+  private DefaultMsgStrBackend(
     @Nullable ResourceBundleProvider resourceBundleProvider,
     @Nullable MessageFormatter messageFormatter
   ) {
@@ -34,7 +37,7 @@ final class DefaultStrBackend implements StrBackend {
       Objects.requireNonNullElse(messageFormatter, MessageFormatter.defaultImplementation());
   }
 
-  public static DefaultStrBackend instance() {
+  public static DefaultMsgStrBackend instance() {
     return INSTANCE;
   }
 
@@ -66,6 +69,21 @@ final class DefaultStrBackend implements StrBackend {
         false
       );
       return keyStream.collect(Collectors.toUnmodifiableSet());
+    }
+  }
+
+  @Override
+  public @Nullable ValidationError validateMessage(ResInfo resInfo, int numberOfArguments, Locale locale, boolean optional) {
+    var pattern = maybeString(resInfo, locale);
+    if (pattern != null) {
+      return messageFormatter.validateMessage(resInfo, pattern, numberOfArguments, locale);
+    } else {
+      if (!optional) {
+        return new ValidationError.ResourceNotFound(resInfo, locale);
+      } else {
+        // no problem, resource is optional.
+        return null;
+      }
     }
   }
 

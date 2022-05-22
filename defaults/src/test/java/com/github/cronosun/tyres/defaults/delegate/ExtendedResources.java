@@ -5,14 +5,14 @@ import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.core.Resources;
 import com.github.cronosun.tyres.core.StrRes;
 import com.github.cronosun.tyres.defaults.LocalizedMsg;
-import com.github.cronosun.tyres.defaults.ResourcesDelegate;
+import com.github.cronosun.tyres.defaults.DelegatingResouces;
 import java.util.Locale;
 import java.util.Set;
 
 /**
- * You can extend {@link Resources} in your application using {@link ResourcesDelegate}.
+ * You can extend {@link Resources} in your application using {@link DelegatingResouces}.
  */
-public final class ExtendedResources extends ResourcesDelegate {
+public final class ExtendedResources extends DelegatingResouces {
 
   private final Set<Locale> supportedLocales = Set.of(Locale.GERMANY, Locale.US, Locale.FRANCE);
 

@@ -1,19 +1,22 @@
-package com.github.cronosun.tyres.defaults;
+package com.github.cronosun.tyres.defaults.validation;
 
 import com.github.cronosun.tyres.core.*;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.github.cronosun.tyres.defaults.backends.BinBackend;
+import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 final class DefaultValidator implements Validator {
 
-  private final StrBackend strBackend;
+  private final MsgStrBackend msgStrBackend;
   private final BinBackend binBackend;
 
-  DefaultValidator(StrBackend strBackend, BinBackend binBackend) {
-    this.strBackend = strBackend;
+  DefaultValidator(MsgStrBackend msgStrBackend, BinBackend binBackend) {
+    this.msgStrBackend = msgStrBackend;
     this.binBackend = binBackend;
   }
 
@@ -40,7 +43,7 @@ final class DefaultValidator implements Validator {
 
     // now make sure there's nothing superfluous
     var bundleInfo = reflectionInfo.bundleInfo();
-    var resourceNamesInBundle = strBackend.resourceNamesInBundleForValidation(bundleInfo, locale);
+    var resourceNamesInBundle = msgStrBackend.resourceNamesInBundleForValidation(bundleInfo, locale);
     if (resourceNamesInBundle != null) {
       var declaredNames = collectDeclaredStringResourceNames(reflectionInfo);
       for (var resourceName : resourceNamesInBundle) {
@@ -91,7 +94,7 @@ final class DefaultValidator implements Validator {
 
   @Nullable
   private ValidationError validateStrExists(ResInfo resInfo, Locale locale) {
-    if (!strBackend.validateStringExists(resInfo, locale)) {
+    if (!msgStrBackend.validateStringExists(resInfo, locale)) {
       return new ValidationError.ResourceNotFound(resInfo, locale);
     } else {
       return null;
@@ -112,7 +115,7 @@ final class DefaultValidator implements Validator {
     // number of arguments?
     var method = resInfo.method();
     var numberOfArguments = method.getParameterCount();
-    return strBackend.validateMessage(resInfo, numberOfArguments, locale, optional);
+    return msgStrBackend.validateMessage(resInfo, numberOfArguments, locale, optional);
   }
 
   private boolean isOptional(Res<?> res) {

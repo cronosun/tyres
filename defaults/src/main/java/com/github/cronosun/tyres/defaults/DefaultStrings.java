@@ -2,17 +2,19 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.*;
 import java.util.Locale;
+
+import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 final class DefaultStrings implements Resources.Strings {
 
   private final Resources resources;
-  private final StrBackend backend;
+  private final MsgStrBackend backend;
 
-  public DefaultStrings(Resources resources, StrBackend strBackend) {
+  public DefaultStrings(Resources resources, MsgStrBackend msgStrBackend) {
     this.resources = resources;
-    this.backend = strBackend;
+    this.backend = msgStrBackend;
   }
 
   @Override

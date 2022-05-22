@@ -1,21 +1,27 @@
-package com.github.cronosun.tyres.defaults;
+package com.github.cronosun.tyres.defaults.backends;
 
 import com.github.cronosun.tyres.core.*;
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Set;
+
+import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Backend for string-like sources: plain strings and messages.
+ *
+ * Why are those backends combined? Unlike binaries, the strings and messages have to be served by the same
+ * backend: The default implementation requires that the strings are just the message patterns - if you
+ * ask the implementation to return a string with a {@link ResInfo} from a message, the implementation
+ * has to return the message pattern (unformatted). This is required for the validation to work correcltly.
  */
 @ThreadSafe
-public interface StrBackend {
+public interface MsgStrBackend {
   /**
    * Returns the default implementation that uses {@link java.util.ResourceBundle}.
    */
-  static StrBackend usingResourceBundle() {
-    return DefaultStrBackend.instance();
+  static MsgStrBackend backendUsingResourceBundle() {
+    return DefaultMsgStrBackend.instance();
   }
 
   /**
@@ -44,41 +50,12 @@ public interface StrBackend {
    *                 exists, it's validated.
    **/
   @Nullable
-  default ValidationError validateMessage(
+  ValidationError validateMessage(
     ResInfo resInfo,
     int numberOfArguments,
     Locale locale,
     boolean optional
-  ) {
-    var pattern = maybeString(resInfo, locale);
-    if (pattern != null) {
-      MessageFormat msgFormat;
-      try {
-        msgFormat = new MessageFormat(pattern, locale);
-      } catch (IllegalArgumentException invalidPattern) {
-        return new ValidationError.InvalidMsgPattern(resInfo, locale, pattern);
-      }
-      var expectedNumberOfArguments = msgFormat.getFormats().length;
-      if (numberOfArguments != expectedNumberOfArguments) {
-        return new ValidationError.InvalidNumberOfArguments(
-          resInfo,
-          locale,
-          pattern,
-          numberOfArguments,
-          expectedNumberOfArguments
-        );
-      } else {
-        return null;
-      }
-    } else {
-      if (!optional) {
-        return new ValidationError.ResourceNotFound(resInfo, locale);
-      } else {
-        // no problem, resource is optional.
-        return null;
-      }
-    }
-  }
+  );
 
   /**
    * Returns the plain string (not formatted) - if found. If there's no such resource, returns <code>null</code>.

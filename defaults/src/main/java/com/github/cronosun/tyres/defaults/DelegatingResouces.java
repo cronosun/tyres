@@ -2,11 +2,11 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.*;
 
-public class ResourcesDelegate implements Resources {
+public class DelegatingResouces implements Resources {
 
   private final Resources resources;
 
-  public ResourcesDelegate(Resources resources) {
+  public DelegatingResouces(Resources resources) {
     this.resources = resources;
   }
 

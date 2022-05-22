@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.defaults;
+package com.github.cronosun.tyres.defaults.validation;
 
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.core.TyResException;

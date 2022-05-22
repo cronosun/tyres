@@ -3,16 +3,18 @@ package com.github.cronosun.tyres.spring;
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.TyResException;
-import com.github.cronosun.tyres.defaults.StrBackend;
+import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
 import java.util.Locale;
 import java.util.Set;
+
+import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import org.jetbrains.annotations.Nullable;
 
-public final class SpringStrBackend implements StrBackend {
+public final class SpringMsgStrBackend implements MsgStrBackend {
 
   private final MessageSourceProvider messageSourceProvider;
 
-  public SpringStrBackend(MessageSourceProvider messageSourceProvider) {
+  public SpringMsgStrBackend(MessageSourceProvider messageSourceProvider) {
     this.messageSourceProvider = messageSourceProvider;
   }
 
@@ -36,6 +38,18 @@ public final class SpringStrBackend implements StrBackend {
         iae
       );
     }
+  }
+
+  @Override
+  public @Nullable ValidationError validateMessage(ResInfo resInfo, int numberOfArguments, Locale locale, boolean optional) {
+    // TODO
+    return null;
+  }
+
+  @Override
+  public boolean validateStringExists(ResInfo resInfo, Locale locale) {
+    // TODO
+    return false;
   }
 
   @Override
