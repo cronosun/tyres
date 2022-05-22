@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
  * Something that can translate itself using the given {@link MsgResources}.
  */
 @ThreadSafe
-public interface Msg {
+public interface Msg extends WithConciseDebugString {
   String msg(MsgResources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale);
 
   @Nullable

@@ -63,6 +63,13 @@ public final class MsgList implements Msg {
   }
 
   @Override
+  public String conciseDebugString() {
+    var content =
+      this.messages.stream().map(Msg::conciseDebugString).collect(Collectors.joining(","));
+    return "{[" + content + "]}";
+  }
+
+  @Override
   public String msg(MsgResources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var messages = this.messages;
     var numberOfMessages = messages.size();

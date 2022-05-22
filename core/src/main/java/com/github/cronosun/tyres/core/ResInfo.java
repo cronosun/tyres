@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 @ThreadSafe
-public final class ResInfo {
+public final class ResInfo implements WithConciseDebugString {
 
   private final BundleInfo bundleInfo;
   private final Method method;
@@ -34,26 +34,6 @@ public final class ResInfo {
     return details;
   }
 
-  /**
-   * Returns information for debugging information: Gives enough information so a developer can identify this
-   * resource. This can also be used to generate the fallback message.
-   */
-  public String debugReference() {
-    var baseName = bundle().baseName().value();
-    var details = details();
-    var kind = details.kind();
-    switch (kind) {
-      case STRING:
-        var stringResource = details.asStringResource();
-        return "{" + baseName + "::" + stringResource.name() + "}";
-      case BINARY:
-        var fileResource = details.asBinResource();
-        return "{" + baseName + " FILE " + fileResource.filename() + "}";
-      default:
-        throw new TyResException("Unknown resource kind: " + kind);
-    }
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -73,8 +53,20 @@ public final class ResInfo {
 
   @Override
   public String toString() {
-    return (
-      "ResInfo{" + "bundleInfo=" + bundleInfo + ", method=" + method + ", details=" + details + '}'
-    );
+    return ("ResInfo{" + details + ", " + method + ", " + bundleInfo + '}');
+  }
+
+  @Override
+  public String conciseDebugString() {
+    var baseName = bundle().baseName();
+    var details = details();
+    return ConciseDebugString
+      .create()
+      .start()
+      .append(baseName)
+      .child()
+      .append(details)
+      .end()
+      .finish();
   }
 }

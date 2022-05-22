@@ -78,10 +78,14 @@ final class DefaultMsgResources implements MsgResources {
 
   private TyResException exceptionResourceNotFound(ResInfo resInfo) {
     var bundle = resInfo.bundle();
-    var debugReference = resInfo.debugReference();
-    var bundleDebugReference = bundle.baseName();
+    var conciseDebugString = resInfo.conciseDebugString();
+    var bundleConciseDebugString = bundle.conciseDebugString();
     return new TyResException(
-      "Msg resource " + debugReference + " not found in bundle " + bundleDebugReference + "."
+      "Msg resource " +
+      conciseDebugString +
+      " not found in bundle " +
+      bundleConciseDebugString +
+      "."
     );
   }
 

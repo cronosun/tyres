@@ -161,6 +161,11 @@ public final class LocalizedMsg implements Msg {
     return null;
   }
 
+  @Override
+  public String conciseDebugString() {
+    return "{" + this.localizations.toString() + "}";
+  }
+
   public static final class Builder {
 
     @Nullable

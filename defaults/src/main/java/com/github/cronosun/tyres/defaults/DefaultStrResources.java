@@ -31,10 +31,14 @@ final class DefaultStrResources implements StrResources {
 
   private TyResException exceptionResourceNotFound(ResInfo resInfo) {
     var bundle = resInfo.bundle();
-    var debugReference = resInfo.debugReference();
+    var conciseDebugString = resInfo.conciseDebugString();
     var bundleDebugReference = bundle.baseName();
     return new TyResException(
-      "String resource " + debugReference + " not found in bundle " + bundleDebugReference + "."
+      "String resource " +
+      conciseDebugString +
+      " not found in bundle " +
+      bundleDebugReference +
+      "."
     );
   }
 
@@ -46,7 +50,7 @@ final class DefaultStrResources implements StrResources {
         "Invalid resource kind (must be a string resource). It's " +
         kind +
         ". Resource '" +
-        resInfo.debugReference() +
+        resInfo.conciseDebugString() +
         "'."
       );
     }

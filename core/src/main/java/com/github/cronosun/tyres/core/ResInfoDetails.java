@@ -25,7 +25,7 @@ public abstract class ResInfoDetails {
     BINARY,
   }
 
-  public static final class StrResource extends ResInfoDetails {
+  public static final class StrResource extends ResInfoDetails implements WithConciseDebugString {
 
     private final String name;
 
@@ -99,9 +99,18 @@ public abstract class ResInfoDetails {
         "StringResource{" + "name='" + name + '\'' + ", defaultValue='" + defaultValue + '\'' + '}'
       );
     }
+
+    @Override
+    public String conciseDebugString() {
+      var builder = ConciseDebugString.create().start().append(name);
+      if (defaultValue != null) {
+        builder.separator().append(defaultValue);
+      }
+      return builder.end().finish();
+    }
   }
 
-  public static final class BinResource extends ResInfoDetails {
+  public static final class BinResource extends ResInfoDetails implements WithConciseDebugString {
 
     private final Filename filename;
 
@@ -139,6 +148,18 @@ public abstract class ResInfoDetails {
     @Override
     public int hashCode() {
       return Objects.hash(filename);
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return ConciseDebugString
+        .create()
+        .start()
+        .append("FILE")
+        .child()
+        .append(filename.value())
+        .end()
+        .finish();
     }
 
     @Override

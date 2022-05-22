@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.core;
 import java.util.Objects;
 
 @ThreadSafe
-public final class BaseName {
+public final class BaseName implements WithConciseDebugString {
 
   private static final char DOT_SEPARATOR = '.';
   private static final char PATH_SEPARATOR = '/';
@@ -97,5 +97,10 @@ public final class BaseName {
   @Override
   public String toString() {
     return "BaseName{" + "value='" + value + '\'' + '}';
+  }
+
+  @Override
+  public String conciseDebugString() {
+    return ConciseDebugString.create().start().append(value).end().finish();
   }
 }

@@ -64,7 +64,7 @@ public final class SpringMsgSourceBackend implements StrBackend {
         "Invalid resource kind (must be a string resource). It's " +
         kind +
         ". Resource '" +
-        resInfo.debugReference() +
+        resInfo.conciseDebugString() +
         "'."
       );
     }

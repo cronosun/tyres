@@ -53,7 +53,7 @@ class WorkingBundleTest {
       .msg()
       .get(WorkingBundle.INSTANCE.somethingThatCannotBeFound("The argument"), Locale.UK);
     Assertions.assertEquals(
-      "{{com.github.cronosun.tyres.defaults.WorkingBundle::somethingThatCannotBeFound} [The argument]}",
+      "{{{com.github.cronosun.tyres.defaults.WorkingBundle}::{somethingThatCannotBeFound}} [The argument]}",
       msg
     );
   }

@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 @ThreadSafe
-public final class BundleInfo {
+public final class BundleInfo implements WithConciseDebugString {
 
   private final Class<?> bundleClass;
   private final BaseName baseName;
@@ -74,5 +74,10 @@ public final class BundleInfo {
       implementation +
       '}'
     );
+  }
+
+  @Override
+  public String conciseDebugString() {
+    return baseName.conciseDebugString();
   }
 }

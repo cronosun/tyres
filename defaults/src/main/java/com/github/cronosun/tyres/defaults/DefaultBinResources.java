@@ -32,10 +32,14 @@ final class DefaultBinResources implements BinResources {
 
   private TyResException exceptionResourceNotFound(ResInfo resInfo) {
     var bundle = resInfo.bundle();
-    var debugReference = resInfo.debugReference();
+    var conciseDebugString = resInfo.conciseDebugString();
     var bundleDebugReference = bundle.baseName();
     return new TyResException(
-      "Binary resource " + debugReference + " not found in bundle " + bundleDebugReference + "."
+      "Binary resource " +
+      conciseDebugString +
+      " not found in bundle " +
+      bundleDebugReference +
+      "."
     );
   }
 
@@ -47,7 +51,7 @@ final class DefaultBinResources implements BinResources {
         "Invalid resource kind (must be a binary resource). It's " +
         kind +
         ". Resource '" +
-        resInfo.debugReference() +
+        resInfo.conciseDebugString() +
         "'."
       );
     }
