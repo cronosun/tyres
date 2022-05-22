@@ -69,7 +69,7 @@ class TranslateTest {
 
 ### Documentation
 
-See the [tests](defaults/src/test/java/com/github/cronosun/tyres/defaults/README.md) in the `defaults` module, they are also meant as documentation.
+See the [tests](defaults/src/test/java/com/github/cronosun/tyres/defaults/README.md) in the `defaults` module, they are also meant as documentation. Also see [the spring tests](spring/src/test/java/com/github/cronosun/tyres/spring/README.md) if you're interested in spring support. 
 
 ### Validation
 

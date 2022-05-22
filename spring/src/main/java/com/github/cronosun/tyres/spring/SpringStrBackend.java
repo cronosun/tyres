@@ -2,31 +2,27 @@ package com.github.cronosun.tyres.spring;
 
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
-import com.github.cronosun.tyres.core.ResInfoDetails;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.defaults.StrBackend;
 import java.util.Locale;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
-public final class SpringMsgSourceBackend implements StrBackend {
+public final class SpringStrBackend implements StrBackend {
 
-  private final MessageSourceCreator messageSourceCreator;
+  private final MessageSourceProvider messageSourceProvider;
 
-  public SpringMsgSourceBackend(MessageSourceCreator messageSourceCreator) {
-    this.messageSourceCreator = messageSourceCreator;
+  public SpringStrBackend(MessageSourceProvider messageSourceProvider) {
+    this.messageSourceProvider = messageSourceProvider;
   }
 
   @Override
   public @Nullable String maybeMessage(ResInfo resInfo, Object[] args, Locale locale) {
-    // TODO: Cache
-    assertCorrectResourceType(resInfo);
-    var createdSource = messageSourceCreator.createMessageSource(resInfo, locale);
-    var msgSource = createdSource.messageSource();
-
+    var bundleInfo = resInfo.bundle();
+    var source = messageSourceProvider.messageSource(bundleInfo, locale);
     var name = resInfo.details().asStringResource().name();
     try {
-      return msgSource.getMessage(name, args, null, locale);
+      return source.getMessage(name, args, null, locale);
     } catch (IllegalArgumentException iae) {
       var bundleRef = resInfo.bundle().baseName().value();
       throw new TyResException(
@@ -44,8 +40,7 @@ public final class SpringMsgSourceBackend implements StrBackend {
 
   @Override
   public @Nullable String maybeString(ResInfo resInfo, Locale locale) {
-    // TODO: Implement me
-    return null;
+    return maybeMessage(resInfo, null, locale);
   }
 
   @Override
@@ -53,20 +48,8 @@ public final class SpringMsgSourceBackend implements StrBackend {
     BundleInfo bundleInfo,
     Locale locale
   ) {
-    return null;
+    var source = messageSourceProvider.messageSource(bundleInfo, locale);
+    return source.resourceNamesInBundleForValidation(bundleInfo, locale);
   }
 
-  private void assertCorrectResourceType(ResInfo resInfo) {
-    var kind = resInfo.details().kind();
-    var correctType = kind == ResInfoDetails.Kind.STRING;
-    if (!correctType) {
-      throw new TyResException(
-        "Invalid resource kind (must be a string resource). It's " +
-        kind +
-        ". Resource '" +
-        resInfo.conciseDebugString() +
-        "'."
-      );
-    }
-  }
 }

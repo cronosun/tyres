@@ -106,6 +106,7 @@ final class DefaultStrBackend implements StrBackend {
     var resourceBundleProvider = this.resourceBundleProvider;
     if (resourceBundleProvider == null) {
       try {
+        // From Java 9 onwards property files are encoded as UTF-8 by default
         return ResourceBundle.getBundle(
           baseName,
           locale,

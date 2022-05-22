@@ -1,7 +1,10 @@
 package com.github.cronosun.tyres.defaults.delegate;
 
+import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.core.Resources;
 import com.github.cronosun.tyres.core.StrRes;
+import com.github.cronosun.tyres.defaults.LocalizedMsg;
 import com.github.cronosun.tyres.defaults.ResourcesDelegate;
 import java.util.Locale;
 import java.util.Set;
@@ -11,7 +14,7 @@ import java.util.Set;
  */
 public final class ExtendedResources extends ResourcesDelegate {
 
-  private final Set<Locale> supportedLocales = Set.of(Locale.GERMAN, Locale.ENGLISH);
+  private final Set<Locale> supportedLocales = Set.of(Locale.GERMANY, Locale.US, Locale.FRANCE);
 
   public ExtendedResources(Resources resources) {
     super(resources);
@@ -21,8 +24,17 @@ public final class ExtendedResources extends ResourcesDelegate {
     validate(bundle, this.supportedLocales);
   }
 
+  public LocalizedMsg toLocalizedMsg(Resolvable resolvable) {
+    return LocalizedMsg.fromResources(
+      this,
+      resolvable,
+      LocalizedMsg.FromResourcesConfig.DEFAULT_NOT_FOUND_STRATEGY,
+      supportedLocales
+    );
+  }
+
   public int asInt(StrRes resource, Locale locale) {
-    var asString = str().get(resource, locale);
+    var asString = str().get(resource, MsgNotFoundStrategy.THROW, locale);
     return Integer.parseInt(asString);
   }
 }
