@@ -13,7 +13,7 @@ public class InheritanceTest {
   @Test
   void bundleValidates() {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
-    resources.validate(TheBundle.INSTANCE, Set.of(Locale.GERMAN, Locale.ENGLISH));
+    resources.common().validate(TheBundle.INSTANCE, Set.of(Locale.GERMAN, Locale.ENGLISH));
   }
 
   @Test

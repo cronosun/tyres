@@ -6,23 +6,23 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
-final class DefaultBinResources implements BinResources {
+final class DefaultBinaries implements Resources.Binaries {
 
   private final BinBackend backend;
 
-  DefaultBinResources(BinBackend backend) {
+  DefaultBinaries(BinBackend backend) {
     this.backend = backend;
   }
 
   @Override
-  public @Nullable InputStream maybe(BinRes resource, Locale locale) {
+  public @Nullable InputStream maybe(Resources.BinRes resource, Locale locale) {
     var resInfo = resource.info();
     assertCorrectResourceKind(resInfo);
     return backend.maybeBin(resource.info(), locale);
   }
 
   @Override
-  public InputStream get(BinRes resource, Locale locale) {
+  public InputStream get(Resources.BinRes resource, Locale locale) {
     var maybeInputStream = maybe(resource, locale);
     if (maybeInputStream != null) {
       return maybeInputStream;

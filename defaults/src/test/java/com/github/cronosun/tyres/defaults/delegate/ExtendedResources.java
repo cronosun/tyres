@@ -21,7 +21,7 @@ public final class ExtendedResources extends ResourcesDelegate {
   }
 
   public void validate(Object bundle) {
-    validate(bundle, this.supportedLocales);
+    common().validate(bundle, this.supportedLocales);
   }
 
   public LocalizedMsg toLocalizedMsg(Resolvable resolvable) {

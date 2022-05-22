@@ -2,12 +2,11 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.Resolvable;
-import com.github.cronosun.tyres.core.Resolver;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
-final class DefaultResolver implements Resolver {
+final class DefaultResolver implements Resources.Resolver {
 
   private final Resources resources;
 
@@ -27,6 +26,6 @@ final class DefaultResolver implements Resolver {
 
   @Override
   public String get(Resolvable message, Locale locale) {
-    return get(message, resources.notFoundStrategy(), locale);
+    return get(message, resources.common().notFoundStrategy(), locale);
   }
 }

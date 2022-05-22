@@ -10,5 +10,5 @@ public interface ValidatesCorrectlyBundle {
   MsgRes msgWithArgument(String value);
 
   @File("some_text.txt")
-  BinRes someText();
+  Resources.BinRes someText();
 }

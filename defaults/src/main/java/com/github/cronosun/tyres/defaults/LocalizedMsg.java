@@ -299,20 +299,20 @@ public final class LocalizedMsg implements Resolvable {
 
   public enum FromResourcesConfig {
     /**
-     * Use {@link Resolver#maybe(Resolvable, Locale)} to get the message. If it's not present (<code>null</code>)
+     * Use {@link Resources.Resolver#maybe(Resolvable, Locale)} to get the message. If it's not present (<code>null</code>)
      * it won't be in the generated {@link LocalizedMsg}.
      */
     MAYBE,
     /**
-     * Use {@link Resolver#get(Resolvable, Locale)}.
+     * Use {@link Resources.Resolver#get(Resolvable, Locale)}.
      */
     DEFAULT_NOT_FOUND_STRATEGY,
     /**
-     * Use {@link Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#THROW}.
+     * Use {@link Resources.Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#THROW}.
      */
     THROW,
     /**
-     * Use {@link Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#FALLBACK}.
+     * Use {@link Resources.Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#FALLBACK}.
      */
     FALLBACK,
   }

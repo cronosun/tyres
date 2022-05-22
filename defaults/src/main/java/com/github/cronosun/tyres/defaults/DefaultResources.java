@@ -1,21 +1,17 @@
 package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.*;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 public final class DefaultResources implements Resources {
 
-  private final BinResources bin;
-  private final StrResources str;
-  private final MsgResources msg;
-  private final Validator validator;
-  private final FallbackGenerator fallbackGenerator;
-  private final MsgNotFoundStrategy notFoundStrategy;
+  private final Binaries bin;
+  private final Strings str;
+  private final Messages msg;
   private final Resolver resolver;
+  private final Common common;
 
   // TODO: Make a config builder for that...
   public DefaultResources(
@@ -37,18 +33,17 @@ public final class DefaultResources implements Resources {
     var presentNotFoundStrategy = Objects.requireNonNull(notFoundStrategy);
     var presentBindBackend = Objects.requireNonNullElse(binBackend, BinBackend.usingResources());
     var presentResolver = Objects.requireNonNullElseGet(resolver, () -> new DefaultResolver(this));
+    var presentValidator = Objects.requireNonNullElseGet(
+      validator,
+      () -> Validator.newDefaultImplementation(presentStringBackend, presentBindBackend)
+    );
 
-    this.notFoundStrategy = presentNotFoundStrategy;
-    this.fallbackGenerator = presentFallbackGenerator;
-    this.str = new DefaultStrResources(this, presentStringBackend);
+    this.common =
+      new DefaultCommon(presentValidator, presentFallbackGenerator, presentNotFoundStrategy);
+    this.str = new DefaultStrings(this, presentStringBackend);
     this.msg = new DefaultMsgResources(presentStringBackend, this);
-    this.bin = new DefaultBinResources(presentBindBackend);
+    this.bin = new DefaultBinaries(presentBindBackend);
     this.resolver = presentResolver;
-    this.validator =
-      Objects.requireNonNullElseGet(
-        validator,
-        () -> Validator.newDefaultImplementation(presentStringBackend, presentBindBackend)
-      );
   }
 
   public static DefaultResources newDefault(MsgNotFoundStrategy notFoundStrategy) {
@@ -56,17 +51,17 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public MsgResources msg() {
+  public Messages msg() {
     return msg;
   }
 
   @Override
-  public StrResources str() {
+  public Strings str() {
     return str;
   }
 
   @Override
-  public BinResources bin() {
+  public Binaries bin() {
     return bin;
   }
 
@@ -76,17 +71,7 @@ public final class DefaultResources implements Resources {
   }
 
   @Override
-  public void validate(Object bundle, Set<Locale> locales) {
-    validator.validate(bundle, locales);
-  }
-
-  @Override
-  public MsgNotFoundStrategy notFoundStrategy() {
-    return this.notFoundStrategy;
-  }
-
-  @Override
-  public String fallbackFor(ResInfo resInfo, Object[] args) {
-    return fallbackGenerator.generateFallbackMessageFor(resInfo, args);
+  public Common common() {
+    return this.common;
   }
 }

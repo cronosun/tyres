@@ -5,12 +5,12 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
-final class DefaultStrResources implements StrResources {
+final class DefaultStrings implements Resources.Strings {
 
   private final Resources resources;
   private final StrBackend backend;
 
-  public DefaultStrResources(Resources resources, StrBackend strBackend) {
+  public DefaultStrings(Resources resources, StrBackend strBackend) {
     this.resources = resources;
     this.backend = strBackend;
   }
@@ -24,7 +24,7 @@ final class DefaultStrResources implements StrResources {
 
   @Override
   public String get(StrRes resource, Locale locale) {
-    return get(resource, resources.notFoundStrategy(), locale);
+    return get(resource, resources.common().notFoundStrategy(), locale);
   }
 
   @Override
@@ -37,7 +37,7 @@ final class DefaultStrResources implements StrResources {
         case THROW:
           throw exceptionResourceNotFound(resource.info());
         case FALLBACK:
-          return resources.fallbackFor(resource.info(), resource.args());
+          return resources.common().fallbackFor(resource.info(), resource.args());
         default:
           throw new IllegalArgumentException("Unknown not-found strategy: " + notFoundStrategy);
       }

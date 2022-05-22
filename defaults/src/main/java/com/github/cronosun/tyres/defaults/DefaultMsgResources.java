@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
-final class DefaultMsgResources implements MsgResources {
+final class DefaultMsgResources implements Resources.Messages {
 
   private final StrBackend backend;
   private final Resources resources;
@@ -26,7 +26,7 @@ final class DefaultMsgResources implements MsgResources {
       var resInfo = resource.info();
       switch (notFoundStrategy) {
         case FALLBACK:
-          return resources.fallbackFor(resInfo, args);
+          return resources.common().fallbackFor(resInfo, args);
         case THROW:
           throw exceptionResourceNotFound(resInfo);
         default:
@@ -37,7 +37,7 @@ final class DefaultMsgResources implements MsgResources {
 
   @Override
   public String get(MsgRes resource, Locale locale) {
-    return get(resource, resources.notFoundStrategy(), locale);
+    return get(resource, resources.common().notFoundStrategy(), locale);
   }
 
   @Override

@@ -24,7 +24,7 @@ final class DefaultBundleCreator implements BundleCreator {
   @Override
   public <T> T createBundle(Class<T> bundleClass) {
     var bundle = tyResImplementation.createInstance(bundleClass);
-    resources.validate(bundle, this.localesForValidation);
+    resources.common().validate(bundle, this.localesForValidation);
     return bundle;
   }
 }

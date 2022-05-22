@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @ThreadSafe
-final class BinResDefault implements Res<BinRes>, BinRes {
+final class BinResDefault implements Res<Resources.BinRes>, Resources.BinRes {
 
   private static final Object[] NO_ARGS = new Object[] {};
   private final ResInfo resInfo;
