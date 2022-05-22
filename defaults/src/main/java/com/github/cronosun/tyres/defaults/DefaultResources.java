@@ -17,6 +17,7 @@ public final class DefaultResources implements Resources {
   private final MsgNotFoundStrategy notFoundStrategy;
   private final Resolver resolver;
 
+  // TODO: Make a config builder for that...
   public DefaultResources(
     MsgNotFoundStrategy notFoundStrategy,
     @Nullable FallbackGenerator fallbackGenerator,

@@ -13,7 +13,9 @@ class MessageSourceCreatorTest {
 
   @Test
   void demo() {
-    var backend = new SpringStrBackend(MessageSourceProvider.cached(MessageSourceFactory.resourceBundle()));
+    var backend = new SpringStrBackend(
+      MessageSourceProvider.cached(MessageSourceFactory.resourceBundle())
+    );
     var source = new DefaultResources(
       MsgNotFoundStrategy.THROW,
       FallbackGenerator.defaultImplementation(),

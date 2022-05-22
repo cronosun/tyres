@@ -40,4 +40,6 @@ public interface Resources {
    * see {@link ResInfoDetails.StrResource#defaultValue()}).
    */
   String fallbackFor(ResInfo resInfo, Object[] args);
+  // TODO: Extract those things to something like "ResourcesCommon" ...
+  // TODO: in "ResourcesCommon" -> also add something like @Nullable currentLocale (can be null)
 }

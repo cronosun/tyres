@@ -36,7 +36,7 @@ public abstract class ValidationError {
 
     @Override
     public String toString() {
-      return "ResourceNotFound{" + "resInfo=" + resInfo + ", locale=" + locale + '}';
+      return "ResourceNotFound{" + resInfo.conciseDebugString() + ", locale=" + locale + '}';
     }
   }
 
@@ -71,8 +71,7 @@ public abstract class ValidationError {
     public String toString() {
       return (
         "InvalidMsgPattern{" +
-        "resInfo=" +
-        resInfo +
+        resInfo.conciseDebugString() +
         ", locale=" +
         locale +
         ", pattern='" +
@@ -109,8 +108,7 @@ public abstract class ValidationError {
     public String toString() {
       return (
         "InvalidNumberOfArguments{" +
-        "resInfo=" +
-        resInfo +
+        resInfo.conciseDebugString() +
         ", locale=" +
         locale +
         ", pattern='" +
@@ -179,8 +177,7 @@ public abstract class ValidationError {
     public String toString() {
       return (
         "SuperfluousResource{" +
-        "bundle=" +
-        bundle +
+        bundle.conciseDebugString() +
         ", locale=" +
         locale +
         ", name='" +

@@ -51,5 +51,4 @@ public final class SpringStrBackend implements StrBackend {
     var source = messageSourceProvider.messageSource(bundleInfo, locale);
     return source.resourceNamesInBundleForValidation(bundleInfo, locale);
   }
-
 }
