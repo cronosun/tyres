@@ -1,10 +1,12 @@
 package com.github.cronosun.tyres.defaults;
 
+import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.core.TyResException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
 
+@ThreadSafe
 final class DefaultMessageFormatter implements MessageFormatter {
 
   private static final DefaultMessageFormatter INSTANCE = new DefaultMessageFormatter();

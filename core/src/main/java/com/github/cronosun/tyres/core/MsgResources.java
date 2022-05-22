@@ -20,11 +20,9 @@ public interface MsgResources {
   String get(MsgRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale);
 
   /**
-   * Calls {@link #get(MsgRes, MsgNotFoundStrategy, Locale)} with {@link #notFoundStrategy()}.
+   * Calls {@link #get(MsgRes, MsgNotFoundStrategy, Locale)} with {@link Resources#notFoundStrategy()}.
    */
-  default String get(MsgRes resource, Locale locale) {
-    return get(resource, notFoundStrategy(), locale);
-  }
+  String get(MsgRes resource, Locale locale);
 
   /**
    * Returns the message (if the resource can be found) or <code>null</code> if there's no such message.
@@ -34,37 +32,4 @@ public interface MsgResources {
    */
   @Nullable
   String maybe(MsgRes resource, Locale locale);
-
-  /**
-   * Calls {@link Msg#maybeMsg(MsgResources, Locale)}.
-   */
-  @Nullable
-  default String maybeResolve(Msg message, Locale locale) {
-    return message.maybeMsg(this, locale);
-  }
-
-  /**
-   * Calls {@link Msg#msg(MsgResources, MsgNotFoundStrategy, Locale)}.
-   */
-  default String resolve(Msg message, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
-    return message.msg(this, notFoundStrategy, locale);
-  }
-
-  /**
-   * Calls {@link Msg#msg(MsgResources, MsgNotFoundStrategy, Locale)} with {@link #notFoundStrategy()}.
-   */
-  default String resolve(Msg message, Locale locale) {
-    return message.msg(this, notFoundStrategy(), locale);
-  }
-
-  /**
-   * What {@link #get(MsgRes, Locale)} should do if the resouce cannot be found.
-   */
-  MsgNotFoundStrategy notFoundStrategy();
-
-  /**
-   * Generates the fallback message (note, this is not to be confused with the default message,
-   * see {@link ResInfoDetails.StrResource#defaultValue()}).
-   */
-  String fallbackFor(ResInfo resInfo, Object[] args);
 }

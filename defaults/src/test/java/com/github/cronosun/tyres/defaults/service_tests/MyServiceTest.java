@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.defaults.service_tests;
 
-import com.github.cronosun.tyres.core.Msg;
+import com.github.cronosun.tyres.core.Resolvable;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,10 @@ public class MyServiceTest {
     );
   }
 
-  private void validateThrowsValidationExceptionWithMessage(Runnable runnable, Msg message) {
+  private void validateThrowsValidationExceptionWithMessage(
+    Runnable runnable,
+    Resolvable message
+  ) {
     try {
       runnable.run();
       throw new AssertionError("Expected an exception");

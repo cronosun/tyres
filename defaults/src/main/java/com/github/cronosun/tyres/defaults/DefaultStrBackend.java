@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
+import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 final class DefaultStrBackend implements StrBackend {
 
   private static final DefaultStrBackend INSTANCE = new DefaultStrBackend(

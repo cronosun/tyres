@@ -20,6 +20,7 @@ class MessageSourceCreatorTest {
       FallbackGenerator.defaultImplementation(),
       backend,
       BinBackend.usingResources(),
+      null,
       null
     );
 

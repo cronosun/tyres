@@ -21,7 +21,7 @@ class MsgListTest {
       WorkingBundle.INSTANCE.somethingFromParentWithArgument("TheArgument")
     );
     var list = MsgList.fromList(messages);
-    var messageString = resources.msg().resolve(list, Locale.UK);
+    var messageString = resources.resolver().get(list, Locale.UK);
 
     Assertions.assertEquals(
       "Colour, Message from parent interface, Hello, TheArgument!",
@@ -35,7 +35,7 @@ class MsgListTest {
 
     var messages = List.of(WorkingBundle.INSTANCE.colour());
     var list = MsgList.fromList(messages);
-    var messageString = resources.msg().resolve(list, Locale.UK);
+    var messageString = resources.resolver().get(list, Locale.UK);
 
     Assertions.assertEquals("Colour", messageString);
   }
@@ -45,7 +45,7 @@ class MsgListTest {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
     var list = MsgList.empty();
-    var messageString = source.msg().resolve(list, Locale.UK);
+    var messageString = source.resolver().get(list, Locale.UK);
 
     Assertions.assertEquals("", messageString);
   }
@@ -61,13 +61,13 @@ class MsgListTest {
     );
     var list = MsgList.fromList(CustomMsgListConfiguration.INSTANCE, messages);
 
-    var messageEn = source.msg().resolve(list, Locale.UK);
+    var messageEn = source.resolver().get(list, Locale.UK);
     Assertions.assertEquals(
       "\"Colour, Message from parent interface, Hello, TheArgument!\"",
       messageEn
     );
 
-    var messageDe = source.msg().resolve(list, Locale.GERMAN);
+    var messageDe = source.resolver().get(list, Locale.GERMAN);
     Assertions.assertEquals(
       "<<Farbe; Meldung vom Elter-Interface; Hallo, TheArgument!>>",
       messageDe
@@ -80,10 +80,10 @@ class MsgListTest {
 
     var list = MsgList.fromList(CustomMsgListConfiguration.INSTANCE, List.of());
 
-    var messageEn = source.msg().resolve(list, Locale.UK);
+    var messageEn = source.resolver().get(list, Locale.UK);
     Assertions.assertEquals("Nothing in this list", messageEn);
 
-    var messageDe = source.msg().resolve(list, Locale.GERMAN);
+    var messageDe = source.resolver().get(list, Locale.GERMAN);
     Assertions.assertEquals("Nichts in der Liste", messageDe);
   }
 
@@ -94,10 +94,10 @@ class MsgListTest {
     var messages = List.of(WorkingBundle.INSTANCE.colour());
     var list = MsgList.fromList(CustomMsgListConfiguration.INSTANCE, messages);
 
-    var messageEn = source.msg().resolve(list, Locale.UK);
+    var messageEn = source.resolver().get(list, Locale.UK);
     Assertions.assertEquals("Only one: [Colour]", messageEn);
 
-    var messageDe = source.msg().resolve(list, Locale.GERMAN);
+    var messageDe = source.resolver().get(list, Locale.GERMAN);
     Assertions.assertEquals("Nur eines: [Farbe]", messageDe);
   }
 }

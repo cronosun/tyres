@@ -13,7 +13,7 @@ Provides functionality for typed resources (such as messages) for [spring](https
    * **Strings**: Similar to messages, but not formatted, without arguments.
    * **Binary** resources (localization is supported too).
  * Supports multiple backend implementations: Spring `MessageSource` and Java `ResourceBundle` are included - or write your own.
- * Lightweight & small.
+ * Lightweight & small (few dependencies).
  * Validation: Detect missing translations or unused translations.
  * Testing: Easy to test whether services return correct messages (messages can be referenced in tests).
  * Globally configurable what to do if a resource is missing (return a fallback message or throw an exception).
@@ -65,9 +65,19 @@ class TranslateTest {
    * Some utilities, like message list and localized messages.
  * `spring`: Contains an implementation for spring. You only need this implementation if you use spring.
 
-## Want to see more
+## More
 
-See the [tests](defaults/src/test/java/com/github/cronosun/tyres/defaults/README.md) in the `defaults` module.
+### Documentation
+
+See the [tests](defaults/src/test/java/com/github/cronosun/tyres/defaults/README.md) in the `defaults` module, they are also meant as documentation.
+
+### Validation
+
+TyRes can validate resource bundles and finds those errors:
+
+ * Missing resource / missing translation / missing binary for given locale.
+ * Invalid message patterns (invalid format and incorrect number of arguments).
+ * Superfluous / unused texts in `.properties`-files.
 
 ## Common errors
 

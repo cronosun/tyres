@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.Nullable;
 
-class DefaultBinBackend implements BinBackend {
+final class DefaultBinBackend implements BinBackend {
 
   private static final Object NOT_FOUND = new Object();
   private static final DefaultBinBackend INSTANCE = new DefaultBinBackend(

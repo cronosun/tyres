@@ -1,8 +1,10 @@
 package com.github.cronosun.tyres.defaults;
 
+import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 import java.util.Set;
 
+@ThreadSafe
 public interface Validator {
   ValidationErrors validationErrors(Object bundle, Set<Locale> locales);
 

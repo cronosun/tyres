@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 final class DefaultBinResources implements BinResources {
 
   private final BinBackend backend;

@@ -12,8 +12,13 @@ public interface StrResources {
   String maybe(StrRes resource, Locale locale);
 
   /**
-   * Returns the string from the resources, if found. Throws a {@link TyResException} if the given string resource
-   * cannot be resolved.
+   * Calls {@link #get(StrRes, MsgNotFoundStrategy, Locale)} with {@link Resources#notFoundStrategy()}.
    */
   String get(StrRes resource, Locale locale);
+
+  /**
+   * Returns the string from the resources, if found. If not found, either throws {@link TyResException} or
+   * returns a fallback string, depending on {@link MsgNotFoundStrategy}.
+   */
+  String get(StrRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale);
 }

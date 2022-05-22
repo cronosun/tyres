@@ -4,11 +4,14 @@ import com.github.cronosun.tyres.core.*;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 final class DefaultStrResources implements StrResources {
 
+  private final Resources resources;
   private final StrBackend backend;
 
-  public DefaultStrResources(StrBackend strBackend) {
+  public DefaultStrResources(Resources resources, StrBackend strBackend) {
+    this.resources = resources;
     this.backend = strBackend;
   }
 
@@ -21,11 +24,23 @@ final class DefaultStrResources implements StrResources {
 
   @Override
   public String get(StrRes resource, Locale locale) {
+    return get(resource, resources.notFoundStrategy(), locale);
+  }
+
+  @Override
+  public String get(StrRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var maybeString = maybe(resource, locale);
     if (maybeString != null) {
       return maybeString;
     } else {
-      throw exceptionResourceNotFound(resource.info());
+      switch (notFoundStrategy) {
+        case THROW:
+          throw exceptionResourceNotFound(resource.info());
+        case FALLBACK:
+          return resources.fallbackFor(resource.info(), resource.args());
+        default:
+          throw new IllegalArgumentException("Unknown not-found strategy: " + notFoundStrategy);
+      }
     }
   }
 

@@ -2,9 +2,11 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
+import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 import java.util.Objects;
 
+@ThreadSafe
 public abstract class ValidationError {
 
   private ValidationError() {}

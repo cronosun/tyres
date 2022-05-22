@@ -5,20 +5,15 @@ import java.util.Locale;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 final class DefaultMsgResources implements MsgResources {
 
   private final StrBackend backend;
-  private final MsgNotFoundStrategy notFoundStrategy;
-  private final FallbackGenerator fallbackGenerator;
+  private final Resources resources;
 
-  DefaultMsgResources(
-    StrBackend backend,
-    MsgNotFoundStrategy notFoundStrategy,
-    FallbackGenerator fallbackGenerator
-  ) {
+  DefaultMsgResources(StrBackend backend, Resources resources) {
     this.backend = backend;
-    this.notFoundStrategy = notFoundStrategy;
-    this.fallbackGenerator = fallbackGenerator;
+    this.resources = resources;
   }
 
   @Override
@@ -31,13 +26,18 @@ final class DefaultMsgResources implements MsgResources {
       var resInfo = resource.info();
       switch (notFoundStrategy) {
         case FALLBACK:
-          return fallbackFor(resInfo, args);
+          return resources.fallbackFor(resInfo, args);
         case THROW:
           throw exceptionResourceNotFound(resInfo);
         default:
           throw new TyResException("Unknown not found strategy: " + notFoundStrategy);
       }
     }
+  }
+
+  @Override
+  public String get(MsgRes resource, Locale locale) {
+    return get(resource, resources.notFoundStrategy(), locale);
   }
 
   @Override
@@ -58,20 +58,10 @@ final class DefaultMsgResources implements MsgResources {
     }
   }
 
-  @Override
-  public MsgNotFoundStrategy notFoundStrategy() {
-    return notFoundStrategy;
-  }
-
-  @Override
-  public String fallbackFor(ResInfo resInfo, Object[] args) {
-    return fallbackGenerator.generateFallbackMessageFor(resInfo, args);
-  }
-
   @Nullable
-  private static Msg maybeMsg(Object object) {
-    if (object instanceof Msg) {
-      return (Msg) object;
+  private static Resolvable maybeMsg(Object object) {
+    if (object instanceof Resolvable) {
+      return (Resolvable) object;
     }
     return null;
   }
@@ -107,7 +97,12 @@ final class DefaultMsgResources implements MsgResources {
             newArgs = args.clone();
           }
           newArgs[index] =
-            new DefaultMsgResources.ArgForMessage(maybeResolvable, locale, this, notFoundStrategy);
+            new DefaultMsgResources.ArgForMessage(
+              maybeResolvable,
+              locale,
+              resources,
+              notFoundStrategy
+            );
         }
       }
       return Objects.requireNonNullElse(newArgs, args);
@@ -137,7 +132,7 @@ final class DefaultMsgResources implements MsgResources {
               argsForMaybeMessage,
               maybeResolvable,
               locale,
-              this
+              resources
             );
         }
       }
@@ -158,25 +153,25 @@ final class DefaultMsgResources implements MsgResources {
   private static final class ArgForMaybeMessage {
 
     private final ArgsForMaybeMessage argsForMaybeMessage;
-    private final Msg msg;
+    private final Resolvable resolvable;
     private final Locale locale;
-    private final MsgResources source;
+    private final Resources source;
 
     private ArgForMaybeMessage(
       ArgsForMaybeMessage argsForMaybeMessage,
-      Msg msg,
+      Resolvable resolvable,
       Locale locale,
-      MsgResources source
+      Resources source
     ) {
       this.argsForMaybeMessage = argsForMaybeMessage;
-      this.msg = msg;
+      this.resolvable = resolvable;
       this.locale = locale;
       this.source = source;
     }
 
     @Override
     public String toString() {
-      var maybeMsg = source.maybeResolve(msg, locale);
+      var maybeMsg = source.resolver().maybe(resolvable, locale);
       if (maybeMsg != null) {
         return maybeMsg;
       } else {
@@ -188,18 +183,18 @@ final class DefaultMsgResources implements MsgResources {
 
   private static final class ArgForMessage {
 
-    private final Msg msg;
+    private final Resolvable resolvable;
     private final Locale locale;
-    private final MsgResources source;
+    private final Resources source;
     private final MsgNotFoundStrategy notFoundStrategy;
 
     private ArgForMessage(
-      Msg msg,
+      Resolvable resolvable,
       Locale locale,
-      MsgResources source,
+      Resources source,
       MsgNotFoundStrategy notFoundStrategy
     ) {
-      this.msg = msg;
+      this.resolvable = resolvable;
       this.locale = locale;
       this.source = source;
       this.notFoundStrategy = notFoundStrategy;
@@ -207,7 +202,7 @@ final class DefaultMsgResources implements MsgResources {
 
     @Override
     public String toString() {
-      return source.resolve(msg, notFoundStrategy, locale);
+      return source.resolver().get(resolvable, notFoundStrategy, locale);
     }
   }
 }

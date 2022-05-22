@@ -1,7 +1,9 @@
 package com.github.cronosun.tyres.defaults;
 
+import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 
+@ThreadSafe
 public interface MessageFormatter {
   static MessageFormatter defaultImplementation() {
     return DefaultMessageFormatter.instance();

@@ -1,8 +1,6 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.Msg;
-import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.core.MsgResources;
+import com.github.cronosun.tyres.core.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -13,36 +11,37 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A list of messages.
  */
-public final class MsgList implements Msg {
+@ThreadSafe
+public final class MsgList implements Resolvable {
 
   private static final MsgList EMPTY = new MsgList(MsgListConfiguration.INSTANCE, List.of());
   private final MsgListConfiguration configuration;
-  private final List<? extends Msg> messages;
+  private final List<? extends Resolvable> messages;
 
-  private MsgList(MsgListConfiguration configuration, List<? extends Msg> messages) {
+  private MsgList(MsgListConfiguration configuration, List<? extends Resolvable> messages) {
     this.configuration = configuration;
     this.messages = messages;
   }
 
   public static MsgList fromStream(
     MsgListConfiguration configuration,
-    Stream<? extends Msg> messages
+    Stream<? extends Resolvable> messages
   ) {
     return new MsgList(configuration, messages.collect(Collectors.toUnmodifiableList()));
   }
 
-  public static MsgList fromStream(Stream<? extends Msg> messages) {
+  public static MsgList fromStream(Stream<? extends Resolvable> messages) {
     return fromStream(MsgListConfiguration.INSTANCE, messages);
   }
 
   public static MsgList fromList(
     MsgListConfiguration configuration,
-    List<? extends Msg> messages
+    List<? extends Resolvable> messages
   ) {
     return new MsgList(configuration, Collections.unmodifiableList(messages));
   }
 
-  public static MsgList fromList(List<? extends Msg> messages) {
+  public static MsgList fromList(List<? extends Resolvable> messages) {
     return new MsgList(MsgListConfiguration.INSTANCE, Collections.unmodifiableList(messages));
   }
 
@@ -54,7 +53,7 @@ public final class MsgList implements Msg {
     return EMPTY;
   }
 
-  public List<? extends Msg> messages() {
+  public List<? extends Resolvable> messages() {
     return messages;
   }
 
@@ -65,45 +64,47 @@ public final class MsgList implements Msg {
   @Override
   public String conciseDebugString() {
     var content =
-      this.messages.stream().map(Msg::conciseDebugString).collect(Collectors.joining(","));
+      this.messages.stream().map(Resolvable::conciseDebugString).collect(Collectors.joining(","));
     return "{[" + content + "]}";
   }
 
   @Override
-  public String msg(MsgResources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
+  public String get(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var messages = this.messages;
     var numberOfMessages = messages.size();
     switch (numberOfMessages) {
       case 0:
-        return resources.get(configuration.empty(), notFoundStrategy, locale);
+        return resources.msg().get(configuration.empty(), notFoundStrategy, locale);
       case 1:
         var single = messages.get(0);
-        return resources.get(configuration.single(single), notFoundStrategy, locale);
+        return resources.msg().get(configuration.single(single), notFoundStrategy, locale);
       default:
-        final String prefix = resources.get(configuration.prefix(), notFoundStrategy, locale);
-        final String delimiter = resources.get(
-          configuration.delimiter(),
-          notFoundStrategy,
-          locale
-        );
-        final String suffix = resources.get(configuration.suffix(), notFoundStrategy, locale);
+        final String prefix = resources
+          .msg()
+          .get(configuration.prefix(), notFoundStrategy, locale);
+        final String delimiter = resources
+          .msg()
+          .get(configuration.delimiter(), notFoundStrategy, locale);
+        final String suffix = resources
+          .msg()
+          .get(configuration.suffix(), notFoundStrategy, locale);
         return messages
           .stream()
-          .map(message -> resources.resolve(message, notFoundStrategy, locale))
+          .map(message -> resources.resolver().get(message, notFoundStrategy, locale))
           .collect(Collectors.joining(delimiter, prefix, suffix));
     }
   }
 
   @Nullable
   @Override
-  public String maybeMsg(MsgResources resources, Locale locale) {
+  public String maybe(Resources resources, Locale locale) {
     var messages = this.messages;
     if (messages.isEmpty()) {
-      return resources.maybe(configuration.empty(), locale);
+      return resources.msg().maybe(configuration.empty(), locale);
     } else {
-      final String prefix = resources.maybe(configuration.prefix(), locale);
-      final String delimiter = resources.maybe(configuration.delimiter(), locale);
-      final String suffix = resources.maybe(configuration.suffix(), locale);
+      final String prefix = resources.msg().maybe(configuration.prefix(), locale);
+      final String delimiter = resources.msg().maybe(configuration.delimiter(), locale);
+      final String suffix = resources.msg().maybe(configuration.suffix(), locale);
       if (prefix == null || delimiter == null || suffix == null) {
         return null;
       }
@@ -115,7 +116,7 @@ public final class MsgList implements Msg {
           if (atLeastOneIsMissing[0]) {
             return "";
           }
-          var maybeMessage = resources.maybeResolve(message, locale);
+          var maybeMessage = resources.resolver().maybe(message, locale);
           if (maybeMessage == null) {
             atLeastOneIsMissing[0] = true;
             return "";

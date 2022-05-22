@@ -1,5 +1,7 @@
 package com.github.cronosun.tyres.defaults.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.defaults.Implementation;
@@ -120,6 +122,55 @@ public class ValidationTest {
     Assertions.assertThrows(
       TyResException.class,
       () -> resources.validate(OptionalResourcesBundle.INSTANCE, Set.of(Locale.ITALIAN))
+    );
+  }
+
+  @Test
+  void patternsAreOnlyValidatedForMsgResNotForStrRes() {
+    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var locale = Locale.ENGLISH;
+    resources.validate(InvalidPatternInStrResBundle.INSTANCE, Set.of(locale));
+
+    // can also get the messages
+    assertEquals(
+      "Too many arguments: {0} {1} {2}",
+      resources.str().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern1(), locale)
+    );
+    assertEquals(
+      "Completely invalid: {0,UNKNOWN} {1,_?} {2",
+      resources.str().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern2(), locale)
+    );
+    assertEquals(
+      "Is is invalid {0x,??}, {1}",
+      resources.str().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern3(), locale)
+    );
+    assertEquals(
+      "Is is invalid {0,,_ {1}",
+      resources.str().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern4(), locale)
+    );
+
+    // also works using the resolver (StrRes is Resolvable too).
+    assertEquals(
+      "Too many arguments: {0} {1} {2}",
+      resources.resolver().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern1(), locale)
+    );
+    assertEquals(
+      "Completely invalid: {0,UNKNOWN} {1,_?} {2",
+      resources.resolver().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern2(), locale)
+    );
+    assertEquals(
+      "Is is invalid {0x,??}, {1}",
+      resources.resolver().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern3(), locale)
+    );
+    assertEquals(
+      "Is is invalid {0,,_ {1}",
+      resources.resolver().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern4(), locale)
+    );
+
+    // ok, this does not validate (missing translations for GERMAN).
+    Assertions.assertThrows(
+      TyResException.class,
+      () -> resources.validate(InvalidPatternInStrResBundle.INSTANCE, Set.of(Locale.GERMAN))
     );
   }
 }

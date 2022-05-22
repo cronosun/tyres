@@ -3,21 +3,24 @@ package com.github.cronosun.tyres.defaults;
 import com.github.cronosun.tyres.core.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: Serialize, de-serialize
 /**
  * Contains 0-n localized messages.
  */
 @ThreadSafe
-public final class LocalizedMsg implements Msg {
+public final class LocalizedMsg implements Resolvable {
 
   private static final LocalizedMsg EMPTY = new LocalizedMsg(Map.of());
   private final Map<Locale, String> localizations;
-  private final transient Object resultCacheLock = new Object();
+  private final transient Object internalSyncLock = new Object();
 
   @Nullable
   private transient volatile Map<Locale, Object> resultCache;
+
+  @Nullable
+  private transient volatile Map<String, String> serializedCache;
 
   private LocalizedMsg(Map<Locale, String> localizations) {
     this.localizations = localizations;
@@ -57,8 +60,8 @@ public final class LocalizedMsg implements Msg {
   }
 
   @Override
-  public String msg(MsgResources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
-    var message = maybeMsg(resources, locale);
+  public String get(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
+    var message = maybe(resources, locale);
     if (message == null) {
       switch (notFoundStrategy) {
         case THROW:
@@ -75,7 +78,7 @@ public final class LocalizedMsg implements Msg {
 
   @Nullable
   @Override
-  public String maybeMsg(MsgResources resources, Locale locale) {
+  public String maybe(Resources resources, Locale locale) {
     return messageWithCandidates(locale);
   }
 
@@ -95,6 +98,94 @@ public final class LocalizedMsg implements Msg {
   @Override
   public String toString() {
     return "LocalizedMsg{" + localizations + '}';
+  }
+
+  public static LocalizedMsg fromResources(
+    Resources resources,
+    Resolvable resolvable,
+    FromResourcesConfig configuration,
+    Set<Locale> locales
+  ) {
+    var builder = builder();
+    for (var locale : locales) {
+      var maybeText = fromResourcesForSingleLocale(resources, resolvable, configuration, locale);
+      if (maybeText != null) {
+        builder.add(locale, maybeText);
+      }
+    }
+    return builder.build();
+  }
+
+  @Nullable
+  private static String fromResourcesForSingleLocale(
+    Resources resources,
+    Resolvable resolvable,
+    FromResourcesConfig configuration,
+    Locale locale
+  ) {
+    switch (configuration) {
+      case MAYBE:
+        return resources.resolver().maybe(resolvable, locale);
+      case DEFAULT_NOT_FOUND_STRATEGY:
+        return resources.resolver().get(resolvable, locale);
+      case THROW:
+        return resources.resolver().get(resolvable, MsgNotFoundStrategy.THROW, locale);
+      case FALLBACK:
+        return resources.resolver().get(resolvable, MsgNotFoundStrategy.FALLBACK, locale);
+      default:
+        throw new IllegalArgumentException("Unknown configuration: " + configuration);
+    }
+  }
+
+  /**
+   * Returns the serialized representation of this message. This is useful if you want to transfer the message
+   * to the client using Jackson for example.
+   * <p>
+   * Keys are {@link Locale#toLanguageTag()}, values are the message strings. Note: The ROOT language is
+   * mapped to `und`.
+   *
+   * @see #deserialize(Map)
+   */
+  public Map<String, String> serialized() {
+    var serialized = this.serializedCache;
+    if (serialized == null) {
+      synchronized (this.internalSyncLock) {
+        serialized = this.serializedCache;
+        if (serialized == null) {
+          serialized = doSerialize();
+          this.serializedCache = serialized;
+          return serialized;
+        } else {
+          return serialized;
+        }
+      }
+    } else {
+      return serialized;
+    }
+  }
+
+  /**
+   * Creates a new message from the serialized representation.
+   *
+   * @see #serialized()
+   */
+  public static LocalizedMsg deserialize(Map<String, String> map) {
+    if (map.isEmpty()) {
+      return LocalizedMsg.empty();
+    }
+    var builder = LocalizedMsg.builder();
+    for (var entry : map.entrySet()) {
+      var languageTag = entry.getKey();
+      builder.add(Locale.forLanguageTag(languageTag), entry.getValue());
+    }
+    return builder.build();
+  }
+
+  private Map<String, String> doSerialize() {
+    var inputStream = localizations.entrySet().stream();
+    return inputStream
+      .map(item -> new String[] { item.getKey().toLanguageTag(), item.getValue() })
+      .collect(Collectors.toUnmodifiableMap(item -> item[0], item -> item[1]));
   }
 
   @Nullable
@@ -129,7 +220,7 @@ public final class LocalizedMsg implements Msg {
     if (cache != null) {
       addToCache(cache, locale, computedResult);
     } else {
-      synchronized (this.resultCacheLock) {
+      synchronized (this.internalSyncLock) {
         cache = this.resultCache;
         if (cache == null) {
           cache = new ConcurrentHashMap<>();
@@ -204,5 +295,25 @@ public final class LocalizedMsg implements Msg {
     public static final CacheMarkerNotFound INSTANCE = new CacheMarkerNotFound();
 
     private CacheMarkerNotFound() {}
+  }
+
+  public enum FromResourcesConfig {
+    /**
+     * Use {@link Resolver#maybe(Resolvable, Locale)} to get the message. If it's not present (<code>null</code>)
+     * it won't be in the generated {@link LocalizedMsg}.
+     */
+    MAYBE,
+    /**
+     * Use {@link Resolver#get(Resolvable, Locale)}.
+     */
+    DEFAULT_NOT_FOUND_STRATEGY,
+    /**
+     * Use {@link Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#THROW}.
+     */
+    THROW,
+    /**
+     * Use {@link Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#FALLBACK}.
+     */
+    FALLBACK,
   }
 }

@@ -11,6 +11,8 @@ public interface Resources {
 
   BinResources bin();
 
+  Resolver resolver();
+
   /**
    * Validates the given bundle. Throws {@link TyResException} if the bundle is not correct / has validation errors.
    * This method should only be used in unit-tests.
@@ -25,4 +27,17 @@ public interface Resources {
    * - If the validator supports it, also asserts that there are no unused (superfluous) resources.
    */
   void validate(Object bundle, Set<Locale> locales);
+
+  /**
+   * What should be done if the resource cannot be found.
+   *
+   * Used for example in {@link MsgResources#get(MsgRes, Locale)}.
+   */
+  MsgNotFoundStrategy notFoundStrategy();
+
+  /**
+   * Generates the fallback message (note, this is not to be confused with the default message,
+   * see {@link ResInfoDetails.StrResource#defaultValue()}).
+   */
+  String fallbackFor(ResInfo resInfo, Object[] args);
 }
