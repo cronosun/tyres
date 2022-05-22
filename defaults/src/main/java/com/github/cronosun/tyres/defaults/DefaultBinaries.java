@@ -15,14 +15,14 @@ final class DefaultBinaries implements Resources.Binaries {
   }
 
   @Override
-  public @Nullable InputStream maybe(Resources.BinRes resource, Locale locale) {
+  public @Nullable InputStream maybe(BinRes resource, Locale locale) {
     var resInfo = resource.info();
     assertCorrectResourceKind(resInfo);
     return backend.maybeBin(resource.info(), locale);
   }
 
   @Override
-  public InputStream get(Resources.BinRes resource, Locale locale) {
+  public InputStream get(BinRes resource, Locale locale) {
     var maybeInputStream = maybe(resource, locale);
     if (maybeInputStream != null) {
       return maybeInputStream;

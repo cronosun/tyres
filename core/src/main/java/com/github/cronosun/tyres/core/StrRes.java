@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
  * If you write an API that needs to support both ({@link MsgRes} and {@link StrRes}), use {@link Resolvable}.
  */
 public interface StrRes extends Res<StrRes>, Resolvable {
-  static StrResDefault create(ResInfo resInfo) {
-    return StrResDefault.create(resInfo);
+  static StrRes create(ResInfo resInfo) {
+    return ResDefaults.StrResDefault.create(resInfo);
   }
 
   @Override

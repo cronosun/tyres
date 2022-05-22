@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface MsgRes extends Res<MsgRes>, Resolvable {
   static MsgRes create(ResInfo resInfo) {
-    return MsgResDefault.create(resInfo);
+    return ResDefaults.MsgResDefault.create(resInfo);
   }
 
   @Override

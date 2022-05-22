@@ -4,6 +4,8 @@ import java.lang.annotation.*;
 
 /**
  * Renames the name, see also {@link BaseName#name()}}.
+ *
+ * @see RenamePackage
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

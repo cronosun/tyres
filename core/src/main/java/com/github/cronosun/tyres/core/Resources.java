@@ -121,12 +121,6 @@ public interface Resources {
     String get(StrRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale);
   }
 
-  interface BinRes extends Res<BinRes> {
-    static BinRes create(ResInfo resInfo) {
-      return BinResDefault.create(resInfo);
-    }
-  }
-
   interface Binaries {
     /**
      * Returns the binary as input stream or <code>null</code> if resource cannot be found.
