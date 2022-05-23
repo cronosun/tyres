@@ -3,11 +3,13 @@ package com.github.cronosun.tyres.defaults.validation;
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
+import com.github.cronosun.tyres.core.WithConciseDebugString;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 @ThreadSafe
-public abstract class ValidationError {
+public abstract class ValidationError implements WithConciseDebugString {
 
   private ValidationError() {}
 
@@ -37,6 +39,13 @@ public abstract class ValidationError {
     @Override
     public String toString() {
       return "ResourceNotFound{" + resInfo.conciseDebugString() + ", locale=" + locale + '}';
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return WithConciseDebugString.build(
+        List.of("resource_not_found", resInfo, locale.toLanguageTag())
+      );
     }
   }
 
@@ -78,6 +87,14 @@ public abstract class ValidationError {
         pattern +
         '\'' +
         '}'
+      );
+    }
+
+    @Override
+    public String conciseDebugString() {
+      var pattern = WithConciseDebugString.text(this.pattern);
+      return WithConciseDebugString.build(
+        List.of("invalid_msg_pattern", resInfo, pattern, locale.toLanguageTag())
       );
     }
   }
@@ -146,6 +163,29 @@ public abstract class ValidationError {
         numberOfArgumentsAccordingToPattern
       );
     }
+
+    @Override
+    public String conciseDebugString() {
+      var pattern = WithConciseDebugString.text(this.pattern);
+      var argsInMethod = WithConciseDebugString.association(
+        "arguments_in_method",
+        numberOfArgumentsInMethod
+      );
+      var argsInPattern = WithConciseDebugString.association(
+        "arguments_in_pattern",
+        numberOfArgumentsAccordingToPattern
+      );
+      return WithConciseDebugString.build(
+        List.of(
+          "invalid_number_of_arguments",
+          resInfo,
+          pattern,
+          argsInMethod,
+          argsInPattern,
+          locale.toLanguageTag()
+        )
+      );
+    }
   }
 
   public static final class SuperfluousResource extends ValidationError {
@@ -184,6 +224,13 @@ public abstract class ValidationError {
         name +
         '\'' +
         '}'
+      );
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return WithConciseDebugString.build(
+        List.of("superfluous_resource", name, bundle, locale.toLanguageTag())
       );
     }
   }

@@ -2,14 +2,12 @@ package com.github.cronosun.tyres.defaults.validation;
 
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.core.TyResException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import com.github.cronosun.tyres.core.WithConciseDebugString;
+import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
-public final class ValidationErrors {
+public final class ValidationErrors implements WithConciseDebugString {
 
   private static final ValidationErrors EMPTY = new ValidationErrors(Set.of());
 
@@ -33,7 +31,7 @@ public final class ValidationErrors {
 
   public void throwIfHasErrors() {
     if (!errors().isEmpty()) {
-      throw new TyResException(toString());
+      throw new TyResException(conciseDebugString());
     }
   }
 
@@ -53,6 +51,15 @@ public final class ValidationErrors {
   @Override
   public int hashCode() {
     return Objects.hash(errors);
+  }
+
+  @Override
+  public String conciseDebugString() {
+    if (errors.isEmpty()) {
+      return WithConciseDebugString.build(List.of("no_validation_errors"));
+    } else {
+      return WithConciseDebugString.build(List.of("validation_errors", errors));
+    }
   }
 
   public static final class Builder {

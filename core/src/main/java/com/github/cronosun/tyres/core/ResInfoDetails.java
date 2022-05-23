@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.core;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,11 +103,11 @@ public abstract class ResInfoDetails {
 
     @Override
     public String conciseDebugString() {
-      var builder = ConciseDebugString.create().start().append(name);
       if (defaultValue != null) {
-        builder.separator().append(defaultValue);
+        return WithConciseDebugString.build(List.of(name, defaultValue));
+      } else {
+        return WithConciseDebugString.build(List.of(name));
       }
-      return builder.end().finish();
     }
   }
 
@@ -152,14 +153,9 @@ public abstract class ResInfoDetails {
 
     @Override
     public String conciseDebugString() {
-      return ConciseDebugString
-        .create()
-        .start()
-        .append("FILE")
-        .child()
-        .append(filename.value())
-        .end()
-        .finish();
+      return WithConciseDebugString.build(
+        List.of("file", WithConciseDebugString.text(filename.value()))
+      );
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.github.cronosun.tyres.core;
 
+import java.util.List;
+
 @ThreadSafe
 public interface Res<TSelf> extends WithConciseDebugString {
   ResInfo info();
@@ -10,10 +12,10 @@ public interface Res<TSelf> extends WithConciseDebugString {
 
   @Override
   default String conciseDebugString() {
-    var builder = ConciseDebugString.create().start().append(info());
     if (args().length > 0) {
-      builder.child().append(args());
+      return WithConciseDebugString.build(List.of(info(), args()));
+    } else {
+      return WithConciseDebugString.build(List.of(info()));
     }
-    return builder.end().finish();
   }
 }

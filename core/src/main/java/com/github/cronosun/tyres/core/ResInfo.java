@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.core;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,14 +62,7 @@ public final class ResInfo implements WithConciseDebugString {
   public String conciseDebugString() {
     var baseName = bundle().baseName();
     var details = details();
-    return ConciseDebugString
-      .create()
-      .start()
-      .append(baseName)
-      .child()
-      .append(details)
-      .end()
-      .finish();
+    return WithConciseDebugString.build(List.of(baseName, details));
   }
 
   static Res<?> reflect(BundleInfo bundleInfo, Method method) {

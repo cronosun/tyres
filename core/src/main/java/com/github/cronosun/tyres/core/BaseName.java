@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.core;
 
 import java.util.Objects;
+import java.util.Set;
 
 @ThreadSafe
 public final class BaseName implements WithConciseDebugString {
@@ -101,6 +102,6 @@ public final class BaseName implements WithConciseDebugString {
 
   @Override
   public String conciseDebugString() {
-    return ConciseDebugString.create().start().append(value).end().finish();
+    return WithConciseDebugString.build(Set.of(value));
   }
 }

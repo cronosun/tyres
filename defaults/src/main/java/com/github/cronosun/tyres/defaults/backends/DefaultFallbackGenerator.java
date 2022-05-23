@@ -2,7 +2,10 @@ package com.github.cronosun.tyres.defaults.backends;
 
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
+import com.github.cronosun.tyres.core.WithConciseDebugString;
+
 import java.util.Arrays;
+import java.util.List;
 
 @ThreadSafe
 final class DefaultFallbackGenerator implements FallbackGenerator {
@@ -21,7 +24,7 @@ final class DefaultFallbackGenerator implements FallbackGenerator {
     if (args.length == 0) {
       return conciseDebugString;
     } else {
-      return "{" + conciseDebugString + " " + Arrays.toString(args) + "}";
+      return WithConciseDebugString.build(List.of(conciseDebugString, args));
     }
   }
 }
