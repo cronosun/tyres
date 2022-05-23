@@ -1,10 +1,9 @@
 package com.github.cronosun.tyres.defaults.backends;
 
 import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import java.util.Locale;
 import java.util.Set;
-
-import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import org.jetbrains.annotations.Nullable;
 
 /**

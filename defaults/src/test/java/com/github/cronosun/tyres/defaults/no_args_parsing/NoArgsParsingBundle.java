@@ -5,8 +5,8 @@ import com.github.cronosun.tyres.core.StrRes;
 import com.github.cronosun.tyres.core.TyRes;
 
 public interface NoArgsParsingBundle {
-    NoArgsParsingBundle INSTANCE = TyRes.create(NoArgsParsingBundle.class);
+  NoArgsParsingBundle INSTANCE = TyRes.create(NoArgsParsingBundle.class);
 
-    MsgRes msgRes();
-    StrRes strRes();
+  MsgRes msgRes();
+  StrRes strRes();
 }

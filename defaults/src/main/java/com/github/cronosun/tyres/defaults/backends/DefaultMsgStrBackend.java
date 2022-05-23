@@ -3,15 +3,13 @@ package com.github.cronosun.tyres.defaults.backends;
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
-
+import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.spi.ResourceBundleProvider;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
@@ -73,7 +71,12 @@ final class DefaultMsgStrBackend implements MsgStrBackend {
   }
 
   @Override
-  public @Nullable ValidationError validateMessage(ResInfo resInfo, int numberOfArguments, Locale locale, boolean optional) {
+  public @Nullable ValidationError validateMessage(
+    ResInfo resInfo,
+    int numberOfArguments,
+    Locale locale,
+    boolean optional
+  ) {
     var pattern = maybeString(resInfo, locale);
     if (pattern != null) {
       return messageFormatter.validateMessage(resInfo, pattern, numberOfArguments, locale);

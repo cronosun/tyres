@@ -5,7 +5,6 @@ import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.Resources;
 import com.github.cronosun.tyres.defaults.backends.FallbackGenerator;
 import com.github.cronosun.tyres.defaults.validation.Validator;
-
 import java.util.Locale;
 import java.util.Set;
 

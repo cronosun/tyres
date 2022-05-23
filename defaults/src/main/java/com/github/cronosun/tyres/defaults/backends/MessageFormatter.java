@@ -4,9 +4,8 @@ import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ResInfoDetails;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.defaults.validation.ValidationError;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Locale;
+import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 public interface MessageFormatter {
@@ -34,9 +33,9 @@ public interface MessageFormatter {
    **/
   @Nullable
   ValidationError validateMessage(
-          ResInfo resInfo,
-          String msgPattern,
-          int numberOfArguments,
-          Locale locale
+    ResInfo resInfo,
+    String msgPattern,
+    int numberOfArguments,
+    Locale locale
   );
 }

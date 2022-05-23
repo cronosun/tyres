@@ -24,6 +24,14 @@ class BundleWithFactoryTest {
       "File win32.dll not found.",
       resources.resolver().get(bundleWithFactory.noSuchFileError("win32.dll"), Locale.UK)
     );
+    assertEquals(
+      "This WILL  be formatted (even without arguments).",
+      resources.resolver().get(bundleWithFactory.msgResAreFormatted(), Locale.UK)
+    );
+    assertEquals(
+      "Das here ' will not be formatted.",
+      resources.resolver().get(bundleWithFactory.strResAreNotFormatted(), Locale.UK)
+    );
 
     assertNotNull(bundleWithFactory);
   }

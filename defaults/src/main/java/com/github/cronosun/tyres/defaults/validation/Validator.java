@@ -3,7 +3,6 @@ package com.github.cronosun.tyres.defaults.validation;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.defaults.backends.BinBackend;
 import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
-
 import java.util.Locale;
 import java.util.Set;
 

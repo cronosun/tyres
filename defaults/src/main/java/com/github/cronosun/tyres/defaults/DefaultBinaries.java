@@ -1,10 +1,9 @@
 package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.defaults.backends.BinBackend;
 import java.io.InputStream;
 import java.util.Locale;
-
-import com.github.cronosun.tyres.defaults.backends.BinBackend;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe

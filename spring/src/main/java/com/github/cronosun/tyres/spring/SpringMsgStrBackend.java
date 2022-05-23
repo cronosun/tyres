@@ -4,10 +4,9 @@ import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
+import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import java.util.Locale;
 import java.util.Set;
-
-import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import org.jetbrains.annotations.Nullable;
 
 public final class SpringMsgStrBackend implements MsgStrBackend {
@@ -24,7 +23,7 @@ public final class SpringMsgStrBackend implements MsgStrBackend {
     var source = messageSourceProvider.messageSource(bundleInfo, locale);
     var name = resInfo.details().asStringResource().name();
     try {
-      return source.message(name, args,  locale);
+      return source.message(name, args, locale);
     } catch (IllegalArgumentException iae) {
       var bundleRef = resInfo.bundle().baseName().value();
       throw new TyResException(
@@ -41,15 +40,19 @@ public final class SpringMsgStrBackend implements MsgStrBackend {
   }
 
   @Override
-  public @Nullable ValidationError validateMessage(ResInfo resInfo, int numberOfArguments, Locale locale, boolean optional) {
+  public @Nullable ValidationError validateMessage(
+    ResInfo resInfo,
+    int numberOfArguments,
+    Locale locale,
+    boolean optional
+  ) {
     // TODO
     return null;
   }
 
   @Override
   public boolean validateStringExists(ResInfo resInfo, Locale locale) {
-    // TODO
-    return false;
+    return maybeString(resInfo, locale)!=null;
   }
 
   @Override

@@ -4,8 +4,8 @@ import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.core.Resources;
 import com.github.cronosun.tyres.core.StrRes;
-import com.github.cronosun.tyres.defaults.LocalizedMsg;
 import com.github.cronosun.tyres.defaults.DelegatingResouces;
+import com.github.cronosun.tyres.defaults.LocalizedMsg;
 import java.util.Locale;
 import java.util.Set;
 

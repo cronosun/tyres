@@ -1,12 +1,11 @@
 package com.github.cronosun.tyres.defaults.validation;
 
 import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.defaults.backends.BinBackend;
+import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.github.cronosun.tyres.defaults.backends.BinBackend;
-import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
@@ -43,7 +42,10 @@ final class DefaultValidator implements Validator {
 
     // now make sure there's nothing superfluous
     var bundleInfo = reflectionInfo.bundleInfo();
-    var resourceNamesInBundle = msgStrBackend.resourceNamesInBundleForValidation(bundleInfo, locale);
+    var resourceNamesInBundle = msgStrBackend.resourceNamesInBundleForValidation(
+      bundleInfo,
+      locale
+    );
     if (resourceNamesInBundle != null) {
       var declaredNames = collectDeclaredStringResourceNames(reflectionInfo);
       for (var resourceName : resourceNamesInBundle) {
