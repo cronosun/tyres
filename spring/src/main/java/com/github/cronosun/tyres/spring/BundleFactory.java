@@ -37,6 +37,16 @@ public abstract class BundleFactory implements FactoryBean<Object> {
 
   @Override
   public final Object getObject() {
+    // TODO: Man sollte auch das feld "INSTANCE" anschauen, man wird das auch
+    // in spring so noch brauchen: Man will ja die Message auch irgendwo referenzieren
+    // können wo es kein Spring gibt. Oder alternativ was auch gehen würde:
+    // Wir machen noch ein `Resolvable`? Eines mit einer "Function<Bundle,Resolveable>"?
+    // ... wird dann aber schwierig die bundle-instanz zu kriegen.
+
+    // Was auch denkbar ist: Dann brauchen wir gar nichts mehr im bereich Spring:
+    // vielleich eine weitere TyRes implementation für spring wo alles aufzeichnet
+    // was generiert wurde? Dann hätten wir das für das validieren auch drinn...
+    // ... dann brauchts diese Bundle factory gar nicht mehr.
     return creator.createBundle(bundleClass());
   }
 
