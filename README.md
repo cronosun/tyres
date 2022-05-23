@@ -36,11 +36,11 @@ public interface MyMessages {
 }
 ```
 
-... then add a resource (`MyMessages.properties` in the correct package):
+... then add the `MyMessages.properties` and `some_data.png` in the correct package:
 
 ```properties
 amountTooLarge=Given amount {0,number,integer} is too large!
-missingAmount=Amount is required
+missingAmount=Amount is required!
 notFormatted=Somethig that's not formatted.
 ```
 
@@ -55,7 +55,7 @@ class TranslateTest {
     
     public void testTranslations() {
         var msg1 = resources.msg().get(MyMessages.INSTANCE.missingAmount(), Locale.UK);
-        assertEquals("Amount is required", msg1);
+        assertEquals("Amount is required!", msg1);
 
         var msg2 = resources.msg().get(MyMessages.INSTANCE.amountTooLarge(2232), Locale.UK);
         assertEquals("Given amount 2232 is too large!", msg2);
@@ -96,7 +96,7 @@ TyRes can validate resource bundles and finds those errors:
 * Invalid message patterns (invalid format and incorrect number of arguments).
 * Superfluous / unused texts in `.properties`-files.
 
-## Common errors
+## FAQ & common errors
 
 ### Resource not found
 
@@ -107,3 +107,7 @@ interface is called `com.company.MyBundle`, the `.properties`-file must be locat
   directory** `com/company` in the `resources` directory.
 * For the Spring implementation: Some spring backends (the `ReloadableResourceBundleMessageSource`) wants the file to be
   in the `resources`-directory, called `com.company.MyBundle.properties`.
+
+### Custom bundle layout
+
+You might want to have all your resouces in one single `messages.properties` instead of one properties-file per bundle. That's currently not implemented (but might be implemented eventually). In the meantime, you can implement that yourself: see for example `MsgStrBackend`. Note: Du not abuse the `@RenamePackage` annotation to achieve that (validation won't work anymore if you solve this that way).
