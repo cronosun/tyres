@@ -27,10 +27,13 @@ Write a message bundle (it's just an interface):
 ```java
 public interface MyMessages {
     MyMessages INSTANCE = TyRes.create(MyMessages.class);
-    
+
     MsgRes amountTooLarge(int amount);
+
     MsgRes missingAmount();
+
     StrRes notFormatted();
+
     @File("some_data.png")
     BinRes someBinary();
 }
@@ -52,17 +55,17 @@ import java.util.Locale;
 class TranslateTest {
     // Get instance, see ResourcesConstructor (inject if using spring)
     private final Resources resources;
-    
+
     public void testTranslations() {
         var msg1 = resources.msg().get(MyMessages.INSTANCE.missingAmount(), Locale.UK);
         assertEquals("Amount is required!", msg1);
 
         var msg2 = resources.msg().get(MyMessages.INSTANCE.amountTooLarge(2232), Locale.UK);
         assertEquals("Given amount 2232 is too large!", msg2);
-        
+
         var msg3 = resources.resolver().get(MyMessages.INSTANCE.notFormatted(), Locale.UK);
         assertEquals("Somethig that's not formatted.", msg3);
-        
+
         var inputStream = resources.bin().get(MyMessages.INSTANCE.someBinary());
         assertNotNull(inputStream);
         inputStream.close();
@@ -110,4 +113,32 @@ interface is called `com.company.MyBundle`, the `.properties`-file must be locat
 
 ### Custom bundle layout
 
-You might want to have all your resouces in one single `messages.properties` instead of one properties-file per bundle. That's currently not implemented (but might be implemented eventually). In the meantime, you can implement that yourself: see for example `MsgStrBackend`. Note: Du not abuse the `@RenamePackage` annotation to achieve that (validation won't work anymore if you solve this that way).
+You might want to have all your resouces in one single `messages.properties` instead of one properties-file per bundle.
+That's currently not implemented (but might be implemented eventually). In the meantime, you can implement that
+yourself: see for example `MsgStrBackend`. Note: Du not abuse the `@RenamePackage` annotation to achieve that (
+validation won't work anymore if you solve this that way).
+
+### Why are there two resouce types that produce strings?
+
+There's `MsgRes` and `StrRes`: Other libraries / frameworks work differently, [spring](https://spring.io/) for example
+does not (unless configured otherwise) format (using `MessageFormat`) if there are no arguments and formats the message
+if there are arguments. Why doesn't TyRes work the same instead of having two resource types (`StrRes` and `MsgRes`)?
+It's for validation reasons: Say we have this situation:
+
+```java
+interface MyBundle {
+    UnspecifiedRes fileNotFound();
+}
+```
+
+```properties
+fileNotFound=File {0} not found.
+```
+
+... how shoud the validator know what's correct?
+
+* Maybe the developer has forgotten the filename in the argument and the method should look like
+  this `UnspecifiedRes fileNotFound(String filename)`?
+* Or is this intentional and the developer really wants the literal text `File {0} not found.`?
+
+By using `StrRes` and `MsgRes` instead of `UnspecifiedRes`, the validator knows.

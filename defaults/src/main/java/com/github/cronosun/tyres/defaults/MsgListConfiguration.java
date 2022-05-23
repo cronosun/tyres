@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.MsgRes;
 import com.github.cronosun.tyres.core.Resolvable;
+import com.github.cronosun.tyres.core.StrRes;
 import com.github.cronosun.tyres.core.TyRes;
 
 /**
@@ -20,7 +21,7 @@ public interface MsgListConfiguration {
   /**
    * Message to use if the list is empty.
    */
-  MsgRes empty();
+  StrRes empty();
 
   /**
    * Message to use if the list has one single item.
@@ -30,15 +31,15 @@ public interface MsgListConfiguration {
   /**
    * Prefix for non-empty lists.
    */
-  MsgRes prefix();
+  StrRes prefix();
 
   /**
    * Delimiter for non-empty lists.
    */
-  MsgRes delimiter();
+  StrRes delimiter();
 
   /**
    * Suffix for non-empty lists.
    */
-  MsgRes suffix();
+  StrRes suffix();
 }

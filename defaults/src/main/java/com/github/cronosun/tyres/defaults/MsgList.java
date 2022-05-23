@@ -1,9 +1,6 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.core.Resolvable;
-import com.github.cronosun.tyres.core.Resources;
-import com.github.cronosun.tyres.core.ThreadSafe;
+import com.github.cronosun.tyres.core.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -66,9 +63,7 @@ public final class MsgList implements Resolvable {
 
   @Override
   public String conciseDebugString() {
-    var content =
-      this.messages.stream().map(Resolvable::conciseDebugString).collect(Collectors.joining(","));
-    return "{[" + content + "]}";
+    return WithConciseDebugString.build(this.messages);
   }
 
   @Override
@@ -77,19 +72,19 @@ public final class MsgList implements Resolvable {
     var numberOfMessages = messages.size();
     switch (numberOfMessages) {
       case 0:
-        return resources.msg().get(configuration.empty(), notFoundStrategy, locale);
+        return resources.str().get(configuration.empty(), notFoundStrategy, locale);
       case 1:
         var single = messages.get(0);
         return resources.msg().get(configuration.single(single), notFoundStrategy, locale);
       default:
         final String prefix = resources
-          .msg()
+          .str()
           .get(configuration.prefix(), notFoundStrategy, locale);
         final String delimiter = resources
-          .msg()
+          .str()
           .get(configuration.delimiter(), notFoundStrategy, locale);
         final String suffix = resources
-          .msg()
+          .str()
           .get(configuration.suffix(), notFoundStrategy, locale);
         return messages
           .stream()
@@ -103,11 +98,11 @@ public final class MsgList implements Resolvable {
   public String maybe(Resources resources, Locale locale) {
     var messages = this.messages;
     if (messages.isEmpty()) {
-      return resources.msg().maybe(configuration.empty(), locale);
+      return resources.str().maybe(configuration.empty(), locale);
     } else {
-      final String prefix = resources.msg().maybe(configuration.prefix(), locale);
-      final String delimiter = resources.msg().maybe(configuration.delimiter(), locale);
-      final String suffix = resources.msg().maybe(configuration.suffix(), locale);
+      final String prefix = resources.str().maybe(configuration.prefix(), locale);
+      final String delimiter = resources.str().maybe(configuration.delimiter(), locale);
+      final String suffix = resources.str().maybe(configuration.suffix(), locale);
       if (prefix == null || delimiter == null || suffix == null) {
         return null;
       }

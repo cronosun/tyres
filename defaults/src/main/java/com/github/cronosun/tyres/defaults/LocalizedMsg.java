@@ -254,7 +254,12 @@ public final class LocalizedMsg implements Resolvable {
 
   @Override
   public String conciseDebugString() {
-    return "{" + this.localizations.toString() + "}";
+    return WithConciseDebugString.build(
+      serialized()
+        .entrySet()
+        .stream()
+        .map(entry -> WithConciseDebugString.association(entry.getKey(), entry.getValue()))
+    );
   }
 
   public enum FromResourcesConfig {
