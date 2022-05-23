@@ -30,6 +30,9 @@ public interface MyMessages {
     
     MsgRes amountTooLarge(int amount);
     MsgRes missingAmount();
+    StrRes notFormatted();
+    @File("some_data.png")
+    BinRes someBinary();
 }
 ```
 
@@ -38,6 +41,7 @@ public interface MyMessages {
 ```properties
 amountTooLarge=Given amount {0,number,integer} is too large!
 missingAmount=Amount is required
+notFormatted=Somethig that's not formatted.
 ```
 
 ... then translate the messages:
@@ -46,7 +50,7 @@ missingAmount=Amount is required
 import java.util.Locale;
 
 class TranslateTest {
-    // Get instance, see DefaultResources (inject if using spring)
+    // Get instance, see ResourcesConstructor (inject if using spring)
     private final Resources resources;
     
     public void testTranslations() {
@@ -55,6 +59,13 @@ class TranslateTest {
 
         var msg2 = resources.msg().get(MyMessages.INSTANCE.amountTooLarge(2232), Locale.UK);
         assertEquals("Given amount 2232 is too large!", msg2);
+        
+        var msg3 = resources.resolver().get(MyMessages.INSTANCE.notFormatted(), Locale.UK);
+        assertEquals("Somethig that's not formatted.", msg3);
+        
+        var inputStream = resources.bin().get(MyMessages.INSTANCE.someBinary());
+        assertNotNull(inputStream);
+        inputStream.close();
     }
 }
 ```
