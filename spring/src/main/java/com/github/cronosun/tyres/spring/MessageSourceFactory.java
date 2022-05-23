@@ -11,7 +11,7 @@ public interface MessageSourceFactory {
   Object cacheKeyFor(BundleInfo bundleInfo, Locale locale);
 
   interface CreatedMessageSource {
-    MessageSourceWithResourceNames messageSource();
+    ExtMessageSource messageSource();
 
     Object cacheKey();
   }

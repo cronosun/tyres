@@ -1,7 +1,6 @@
 package com.github.cronosun.tyres.spring;
 
 import com.github.cronosun.tyres.core.BundleInfo;
-import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 import java.util.Map;
@@ -11,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 final class CachedMessageSourceProvider implements MessageSourceProvider {
 
   private final MessageSourceFactory factory;
-  private final Map<Object, MessageSourceWithResourceNames> cache = new ConcurrentHashMap<>();
+  private final Map<Object, ExtMessageSource> cache = new ConcurrentHashMap<>();
   private final Object lock = new Object();
 
   public CachedMessageSourceProvider(MessageSourceFactory factory) {
@@ -19,7 +18,7 @@ final class CachedMessageSourceProvider implements MessageSourceProvider {
   }
 
   @Override
-  public MessageSourceWithResourceNames messageSource(BundleInfo bundleInfo, Locale locale) {
+  public ExtMessageSource messageSource(BundleInfo bundleInfo, Locale locale) {
     var cacheKey = factory.cacheKeyFor(bundleInfo, locale);
     var fromCache = this.cache.get(cacheKey);
     if (fromCache != null) {

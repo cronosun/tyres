@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import org.jetbrains.annotations.Nullable;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 @ThreadSafe
@@ -18,14 +20,16 @@ final class ResourceBundleMessageSourceFactory implements MessageSourceFactory {
   public CreatedMessageSource createMessageSource(BundleInfo bundleInfo, Locale locale) {
     var baseName = bundleInfo.baseName().value();
 
-    var messageSource = new ResourceBundleWithResourceNames();
+    var messageSource = new ResourceBundleExtMessageSource();
     messageSource.setBasename(baseName);
     messageSource.setFallbackToSystemLocale(false);
     messageSource.setDefaultEncoding(ENCODING);
+    // this is required for the contract of ExtMessageSource
+    messageSource.setAlwaysUseMessageFormat(true);
 
     return new CreatedMessageSource() {
       @Override
-      public MessageSourceWithResourceNames messageSource() {
+      public ExtMessageSource messageSource() {
         return messageSource;
       }
 
@@ -41,9 +45,19 @@ final class ResourceBundleMessageSourceFactory implements MessageSourceFactory {
     return bundleInfo.baseName().value();
   }
 
-  private static final class ResourceBundleWithResourceNames
+  private static final class ResourceBundleExtMessageSource
     extends ResourceBundleMessageSource
-    implements MessageSourceWithResourceNames {
+    implements ExtMessageSource {
+
+    @Override
+    public @Nullable String message(String code, Object[] args, Locale locale) {
+      return getMessage(code, args, null, locale);
+    }
+
+    @Override
+    public @Nullable String string(String code, Locale locale) {
+      return resolveCodeWithoutArguments(code, locale);
+    }
 
     @Override
     public Set<String> resourceNamesInBundleForValidation(BundleInfo bundleInfo, Locale locale) {

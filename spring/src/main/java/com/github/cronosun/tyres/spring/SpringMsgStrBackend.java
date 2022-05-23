@@ -24,7 +24,7 @@ public final class SpringMsgStrBackend implements MsgStrBackend {
     var source = messageSourceProvider.messageSource(bundleInfo, locale);
     var name = resInfo.details().asStringResource().name();
     try {
-      return source.getMessage(name, args, null, locale);
+      return source.message(name, args,  locale);
     } catch (IllegalArgumentException iae) {
       var bundleRef = resInfo.bundle().baseName().value();
       throw new TyResException(
@@ -54,7 +54,10 @@ public final class SpringMsgStrBackend implements MsgStrBackend {
 
   @Override
   public @Nullable String maybeString(ResInfo resInfo, Locale locale) {
-    return maybeMessage(resInfo, null, locale);
+    var bundleInfo = resInfo.bundle();
+    var source = messageSourceProvider.messageSource(bundleInfo, locale);
+    var name = resInfo.details().asStringResource().name();
+    return source.string(name, locale);
   }
 
   @Override
