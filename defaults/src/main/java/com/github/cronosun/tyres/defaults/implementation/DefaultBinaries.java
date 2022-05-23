@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.defaults;
+package com.github.cronosun.tyres.defaults.implementation;
 
 import com.github.cronosun.tyres.core.*;
 import com.github.cronosun.tyres.defaults.backends.BinBackend;

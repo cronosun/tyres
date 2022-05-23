@@ -93,13 +93,13 @@ final class ConciseDebugStringBuilder {
       list(cast.iterator(), true);
     } else if (object instanceof String) {
       var cast = (String) object;
-      builder.append(cast);
+      textOrString(cast);
     } else if (object instanceof Association) {
       var cast = (Association) object;
       addAssociation(cast);
     } else {
       // fallback
-      builder.append(object);
+      any(object.toString());
     }
   }
 
@@ -109,6 +109,14 @@ final class ConciseDebugStringBuilder {
     builder.append("->");
     any(association.value);
     builder.append('}');
+  }
+
+  private void textOrString(String string) {
+    if (string.contains(" ")) {
+      addText(string);
+    } else {
+      builder.append(string);
+    }
   }
 
   private void addText(String text) {

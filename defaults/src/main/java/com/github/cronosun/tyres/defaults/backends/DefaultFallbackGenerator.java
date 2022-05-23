@@ -19,11 +19,10 @@ final class DefaultFallbackGenerator implements FallbackGenerator {
 
   @Override
   public String generateFallbackMessageFor(ResInfo resInfo, Object[] args) {
-    var conciseDebugString = resInfo.conciseDebugString();
     if (args.length == 0) {
-      return conciseDebugString;
+      return resInfo.conciseDebugString();
     } else {
-      return WithConciseDebugString.build(List.of(conciseDebugString, args));
+      return WithConciseDebugString.build(List.of(resInfo, args));
     }
   }
 }

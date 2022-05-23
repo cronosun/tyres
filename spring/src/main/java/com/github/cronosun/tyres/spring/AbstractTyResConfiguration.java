@@ -4,8 +4,8 @@ import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.Resources;
 import com.github.cronosun.tyres.core.TyRes;
 import com.github.cronosun.tyres.core.TyResImplementation;
-import com.github.cronosun.tyres.defaults.DefaultResources;
 import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
+import com.github.cronosun.tyres.defaults.implementation.ResourcesConstructor;
 import java.util.Locale;
 import java.util.Set;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,7 @@ public abstract class AbstractTyResConfiguration {
   @Bean
   protected Resources resources() {
     var strBackend = strBackend();
-    return new DefaultResources(msgNotFoundStrategy(), null, strBackend, null, null, null);
+    return new ResourcesConstructor(msgNotFoundStrategy()).msgStrBackend(strBackend).construct();
   }
 
   protected final MsgStrBackend strBackend() {
