@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.Resources;
 
 public class DelegatingResouces implements Resources {
 

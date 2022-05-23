@@ -7,6 +7,8 @@ public interface MyServiceBundle {
   MyServiceBundle INSTANCE = TyRes.create(MyServiceBundle.class);
 
   MsgRes amountIsMissing();
+
   MsgRes amountIsTooSmall(int givenAmount);
+
   MsgRes amountIsTooLarge(int givenAmount);
 }

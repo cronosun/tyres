@@ -16,6 +16,10 @@ public final class BundleInfo implements WithConciseDebugString {
     this.implementation = Objects.requireNonNull(implementation);
   }
 
+  static BundleInfo reflect(Class<?> bundleClass, TyResImplementation implementation) {
+    return Reflection.reflect(bundleClass, implementation);
+  }
+
   /**
    * Returns the bundle class (the one that has been used to create the instance,
    * see {@link TyResImplementation#createInstance(Class)}).
@@ -79,10 +83,6 @@ public final class BundleInfo implements WithConciseDebugString {
   @Override
   public String conciseDebugString() {
     return baseName.conciseDebugString();
-  }
-
-  static BundleInfo reflect(Class<?> bundleClass, TyResImplementation implementation) {
-    return Reflection.reflect(bundleClass, implementation);
   }
 
   private static final class Reflection {

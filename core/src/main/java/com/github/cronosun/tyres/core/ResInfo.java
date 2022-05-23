@@ -16,6 +16,10 @@ public abstract class ResInfo implements WithConciseDebugString {
     this.method = method;
   }
 
+  static Res<?> reflect(BundleInfo bundleInfo, Method method) {
+    return ResInfoReflection.reflect(bundleInfo, method);
+  }
+
   /**
    * Information about the bundle.
    */
@@ -28,6 +32,24 @@ public abstract class ResInfo implements WithConciseDebugString {
    */
   public final Method method() {
     return method;
+  }
+
+  @Override
+  public String toString() {
+    return "ResInfo{" + "bundle=" + bundle + ", method=" + method + '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ResInfo resInfo = (ResInfo) o;
+    return bundle.equals(resInfo.bundle) && method.equals(resInfo.method);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(bundle, method);
   }
 
   /**
@@ -156,28 +178,6 @@ public abstract class ResInfo implements WithConciseDebugString {
     public int hashCode() {
       return Objects.hash(super.hashCode(), filename);
     }
-  }
-
-  static Res<?> reflect(BundleInfo bundleInfo, Method method) {
-    return ResInfoReflection.reflect(bundleInfo, method);
-  }
-
-  @Override
-  public String toString() {
-    return "ResInfo{" + "bundle=" + bundle + ", method=" + method + '}';
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    ResInfo resInfo = (ResInfo) o;
-    return bundle.equals(resInfo.bundle) && method.equals(resInfo.method);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(bundle, method);
   }
 
   private static final class ResInfoReflection {

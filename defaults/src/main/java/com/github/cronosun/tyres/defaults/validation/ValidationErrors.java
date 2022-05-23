@@ -10,23 +10,22 @@ import org.jetbrains.annotations.Nullable;
 public final class ValidationErrors implements WithConciseDebugString {
 
   private static final ValidationErrors EMPTY = new ValidationErrors(Set.of());
-
-  public static ValidationErrors empty() {
-    return EMPTY;
-  }
-
   private final Set<ValidationError> errors;
 
   private ValidationErrors(Set<ValidationError> errors) {
     this.errors = errors;
   }
 
-  public Set<ValidationError> errors() {
-    return errors;
+  public static ValidationErrors empty() {
+    return EMPTY;
   }
 
   public static Builder builder() {
     return new Builder();
+  }
+
+  public Set<ValidationError> errors() {
+    return errors;
   }
 
   public void throwIfHasErrors() {
@@ -64,10 +63,10 @@ public final class ValidationErrors implements WithConciseDebugString {
 
   public static final class Builder {
 
-    private Builder() {}
-
     @Nullable
     private Set<ValidationError> errors;
+
+    private Builder() {}
 
     public void add(ValidationError error) {
       var errors = this.errors;

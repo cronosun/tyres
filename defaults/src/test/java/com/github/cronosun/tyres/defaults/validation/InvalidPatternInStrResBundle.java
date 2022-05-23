@@ -11,6 +11,7 @@ public interface InvalidPatternInStrResBundle {
   InvalidPatternInStrResBundle INSTANCE = TyRes.create(InvalidPatternInStrResBundle.class);
 
   StrRes invalidPattern1();
+
   StrRes invalidPattern2();
 
   @Default("Is is invalid {0x,??}, {1}")

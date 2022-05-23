@@ -17,6 +17,14 @@ final class DefaultMsgResources implements Resources.Messages {
     this.resources = resources;
   }
 
+  @Nullable
+  private static Resolvable maybeMsg(Object object) {
+    if (object instanceof Resolvable) {
+      return (Resolvable) object;
+    }
+    return null;
+  }
+
   @Override
   public String get(MsgRes resource, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     var args = processArgsForMessage(resource.args(), locale, notFoundStrategy);
@@ -57,14 +65,6 @@ final class DefaultMsgResources implements Resources.Messages {
     } else {
       return message;
     }
-  }
-
-  @Nullable
-  private static Resolvable maybeMsg(Object object) {
-    if (object instanceof Resolvable) {
-      return (Resolvable) object;
-    }
-    return null;
   }
 
   private TyResException exceptionResourceNotFound(ResInfo resInfo) {

@@ -6,6 +6,10 @@ import java.util.Locale;
 
 @ThreadSafe
 public interface MessageSourceFactory {
+  static MessageSourceFactory resourceBundle() {
+    return new ResourceBundleMessageSourceFactory();
+  }
+
   CreatedMessageSource createMessageSource(BundleInfo bundleInfo, Locale locale);
 
   Object cacheKeyFor(BundleInfo bundleInfo, Locale locale);
@@ -14,9 +18,5 @@ public interface MessageSourceFactory {
     ExtMessageSource messageSource();
 
     Object cacheKey();
-  }
-
-  static MessageSourceFactory resourceBundle() {
-    return new ResourceBundleMessageSourceFactory();
   }
 }

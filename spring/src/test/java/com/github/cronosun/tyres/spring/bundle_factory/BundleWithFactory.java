@@ -9,6 +9,7 @@ public interface BundleWithFactory {
   MsgRes noSuchFileError(String filename);
 
   MsgRes msgResAreFormatted();
+
   StrRes strResAreNotFormatted();
 
   @FactoryForBundle(BundleWithFactory.class)

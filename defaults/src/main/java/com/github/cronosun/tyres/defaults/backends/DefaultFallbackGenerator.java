@@ -3,7 +3,6 @@ package com.github.cronosun.tyres.defaults.backends;
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.core.WithConciseDebugString;
-import java.util.Arrays;
 import java.util.List;
 
 @ThreadSafe

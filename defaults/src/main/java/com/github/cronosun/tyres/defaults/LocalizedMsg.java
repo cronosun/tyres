@@ -34,6 +34,60 @@ public final class LocalizedMsg implements Resolvable {
     return new Builder();
   }
 
+  public static LocalizedMsg fromResources(
+    Resources resources,
+    Resolvable resolvable,
+    FromResourcesConfig configuration,
+    Set<Locale> locales
+  ) {
+    var builder = builder();
+    for (var locale : locales) {
+      var maybeText = fromResourcesForSingleLocale(resources, resolvable, configuration, locale);
+      if (maybeText != null) {
+        builder.add(locale, maybeText);
+      }
+    }
+    return builder.build();
+  }
+
+  @Nullable
+  private static String fromResourcesForSingleLocale(
+    Resources resources,
+    Resolvable resolvable,
+    FromResourcesConfig configuration,
+    Locale locale
+  ) {
+    switch (configuration) {
+      case MAYBE:
+        return resources.resolver().maybe(resolvable, locale);
+      case DEFAULT_NOT_FOUND_STRATEGY:
+        return resources.resolver().get(resolvable, locale);
+      case THROW:
+        return resources.resolver().get(resolvable, MsgNotFoundStrategy.THROW, locale);
+      case FALLBACK:
+        return resources.resolver().get(resolvable, MsgNotFoundStrategy.FALLBACK, locale);
+      default:
+        throw new IllegalArgumentException("Unknown configuration: " + configuration);
+    }
+  }
+
+  /**
+   * Creates a new message from the serialized representation.
+   *
+   * @see #serialized()
+   */
+  public static LocalizedMsg deserialize(Map<String, String> map) {
+    if (map.isEmpty()) {
+      return LocalizedMsg.empty();
+    }
+    var builder = LocalizedMsg.builder();
+    for (var entry : map.entrySet()) {
+      var languageTag = entry.getKey();
+      builder.add(Locale.forLanguageTag(languageTag), entry.getValue());
+    }
+    return builder.build();
+  }
+
   public Set<Locale> availableLocales() {
     return localizations.keySet();
   }
@@ -100,43 +154,6 @@ public final class LocalizedMsg implements Resolvable {
     return "LocalizedMsg{" + localizations + '}';
   }
 
-  public static LocalizedMsg fromResources(
-    Resources resources,
-    Resolvable resolvable,
-    FromResourcesConfig configuration,
-    Set<Locale> locales
-  ) {
-    var builder = builder();
-    for (var locale : locales) {
-      var maybeText = fromResourcesForSingleLocale(resources, resolvable, configuration, locale);
-      if (maybeText != null) {
-        builder.add(locale, maybeText);
-      }
-    }
-    return builder.build();
-  }
-
-  @Nullable
-  private static String fromResourcesForSingleLocale(
-    Resources resources,
-    Resolvable resolvable,
-    FromResourcesConfig configuration,
-    Locale locale
-  ) {
-    switch (configuration) {
-      case MAYBE:
-        return resources.resolver().maybe(resolvable, locale);
-      case DEFAULT_NOT_FOUND_STRATEGY:
-        return resources.resolver().get(resolvable, locale);
-      case THROW:
-        return resources.resolver().get(resolvable, MsgNotFoundStrategy.THROW, locale);
-      case FALLBACK:
-        return resources.resolver().get(resolvable, MsgNotFoundStrategy.FALLBACK, locale);
-      default:
-        throw new IllegalArgumentException("Unknown configuration: " + configuration);
-    }
-  }
-
   /**
    * Returns the serialized representation of this message. This is useful if you want to transfer the message
    * to the client using Jackson for example.
@@ -162,23 +179,6 @@ public final class LocalizedMsg implements Resolvable {
     } else {
       return serialized;
     }
-  }
-
-  /**
-   * Creates a new message from the serialized representation.
-   *
-   * @see #serialized()
-   */
-  public static LocalizedMsg deserialize(Map<String, String> map) {
-    if (map.isEmpty()) {
-      return LocalizedMsg.empty();
-    }
-    var builder = LocalizedMsg.builder();
-    for (var entry : map.entrySet()) {
-      var languageTag = entry.getKey();
-      builder.add(Locale.forLanguageTag(languageTag), entry.getValue());
-    }
-    return builder.build();
   }
 
   private Map<String, String> doSerialize() {
@@ -257,6 +257,26 @@ public final class LocalizedMsg implements Resolvable {
     return "{" + this.localizations.toString() + "}";
   }
 
+  public enum FromResourcesConfig {
+    /**
+     * Use {@link Resources.Resolver#maybe(Resolvable, Locale)} to get the message. If it's not present (<code>null</code>)
+     * it won't be in the generated {@link LocalizedMsg}.
+     */
+    MAYBE,
+    /**
+     * Use {@link Resources.Resolver#get(Resolvable, Locale)}.
+     */
+    DEFAULT_NOT_FOUND_STRATEGY,
+    /**
+     * Use {@link Resources.Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#THROW}.
+     */
+    THROW,
+    /**
+     * Use {@link Resources.Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#FALLBACK}.
+     */
+    FALLBACK,
+  }
+
   public static final class Builder {
 
     @Nullable
@@ -295,25 +315,5 @@ public final class LocalizedMsg implements Resolvable {
     public static final CacheMarkerNotFound INSTANCE = new CacheMarkerNotFound();
 
     private CacheMarkerNotFound() {}
-  }
-
-  public enum FromResourcesConfig {
-    /**
-     * Use {@link Resources.Resolver#maybe(Resolvable, Locale)} to get the message. If it's not present (<code>null</code>)
-     * it won't be in the generated {@link LocalizedMsg}.
-     */
-    MAYBE,
-    /**
-     * Use {@link Resources.Resolver#get(Resolvable, Locale)}.
-     */
-    DEFAULT_NOT_FOUND_STRATEGY,
-    /**
-     * Use {@link Resources.Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#THROW}.
-     */
-    THROW,
-    /**
-     * Use {@link Resources.Resolver#get(Resolvable, MsgNotFoundStrategy, Locale)} with {@link MsgNotFoundStrategy#FALLBACK}.
-     */
-    FALLBACK,
   }
 }

@@ -1,6 +1,9 @@
 package com.github.cronosun.tyres.defaults.backends;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.BundleInfo;
+import com.github.cronosun.tyres.core.ResInfo;
+import com.github.cronosun.tyres.core.ThreadSafe;
+import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import java.util.Locale;
 import java.util.Set;
@@ -8,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Backend for string-like sources: plain strings and messages.
- *
+ * <p>
  * Why are those backends combined? Unlike binaries, the strings and messages have to be served by the same
  * backend: The default implementation requires that the strings are just the message patterns - if you
  * ask the implementation to return a string with a {@link ResInfo} from a message, the implementation

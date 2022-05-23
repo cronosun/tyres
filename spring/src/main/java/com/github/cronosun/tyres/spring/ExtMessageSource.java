@@ -12,9 +12,9 @@ import org.springframework.context.MessageSource;
 public interface ExtMessageSource {
   /**
    * See {@link MessageSource#getMessage(String, Object[], String, Locale)} with:
-   *
-   *  - defaultMessage <code>null</code>.
-   *  - and: Also messages without arguments MUST be parsed.
+   * <p>
+   * - defaultMessage <code>null</code>.
+   * - and: Also messages without arguments MUST be parsed.
    *
    * @throws IllegalArgumentException if message cannot be formatted / pattern is invalid.
    */

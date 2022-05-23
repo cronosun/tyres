@@ -21,6 +21,14 @@ public final class ReflectionInfo {
     this.resources = resources.collect(Collectors.toUnmodifiableList());
   }
 
+  /**
+   * Default reflection implementation that conforms to the specification and can be used by
+   * implementations (unless they want to provide their own implementation).
+   */
+  public static ReflectionInfo getFrom(TyResImplementation implementation, Class<?> bundleClass) {
+    return Reflection.reflect(implementation, bundleClass);
+  }
+
   @Override
   public String toString() {
     return "ReflectionInfo{" + "bundleInfo=" + bundleInfo + ", resources=" + resources + '}';
@@ -37,14 +45,6 @@ public final class ReflectionInfo {
   @Override
   public int hashCode() {
     return Objects.hash(bundleInfo, resources);
-  }
-
-  /**
-   * Default reflection implementation that conforms to the specification and can be used by
-   * implementations (unless they want to provide their own implementation).
-   */
-  public static ReflectionInfo getFrom(TyResImplementation implementation, Class<?> bundleClass) {
-    return Reflection.reflect(implementation, bundleClass);
   }
 
   public BundleInfo bundleInfo() {

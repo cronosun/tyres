@@ -1,6 +1,9 @@
 package com.github.cronosun.tyres.defaults;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.Resolvable;
+import com.github.cronosun.tyres.core.Resources;
+import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;

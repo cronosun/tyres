@@ -7,6 +7,12 @@ import java.util.stream.Stream;
 
 final class ConciseDebugStringBuilder {
 
+  private final StringBuilder builder;
+
+  private ConciseDebugStringBuilder() {
+    this.builder = new StringBuilder();
+  }
+
   public static Object text(String text) {
     return new Text(text);
   }
@@ -27,12 +33,6 @@ final class ConciseDebugStringBuilder {
     var builder = new ConciseDebugStringBuilder();
     builder.list(items, false);
     return builder.builder.toString();
-  }
-
-  private final StringBuilder builder;
-
-  private ConciseDebugStringBuilder() {
-    this.builder = new StringBuilder();
   }
 
   private void list(Iterator<?> items, boolean embedded) {

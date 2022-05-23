@@ -39,7 +39,7 @@ public interface Resources {
 
     /**
      * What should be done if the resource cannot be found.
-     *
+     * <p>
      * Used for example in {@link Messages#get(MsgRes, Locale)}.
      */
     MsgNotFoundStrategy notFoundStrategy();

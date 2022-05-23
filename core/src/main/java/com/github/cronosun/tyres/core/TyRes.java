@@ -27,7 +27,7 @@ public final class TyRes {
 
   /**
    * Gets the implementation.
-   *
+   * <p>
    * The implementation (see {@link TyResImplementation}) is determined only once: First asks the service loader
    * ({@link ServiceLoader}), if the service loader returns exactly one implementation, takes that implementation.
    * If the {@link ServiceLoader} returns multiple implementations: throws an exception. If the {@link ServiceLoader}

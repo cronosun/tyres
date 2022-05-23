@@ -8,6 +8,8 @@ public interface LocalizedMsgBundle {
   LocalizedMsgBundle INSTANCE = TyRes.create(LocalizedMsgBundle.class);
 
   StrRes colour();
+
   MsgRes sayHello(String toWhom);
+
   MsgRes messageNotPresentForSomeLocales();
 }

@@ -8,5 +8,6 @@ public interface NoArgsParsingBundle {
   NoArgsParsingBundle INSTANCE = TyRes.create(NoArgsParsingBundle.class);
 
   MsgRes msgRes();
+
   StrRes strRes();
 }

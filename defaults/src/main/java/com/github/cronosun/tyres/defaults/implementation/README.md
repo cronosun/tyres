@@ -1,1 +1,2 @@
-Contains the default implementation of `Resources`. This implementation is configurable and should be sufficient for most use cases.
+Contains the default implementation of `Resources`. This implementation is configurable and should be sufficient for
+most use cases.
