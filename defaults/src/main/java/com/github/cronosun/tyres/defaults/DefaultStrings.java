@@ -19,7 +19,6 @@ final class DefaultStrings implements Resources.Strings {
   @Override
   public @Nullable String maybe(StrRes resource, Locale locale) {
     var resInfo = resource.info();
-    assertCorrectResourceKind(resInfo);
     return this.backend.maybeString(resInfo, locale);
   }
 
@@ -56,19 +55,5 @@ final class DefaultStrings implements Resources.Strings {
       bundleDebugReference +
       "."
     );
-  }
-
-  private void assertCorrectResourceKind(ResInfo resInfo) {
-    var kind = resInfo.details().kind();
-    var correctType = kind == ResInfoDetails.Kind.STRING;
-    if (!correctType) {
-      throw new TyResException(
-        "Invalid resource kind (must be a string resource). It's " +
-        kind +
-        ". Resource '" +
-        resInfo.conciseDebugString() +
-        "'."
-      );
-    }
   }
 }

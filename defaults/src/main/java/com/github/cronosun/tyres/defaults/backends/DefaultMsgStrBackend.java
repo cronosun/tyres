@@ -41,7 +41,7 @@ final class DefaultMsgStrBackend implements MsgStrBackend {
 
   @Nullable
   @Override
-  public String maybeMessage(ResInfo resInfo, Object[] args, Locale locale) {
+  public String maybeMessage(ResInfo.Str resInfo, Object[] args, Locale locale) {
     var pattern = getStringOrDefault(resInfo, locale);
     if (pattern != null) {
       return messageFormatter.format(pattern, args, locale);
@@ -51,7 +51,7 @@ final class DefaultMsgStrBackend implements MsgStrBackend {
   }
 
   @Override
-  public @Nullable String maybeString(ResInfo resInfo, Locale locale) {
+  public @Nullable String maybeString(ResInfo.Str resInfo, Locale locale) {
     return getStringOrDefault(resInfo, locale);
   }
 
@@ -72,7 +72,7 @@ final class DefaultMsgStrBackend implements MsgStrBackend {
 
   @Override
   public @Nullable ValidationError validateMessage(
-    ResInfo resInfo,
+    ResInfo.Str resInfo,
     int numberOfArguments,
     Locale locale,
     boolean optional
@@ -91,21 +91,21 @@ final class DefaultMsgStrBackend implements MsgStrBackend {
   }
 
   @Nullable
-  private String getStringOrDefault(ResInfo resInfo, Locale locale) {
+  private String getStringOrDefault(ResInfo.Str resInfo, Locale locale) {
     var bundle = getResourceBundleForMessages(resInfo.bundle(), locale);
     var string = getString(bundle, resInfo);
     if (string == null) {
       // try the default
-      return resInfo.details().asStringResource().defaultValue();
+      return resInfo.defaultValue();
     } else {
       return string;
     }
   }
 
   @Nullable
-  private String getString(@Nullable ResourceBundle bundle, ResInfo resInfo) {
+  private String getString(@Nullable ResourceBundle bundle, ResInfo.Str resInfo) {
     if (bundle != null) {
-      var key = resInfo.details().asStringResource().name();
+      var key = resInfo.name();
       if (bundle.containsKey(key)) {
         return bundle.getString(key);
       } else {

@@ -16,17 +16,10 @@ final class ResDefaults {
     private MsgResDefault() {}
 
     public static MsgResDefault create(ResInfo resInfo) {
-      var kind = resInfo.details().kind();
-      if (kind == ResInfoDetails.Kind.STRING) {
-        return new NoArgs(resInfo);
+      if (resInfo instanceof ResInfo.Str) {
+        return new NoArgs((ResInfo.Str) resInfo);
       } else {
-        throw new TyResException(
-          "Message resource is not compatible with " +
-          kind +
-          ". Must be of kind " +
-          ResInfoDetails.Kind.STRING +
-          "'."
-        );
+        throw new TyResException("Message resource is not compatible with " + resInfo);
       }
     }
 
@@ -57,14 +50,14 @@ final class ResDefaults {
     private static final class NoArgs extends MsgResDefault {
 
       private static final Object[] NO_ARGS = new Object[] {};
-      private final ResInfo info;
+      private final ResInfo.Str info;
 
-      private NoArgs(ResInfo info) {
+      private NoArgs(ResInfo.Str info) {
         this.info = info;
       }
 
       @Override
-      public ResInfo info() {
+      public ResInfo.Str info() {
         return info;
       }
 
@@ -84,16 +77,16 @@ final class ResDefaults {
 
     private static final class WithArgs extends MsgResDefault {
 
-      private final ResInfo info;
+      private final ResInfo.Str info;
       private final Object[] args;
 
-      private WithArgs(ResInfo info, Object[] args) {
+      private WithArgs(ResInfo.Str info, Object[] args) {
         this.info = info;
         this.args = args;
       }
 
       @Override
-      public ResInfo info() {
+      public ResInfo.Str info() {
         return info;
       }
 
@@ -117,24 +110,17 @@ final class ResDefaults {
   static final class StrResDefault implements Res<StrRes>, StrRes {
 
     private static final Object[] NO_ARGS = new Object[] {};
-    private final ResInfo resInfo;
+    private final ResInfo.Str resInfo;
 
-    private StrResDefault(ResInfo resInfo) {
+    private StrResDefault(ResInfo.Str resInfo) {
       this.resInfo = resInfo;
     }
 
     public static StrResDefault create(ResInfo resInfo) {
-      var kind = resInfo.details().kind();
-      if (kind == ResInfoDetails.Kind.STRING) {
-        return new StrResDefault(resInfo);
+      if (resInfo instanceof ResInfo.Str) {
+        return new StrResDefault((ResInfo.Str) resInfo);
       } else {
-        throw new TyResException(
-          "String resource is not compatible with " +
-          kind +
-          ". Must be of kind " +
-          ResInfoDetails.Kind.STRING +
-          "'."
-        );
+        throw new TyResException("String resource is not compatible with " + resInfo);
       }
     }
 
@@ -163,7 +149,7 @@ final class ResDefaults {
     }
 
     @Override
-    public ResInfo info() {
+    public ResInfo.Str info() {
       return resInfo;
     }
 
@@ -185,24 +171,17 @@ final class ResDefaults {
   static final class BinResDefault implements Res<BinRes>, BinRes {
 
     private static final Object[] NO_ARGS = new Object[] {};
-    private final ResInfo resInfo;
+    private final ResInfo.Bin resInfo;
 
-    private BinResDefault(ResInfo resInfo) {
+    private BinResDefault(ResInfo.Bin resInfo) {
       this.resInfo = resInfo;
     }
 
     public static BinResDefault create(ResInfo resInfo) {
-      var kind = resInfo.details().kind();
-      if (kind == ResInfoDetails.Kind.BINARY) {
-        return new BinResDefault(resInfo);
+      if (resInfo instanceof ResInfo.Bin) {
+        return new BinResDefault((ResInfo.Bin) resInfo);
       } else {
-        throw new TyResException(
-          "Binary resource is not compatible with " +
-          kind +
-          ". Must be of kind " +
-          ResInfoDetails.Kind.BINARY +
-          "'."
-        );
+        throw new TyResException("Binary resource is not compatible with " + resInfo);
       }
     }
 
@@ -231,7 +210,7 @@ final class ResDefaults {
     }
 
     @Override
-    public ResInfo info() {
+    public ResInfo.Bin info() {
       return resInfo;
     }
 

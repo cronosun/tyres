@@ -9,7 +9,7 @@ import java.lang.annotation.*;
  * <pre>myMethodName</pre>, don't rewrite that to <pre>my_method_name</pre> or <pre>my-method-name</pre>. It's
  * up to the implementation (such as {@link Resources}) to convert names.
  *
- * @see ResInfoDetails.StrResource#name()
+ * @see ResInfo.Str#name()
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.defaults;
 
 import com.github.cronosun.tyres.core.BaseName;
+import com.github.cronosun.tyres.core.ResInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ class SimpleBundleTest {
     Assertions.assertEquals("voidMethod", method.getName());
     Assertions.assertEquals(SimpleBundle.class, method.getDeclaringClass());
     Assertions.assertEquals(SimpleBundle.class, bundleInfo.bundleClass());
-    Assertions.assertEquals(method.getName(), info.details().asStringResource().name());
+    Assertions.assertEquals(method.getName(), info.name());
   }
 
   @Test
@@ -34,7 +35,7 @@ class SimpleBundleTest {
     Assertions.assertEquals("methodWithArgument", method.getName());
     Assertions.assertEquals(SimpleBundle.class, method.getDeclaringClass());
     Assertions.assertEquals(SimpleBundle.class, bundleInfo.bundleClass());
-    Assertions.assertEquals(method.getName(), info.details().asStringResource().name());
+    Assertions.assertEquals(method.getName(), info.name());
   }
 
   @Test
@@ -42,7 +43,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethod();
     var info = res.info();
 
-    Assertions.assertEquals("renamedMethod", info.details().asStringResource().name());
+    Assertions.assertEquals("renamedMethod", info.name());
   }
 
   @Test
@@ -50,7 +51,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethodTwo();
     var info = res.info();
 
-    Assertions.assertEquals("renamedMethod", info.details().asStringResource().name());
+    Assertions.assertEquals("renamedMethod", info.name());
   }
 
   @Test
@@ -58,7 +59,7 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.renamedMethodTwo();
     var info = res.info();
 
-    Assertions.assertNull(info.details().asStringResource().defaultValue());
+    Assertions.assertNull(info.defaultValue());
   }
 
   @Test
@@ -66,6 +67,6 @@ class SimpleBundleTest {
     var res = SimpleBundle.INSTANCE.methodWithDefaultValue();
     var info = res.info();
 
-    Assertions.assertEquals("the_default_value", info.details().asStringResource().defaultValue());
+    Assertions.assertEquals("the_default_value", info.defaultValue());
   }
 }

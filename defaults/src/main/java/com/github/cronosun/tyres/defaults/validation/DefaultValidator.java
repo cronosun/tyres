@@ -62,40 +62,40 @@ final class DefaultValidator implements Validator {
     return reflectionInfo
       .resources()
       .stream()
-      .filter(resource -> resource.info().details().kind() == ResInfoDetails.Kind.STRING)
-      .map(resource -> resource.info().details().asStringResource().name())
+      .filter(resource -> resource.info() instanceof ResInfo.Str)
+      .map(resource -> ((ResInfo.Str) resource.info()).name())
       .collect(Collectors.toUnmodifiableSet());
   }
 
   @Nullable
   private ValidationError validateDeclaredResourceIsOk(Res<?> res, Locale locale) {
     var resInfo = res.info();
-    var kind = resInfo.details().kind();
     var optional = isOptional(res);
-    switch (kind) {
-      case STRING:
-        if (res instanceof MsgRes) {
-          return validateMsg(resInfo, locale, optional);
-        } else {
-          if (!optional) {
-            return validateStrExists(resInfo, locale);
-          } else {
-            return null;
-          }
-        }
-      case BINARY:
+    if (resInfo instanceof ResInfo.Str) {
+      var strResInfo = (ResInfo.Str) resInfo;
+      if (res instanceof MsgRes) {
+        return validateMsg(strResInfo, locale, optional);
+      } else {
         if (!optional) {
-          return validateBinExists(resInfo, locale);
+          return validateStrExists(strResInfo, locale);
         } else {
           return null;
         }
-      default:
-        throw new TyResException("Unknown resource kind: " + kind);
+      }
+    } else if (resInfo instanceof ResInfo.Bin) {
+      var binResInfo = (ResInfo.Bin) resInfo;
+      if (!optional) {
+        return validateBinExists(binResInfo, locale);
+      } else {
+        return null;
+      }
+    } else {
+      throw new TyResException("Unknown resource kind: " + resInfo);
     }
   }
 
   @Nullable
-  private ValidationError validateStrExists(ResInfo resInfo, Locale locale) {
+  private ValidationError validateStrExists(ResInfo.Str resInfo, Locale locale) {
     if (!msgStrBackend.validateStringExists(resInfo, locale)) {
       return new ValidationError.ResourceNotFound(resInfo, locale);
     } else {
@@ -104,7 +104,7 @@ final class DefaultValidator implements Validator {
   }
 
   @Nullable
-  private ValidationError validateBinExists(ResInfo resInfo, Locale locale) {
+  private ValidationError validateBinExists(ResInfo.Bin resInfo, Locale locale) {
     if (!binBackend.validateExists(resInfo, locale)) {
       return new ValidationError.ResourceNotFound(resInfo, locale);
     } else {
@@ -113,7 +113,7 @@ final class DefaultValidator implements Validator {
   }
 
   @Nullable
-  private ValidationError validateMsg(ResInfo resInfo, Locale locale, boolean optional) {
+  private ValidationError validateMsg(ResInfo.Str resInfo, Locale locale, boolean optional) {
     // number of arguments?
     var method = resInfo.method();
     var numberOfArguments = method.getParameterCount();

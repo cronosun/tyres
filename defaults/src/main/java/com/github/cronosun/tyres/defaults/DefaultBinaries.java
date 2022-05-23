@@ -18,7 +18,6 @@ final class DefaultBinaries implements Resources.Binaries {
   @Override
   public @Nullable InputStream maybe(BinRes resource, Locale locale) {
     var resInfo = resource.info();
-    assertCorrectResourceKind(resInfo);
     return backend.maybeBin(resource.info(), locale);
   }
 
@@ -43,19 +42,5 @@ final class DefaultBinaries implements Resources.Binaries {
       bundleDebugReference +
       "."
     );
-  }
-
-  private void assertCorrectResourceKind(ResInfo resInfo) {
-    var kind = resInfo.details().kind();
-    var correctType = kind == ResInfoDetails.Kind.BINARY;
-    if (!correctType) {
-      throw new TyResException(
-        "Invalid resource kind (must be a binary resource). It's " +
-        kind +
-        ". Resource '" +
-        resInfo.conciseDebugString() +
-        "'."
-      );
-    }
   }
 }

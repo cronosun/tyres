@@ -29,13 +29,11 @@ public interface MsgStrBackend {
    * Does not throw if the resource cannot be found - but expect the implementaton to throw @{@link TyResException} if
    * something else is wrong, like invalid arguments or an invalid message (a message that cannot be parsed).
    *
-   * Note: Throws resource is not {@link ResInfoDetails.Kind#STRING}.
-   *
    * @param args The arguments (never null; but can be empty): The arguments are already resolved,
    *             implementations MUST NOT try to resolve them.
    */
   @Nullable
-  String maybeMessage(ResInfo resInfo, Object[] args, Locale locale);
+  String maybeMessage(ResInfo.Str resInfo, Object[] args, Locale locale);
 
   /**
    * Validates the given message.
@@ -43,14 +41,12 @@ public interface MsgStrBackend {
    * Note: This is an optional operation. Implementations are allowed to just return <code>null</code> here
    * (this disables this validation).
    *
-   * Note: Throws resource is not {@link ResInfoDetails.Kind#STRING}.
-   *
    * @param optional If this is true, validation does not fail if the resource does not exist. But if the resource
    *                 exists, it's validated.
    **/
   @Nullable
   ValidationError validateMessage(
-    ResInfo resInfo,
+    ResInfo.Str resInfo,
     int numberOfArguments,
     Locale locale,
     boolean optional
@@ -62,24 +58,22 @@ public interface MsgStrBackend {
    * Does not throw if the resource cannot be found.
    * <p>
    * Note: This must also return the pattern for messages: Plain strings and messages must use the same backend.
-   * Calling this method with a {@link ResInfo} intended for {@link #maybeMessage(ResInfo, Object[], Locale)} must
+   * Calling this method with a {@link ResInfo} intended for {@link #maybeMessage(ResInfo.Str, Object[], Locale)} must
    * return the message pattern.
-   *
-   * Note: Throws resource is not {@link ResInfoDetails.Kind#STRING}.
    */
   @Nullable
-  String maybeString(ResInfo resInfo, Locale locale);
+  String maybeString(ResInfo.Str resInfo, Locale locale);
 
   /**
    * Returns <code>true</code> if the given string exists.
    */
-  default boolean validateStringExists(ResInfo resInfo, Locale locale) {
+  default boolean validateStringExists(ResInfo.Str resInfo, Locale locale) {
     return maybeString(resInfo, locale) != null;
   }
 
   /**
-   * Returns all names (see {@link ResInfoDetails.StrResource#name()}) that would produce a result when used
-   * with {@link #maybeString(ResInfo, Locale)}.
+   * Returns all names (see {@link ResInfo.Str#name()}) that would produce a result when used
+   * with {@link #maybeString(ResInfo.Str, Locale)}.
    * <p>
    * Note 1: This method is optional. If the implementation does not support this operation, return <code>null</code>.
    * Note 2: Expect the returned set to be immutable.

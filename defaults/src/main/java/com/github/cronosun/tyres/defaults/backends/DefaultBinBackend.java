@@ -34,14 +34,13 @@ final class DefaultBinBackend implements BinBackend {
   }
 
   @Override
-  public InputStream maybeBin(ResInfo resInfo, Locale locale) {
-    var binResource = resInfo.details().asBinResource();
-    var filename = binResource.filename();
+  public InputStream maybeBin(ResInfo.Bin resInfo, Locale locale) {
+    var filename = resInfo.filename();
     return maybeGet(resInfo, filename, locale);
   }
 
   @Override
-  public boolean validateExists(ResInfo resInfo, Locale locale) {
+  public boolean validateExists(ResInfo.Bin resInfo, Locale locale) {
     try (var maybeBin = maybeBin(resInfo, locale)) {
       return maybeBin != null;
     } catch (IOException e) {

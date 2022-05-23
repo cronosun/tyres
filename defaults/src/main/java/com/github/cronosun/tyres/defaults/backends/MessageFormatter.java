@@ -1,7 +1,6 @@
 package com.github.cronosun.tyres.defaults.backends;
 
 import com.github.cronosun.tyres.core.ResInfo;
-import com.github.cronosun.tyres.core.ResInfoDetails;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.defaults.validation.ValidationError;
 import java.util.Locale;
@@ -28,12 +27,10 @@ public interface MessageFormatter {
    * <p>
    * Note: This is an optional operation. Implementations are allowed to just return <code>null</code> here
    * (this disables this validation).
-   *
-   * Note: Throws resource is not {@link ResInfoDetails.Kind#STRING}.
    **/
   @Nullable
   ValidationError validateMessage(
-    ResInfo resInfo,
+    ResInfo.Str resInfo,
     String msgPattern,
     int numberOfArguments,
     Locale locale

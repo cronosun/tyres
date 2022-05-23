@@ -18,10 +18,10 @@ public final class SpringMsgStrBackend implements MsgStrBackend {
   }
 
   @Override
-  public @Nullable String maybeMessage(ResInfo resInfo, Object[] args, Locale locale) {
+  public @Nullable String maybeMessage(ResInfo.Str resInfo, Object[] args, Locale locale) {
     var bundleInfo = resInfo.bundle();
     var source = messageSourceProvider.messageSource(bundleInfo, locale);
-    var name = resInfo.details().asStringResource().name();
+    var name = resInfo.name();
     try {
       return source.message(name, args, locale);
     } catch (IllegalArgumentException iae) {
@@ -41,7 +41,7 @@ public final class SpringMsgStrBackend implements MsgStrBackend {
 
   @Override
   public @Nullable ValidationError validateMessage(
-    ResInfo resInfo,
+    ResInfo.Str resInfo,
     int numberOfArguments,
     Locale locale,
     boolean optional
@@ -51,15 +51,15 @@ public final class SpringMsgStrBackend implements MsgStrBackend {
   }
 
   @Override
-  public boolean validateStringExists(ResInfo resInfo, Locale locale) {
-    return maybeString(resInfo, locale)!=null;
+  public boolean validateStringExists(ResInfo.Str resInfo, Locale locale) {
+    return maybeString(resInfo, locale) != null;
   }
 
   @Override
-  public @Nullable String maybeString(ResInfo resInfo, Locale locale) {
+  public @Nullable String maybeString(ResInfo.Str resInfo, Locale locale) {
     var bundleInfo = resInfo.bundle();
     var source = messageSourceProvider.messageSource(bundleInfo, locale);
-    var name = resInfo.details().asStringResource().name();
+    var name = resInfo.name();
     return source.string(name, locale);
   }
 

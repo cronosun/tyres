@@ -4,4 +4,7 @@ public interface BinRes extends Res<BinRes> {
   static BinRes create(ResInfo resInfo) {
     return ResDefaults.BinResDefault.create(resInfo);
   }
+
+  @Override
+  ResInfo.Bin info();
 }

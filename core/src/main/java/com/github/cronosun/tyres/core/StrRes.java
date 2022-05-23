@@ -19,6 +19,9 @@ public interface StrRes extends Res<StrRes>, Resolvable {
   }
 
   @Override
+  ResInfo.Str info();
+
+  @Override
   default String get(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     return resources.str().get(this, notFoundStrategy, locale);
   }

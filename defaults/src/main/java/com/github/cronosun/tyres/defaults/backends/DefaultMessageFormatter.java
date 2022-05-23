@@ -40,7 +40,7 @@ final class DefaultMessageFormatter implements MessageFormatter {
 
   @Override
   public ValidationError validateMessage(
-    ResInfo resInfo,
+    ResInfo.Str resInfo,
     String msgPattern,
     int numberOfArguments,
     Locale locale

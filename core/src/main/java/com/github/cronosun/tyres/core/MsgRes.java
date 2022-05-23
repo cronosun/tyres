@@ -14,6 +14,9 @@ public interface MsgRes extends Res<MsgRes>, Resolvable {
   }
 
   @Override
+  ResInfo.Str info();
+
+  @Override
   default String get(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
     return resources.msg().get(this, notFoundStrategy, locale);
   }

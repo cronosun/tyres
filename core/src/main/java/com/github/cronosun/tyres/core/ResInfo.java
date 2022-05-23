@@ -6,34 +6,165 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
-public final class ResInfo implements WithConciseDebugString {
+public abstract class ResInfo implements WithConciseDebugString {
 
-  private final BundleInfo bundleInfo;
+  private final BundleInfo bundle;
   private final Method method;
-  private final ResInfoDetails details;
 
-  public ResInfo(BundleInfo bundleInfo, Method method, ResInfoDetails details) {
-    this.bundleInfo = Objects.requireNonNull(bundleInfo);
-    this.method = Objects.requireNonNull(method);
-    this.details = Objects.requireNonNull(details);
+  private ResInfo(BundleInfo bundle, Method method) {
+    this.bundle = bundle;
+    this.method = method;
   }
 
   /**
    * Information about the bundle.
    */
-  public BundleInfo bundle() {
-    return bundleInfo;
+  public final BundleInfo bundle() {
+    return bundle;
   }
 
   /**
    * The method that has been used to get those {@link ResInfo} from.
    */
-  public Method method() {
+  public final Method method() {
     return method;
   }
 
-  public ResInfoDetails details() {
-    return details;
+  /**
+   * {@link ResInfo} for string and message resouces.
+   */
+  public static final class Str extends ResInfo {
+
+    private final String name;
+
+    @Nullable
+    private final String defaultValue;
+
+    public Str(BundleInfo bundle, Method method, String name, @Nullable String defaultValue) {
+      super(bundle, method);
+      this.name = name;
+      this.defaultValue = defaultValue;
+    }
+
+    /**
+     * The name. This is either {@link Method#getName()} or the name from the {@link Rename}-annotation (if
+     * this annotation is present).
+     */
+    public String name() {
+      return name;
+    }
+
+    /**
+     * The default value from the {@link Default}-annotation or null if there's no such annotation.
+     * <p>
+     * Note: The default value is not the same as the fallback value. The default value is a "normal" value that
+     * is considered to be OK. This default value can be used instead of writing a message bundle for the default
+     * locale.
+     * <p>
+     * Example with default values in the bundle:
+     * <pre>
+     *     messages.properties    -> values for the default locale
+     *     messages_de.properties -> german translation
+     * </pre>
+     * <p>
+     * Instead of doing that, you can use the {@link Default}-annotation instead of <code>messages.properties</code>.
+     */
+    @Nullable
+    public String defaultValue() {
+      return defaultValue;
+    }
+
+    @Override
+    public String conciseDebugString() {
+      if (defaultValue != null) {
+        return WithConciseDebugString.build(List.of(bundle(), name, defaultValue));
+      } else {
+        return WithConciseDebugString.build(List.of(bundle(), name));
+      }
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "Str{" +
+        "bundle=" +
+        bundle() +
+        ", method=" +
+        method() +
+        ", name='" +
+        name +
+        '\'' +
+        ", defaultValue='" +
+        defaultValue +
+        '\'' +
+        '}'
+      );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+      Str str = (Str) o;
+      return name.equals(str.name) && Objects.equals(defaultValue, str.defaultValue);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), name, defaultValue);
+    }
+  }
+
+  public static final class Bin extends ResInfo {
+
+    private final Filename filename;
+
+    public Bin(BundleInfo bundleInfo, Method method, Filename filename) {
+      super(bundleInfo, method);
+      this.filename = filename;
+    }
+
+    public Filename filename() {
+      return filename;
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return WithConciseDebugString.build(
+        List.of(bundle(), "file", WithConciseDebugString.text(filename.value()))
+      );
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "Bin{" + "bundle=" + bundle() + ", method=" + method() + ", filename=" + filename + '}'
+      );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+      Bin bin = (Bin) o;
+      return filename.equals(bin.filename);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), filename);
+    }
+  }
+
+  static Res<?> reflect(BundleInfo bundleInfo, Method method) {
+    return ResInfoReflection.reflect(bundleInfo, method);
+  }
+
+  @Override
+  public String toString() {
+    return "ResInfo{" + "bundle=" + bundle + ", method=" + method + '}';
   }
 
   @Override
@@ -41,32 +172,12 @@ public final class ResInfo implements WithConciseDebugString {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ResInfo resInfo = (ResInfo) o;
-    return (
-      bundleInfo.equals(resInfo.bundleInfo) &&
-      method.equals(resInfo.method) &&
-      details.equals(resInfo.details)
-    );
+    return bundle.equals(resInfo.bundle) && method.equals(resInfo.method);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(bundleInfo, method, details);
-  }
-
-  @Override
-  public String toString() {
-    return ("ResInfo{" + details + ", " + method + ", " + bundleInfo + '}');
-  }
-
-  @Override
-  public String conciseDebugString() {
-    var baseName = bundle().baseName();
-    var details = details();
-    return WithConciseDebugString.build(List.of(baseName, details));
-  }
-
-  static Res<?> reflect(BundleInfo bundleInfo, Method method) {
-    return ResInfoReflection.reflect(bundleInfo, method);
+    return Objects.hash(bundle, method);
   }
 
   private static final class ResInfoReflection {
@@ -188,8 +299,7 @@ public final class ResInfo implements WithConciseDebugString {
       } else {
         defaultValue = null;
       }
-      var details = new ResInfoDetails.StrResource(name, defaultValue);
-      return new ResInfo(bundleInfo, method, details);
+      return new ResInfo.Str(bundleInfo, method, name, defaultValue);
     }
 
     private static ResInfo reflectFileResource(
@@ -198,8 +308,7 @@ public final class ResInfo implements WithConciseDebugString {
       File fileAnnotation
     ) {
       var filename = fileAnnotation.value();
-      var details = new ResInfoDetails.BinResource(filename);
-      return new ResInfo(bundleInfo, method, details);
+      return new ResInfo.Bin(bundleInfo, method, Filename.from(filename));
     }
   }
 }

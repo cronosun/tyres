@@ -46,7 +46,7 @@ public interface Resources {
 
     /**
      * Generates the fallback message (note, this is not to be confused with the default message,
-     * see {@link ResInfoDetails.StrResource#defaultValue()}).
+     * see {@link ResInfo.Str#defaultValue()}).
      */
     String fallbackFor(ResInfo resInfo, Object[] args);
     // TODO: in "ResourcesCommon" -> also add something like @Nullable currentLocale (can be null)
