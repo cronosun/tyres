@@ -1,7 +1,7 @@
 # Project exclude paths
 /core/target/
 /.idea/
-/defaults/defaults.iml
+/implementation/implementation.iml
 /.vscode/
 /implementation/target/
 /implementation-test/target/

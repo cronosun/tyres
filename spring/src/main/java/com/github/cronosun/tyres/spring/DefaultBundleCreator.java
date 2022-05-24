@@ -26,7 +26,7 @@ final class DefaultBundleCreator implements BundleCreator {
   public <T> T createBundle(Class<T> bundleClass) {
     var bundle = tyResImplementation.createInstance(bundleClass);
     var errors = resources.common().validate(bundle, this.localesForValidation);
-    if (errors!=null) {
+    if (errors != null) {
       throw new TyResException(errors);
     }
     return bundle;

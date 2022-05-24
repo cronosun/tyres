@@ -76,17 +76,15 @@ class TranslateTest {
 ## Modules
 
 * `core`: Contains the API and a default implementation of `TyResImplementation`. You always need this dependency.
-* `defaults`: Contains the default implementation - you most likely want this dependency too (unless you write your own
-  implementation from scratch). Also contains:
-    * Validation
-    * Some utilities, like message list and localized messages.
+* `implementation`: Contains the default implementation - you most likely want this dependency too (unless you write your own
+  implementation from scratch).
 * `spring`: Contains an implementation for spring. You only need this implementation if you use spring.
 
 ## More
 
 ### Documentation
 
-See the [tests](defaults/src/test/java/com/github/cronosun/tyres/defaults/README.md) in the `defaults` module, they are
+See the [tests](implementation/src/test/java/com/github/cronosun/tyres/implementation/README.md) in the `implementation` module, they are
 also meant as documentation. Also
 see [the spring tests](spring/src/test/java/com/github/cronosun/tyres/spring/README.md) if you're interested in spring
 support.

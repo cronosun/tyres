@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.spring;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.defaults.implementation.ResourcesConstructor;
+import com.github.cronosun.tyres.implementation.implementation.ResourcesConstructor;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
