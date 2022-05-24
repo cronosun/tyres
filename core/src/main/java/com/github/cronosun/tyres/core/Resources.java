@@ -5,6 +5,17 @@ import java.util.Locale;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Interface for resources.
+ * <p>
+ * There are interfaces for each type of resources, the {@link Messages}, {@link Strings} and {@link Binaries}
+ * interfaces. They all work more or less the same:
+ *
+ * <ul>
+ *     <li><b>maybe</b>: Returns <code>null</code> if the resource cannot be found.</li>
+ *     <li><b>get</b>: Throws or returns an exception, depending on {@link MsgNotFoundStrategy}.</li>
+ * </ul>
+ */
 @ThreadSafe
 public interface Resources {
   Messages msg();
@@ -18,7 +29,7 @@ public interface Resources {
   Common common();
 
   /**
-   * Resources functionality that cannot be clearly assigned to one of the resouce types (messages,
+   * Resources functionality that cannot be clearly assigned to one of the resource types (messages,
    * strings, binaries).
    */
   interface Common {
@@ -50,7 +61,9 @@ public interface Resources {
      * see {@link ResInfo.Str#defaultValue()}).
      */
     String fallbackFor(ResInfo resInfo, Object[] args);
-    // TODO: in "ResourcesCommon" -> also add something like @Nullable currentLocale (can be null)
+
+    /*@Nullable
+    Locale currentLocale();*/
   }
 
   interface Resolver {
