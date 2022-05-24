@@ -1,5 +1,6 @@
 package com.github.cronosun.tyres.defaults;
 
+import com.github.cronosun.tyres.core.LocalizedMsg;
 import com.github.cronosun.tyres.core.MsgRes;
 import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.core.TyRes;

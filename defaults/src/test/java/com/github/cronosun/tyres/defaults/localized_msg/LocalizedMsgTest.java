@@ -3,9 +3,9 @@ package com.github.cronosun.tyres.defaults.localized_msg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.github.cronosun.tyres.core.LocalizedMsg;
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.defaults.Implementation;
-import com.github.cronosun.tyres.defaults.LocalizedMsg;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;

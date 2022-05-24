@@ -23,8 +23,8 @@ public interface Resources {
    */
   interface Common {
     /**
-     * Validates the given bundle. Throws {@link TyResException} if the bundle is not correct / has validation errors.
-     * This method should only be used in unit-tests.
+     * Validates the given bundle. Returns a non-null {@link String} describing the error(s) if there are validation
+     * errors or <code>null</code> if there are no validation errors. This method should only be used in unit-tests.
      * <p>
      * Implementation notes: The behaviour of this method is highly implementation specific. For production code,
      * this implementation might even be a no-op. If it's implemented, it should do about this:
@@ -35,7 +35,8 @@ public interface Resources {
      * arguments match with the pattern.
      * - If the validator supports it, also asserts that there are no unused (superfluous) resources.
      */
-    void validate(Object bundle, Set<Locale> locales);
+    @Nullable
+    String validate(Object bundle, Set<Locale> locales);
 
     /**
      * What should be done if the resource cannot be found.

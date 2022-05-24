@@ -1,18 +1,13 @@
 package com.github.cronosun.tyres.defaults.delegate;
 
-import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.core.Resolvable;
-import com.github.cronosun.tyres.core.Resources;
-import com.github.cronosun.tyres.core.StrRes;
-import com.github.cronosun.tyres.defaults.DelegatingResouces;
-import com.github.cronosun.tyres.defaults.LocalizedMsg;
+import com.github.cronosun.tyres.core.*;
 import java.util.Locale;
 import java.util.Set;
 
 /**
- * You can extend {@link Resources} in your application using {@link DelegatingResouces}.
+ * You can extend {@link Resources} in your application using {@link DelegatingResources}.
  */
-public final class ExtendedResources extends DelegatingResouces {
+public final class ExtendedResources extends DelegatingResources {
 
   private final Set<Locale> supportedLocales = Set.of(Locale.GERMANY, Locale.US, Locale.FRANCE);
 
@@ -21,7 +16,10 @@ public final class ExtendedResources extends DelegatingResouces {
   }
 
   public void validate(Object bundle) {
-    common().validate(bundle, this.supportedLocales);
+    var validationError = common().validate(bundle, this.supportedLocales);
+    if (validationError != null) {
+      throw new TyResException(validationError);
+    }
   }
 
   public LocalizedMsg toLocalizedMsg(Resolvable resolvable) {

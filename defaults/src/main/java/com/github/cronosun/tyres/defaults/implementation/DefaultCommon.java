@@ -7,6 +7,7 @@ import com.github.cronosun.tyres.defaults.backends.FallbackGenerator;
 import com.github.cronosun.tyres.defaults.validation.Validator;
 import java.util.Locale;
 import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
 final class DefaultCommon implements Resources.Common {
 
@@ -25,8 +26,9 @@ final class DefaultCommon implements Resources.Common {
   }
 
   @Override
-  public void validate(Object bundle, Set<Locale> locales) {
-    validator.validate(bundle, locales);
+  @Nullable
+  public String validate(Object bundle, Set<Locale> locales) {
+    return validator.validate(bundle, locales);
   }
 
   @Override

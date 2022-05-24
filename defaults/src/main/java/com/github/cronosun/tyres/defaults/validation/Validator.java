@@ -5,6 +5,7 @@ import com.github.cronosun.tyres.defaults.backends.BinBackend;
 import com.github.cronosun.tyres.defaults.backends.MsgStrBackend;
 import java.util.Locale;
 import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 public interface Validator {
@@ -14,7 +15,13 @@ public interface Validator {
 
   ValidationErrors validationErrors(Object bundle, Set<Locale> locales);
 
-  default void validate(Object bundle, Set<Locale> locales) {
-    validationErrors(bundle, locales).throwIfHasErrors();
+  @Nullable
+  default String validate(Object bundle, Set<Locale> locales) {
+    var errors = validationErrors(bundle, locales);
+    if (errors.errors().isEmpty()) {
+      return null;
+    } else {
+      return errors.conciseDebugString();
+    }
   }
 }

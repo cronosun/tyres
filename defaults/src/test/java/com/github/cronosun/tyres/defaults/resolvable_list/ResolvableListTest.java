@@ -1,26 +1,26 @@
-package com.github.cronosun.tyres.defaults.msg_list;
+package com.github.cronosun.tyres.defaults.resolvable_list;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.ResolvableList;
 import com.github.cronosun.tyres.defaults.Implementation;
-import com.github.cronosun.tyres.defaults.MsgList;
 import com.github.cronosun.tyres.defaults.WorkingBundle;
 import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class MsgListTest {
+class ResolvableListTest {
 
   @Test
-  void simpleMessageList() {
+  void simpleResolvableList() {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var messages = List.of(
+    var elements = List.of(
       WorkingBundle.INSTANCE.colour(),
       WorkingBundle.INSTANCE.somethingFromParent(),
       WorkingBundle.INSTANCE.somethingFromParentWithArgument("TheArgument")
     );
-    var list = MsgList.fromList(messages);
+    var list = ResolvableList.from(elements);
     var messageString = resources.resolver().get(list, Locale.UK);
 
     Assertions.assertEquals(
@@ -30,36 +30,36 @@ class MsgListTest {
   }
 
   @Test
-  void singleItemMessageList() {
+  void singleElementResolvableList() {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var messages = List.of(WorkingBundle.INSTANCE.colour());
-    var list = MsgList.fromList(messages);
+    var elements = List.of(WorkingBundle.INSTANCE.colour());
+    var list = ResolvableList.from(elements);
     var messageString = resources.resolver().get(list, Locale.UK);
 
     Assertions.assertEquals("Colour", messageString);
   }
 
   @Test
-  void emptyMessageList() {
+  void emptyResolvableList() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var list = MsgList.empty();
+    var list = ResolvableList.empty();
     var messageString = source.resolver().get(list, Locale.UK);
 
     Assertions.assertEquals("", messageString);
   }
 
   @Test
-  void messageListWithCustomConfigurationMultipleItems() {
+  void resolvableListWithCustomConfigurationMultipleItems() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var messages = List.of(
+    var elements = List.of(
       WorkingBundle.INSTANCE.colour(),
       WorkingBundle.INSTANCE.somethingFromParent(),
       WorkingBundle.INSTANCE.somethingFromParentWithArgument("TheArgument")
     );
-    var list = MsgList.fromList(CustomMsgListConfiguration.INSTANCE, messages);
+    var list = ResolvableList.from(CustomResolvableListConfiguration.INSTANCE, elements);
 
     var messageEn = source.resolver().get(list, Locale.UK);
     Assertions.assertEquals(
@@ -75,10 +75,10 @@ class MsgListTest {
   }
 
   @Test
-  void messageListWithCustomConfigurationEmptyList() {
+  void resolvableListWithCustomConfigurationEmptyList() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var list = MsgList.fromList(CustomMsgListConfiguration.INSTANCE, List.of());
+    var list = ResolvableList.from(CustomResolvableListConfiguration.INSTANCE, List.of());
 
     var messageEn = source.resolver().get(list, Locale.UK);
     Assertions.assertEquals("Nothing in this list", messageEn);
@@ -88,11 +88,11 @@ class MsgListTest {
   }
 
   @Test
-  void messageListWithCustomConfigurationOneItemInList() {
+  void resolvableListWithCustomConfigurationOneItemInList() {
     var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
 
-    var messages = List.of(WorkingBundle.INSTANCE.colour());
-    var list = MsgList.fromList(CustomMsgListConfiguration.INSTANCE, messages);
+    var elements = List.of(WorkingBundle.INSTANCE.colour());
+    var list = ResolvableList.from(CustomResolvableListConfiguration.INSTANCE, elements);
 
     var messageEn = source.resolver().get(list, Locale.UK);
     Assertions.assertEquals("Only one: [Colour]", messageEn);

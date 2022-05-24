@@ -1,6 +1,5 @@
-package com.github.cronosun.tyres.defaults;
+package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -9,66 +8,75 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A list of messages.
+ * A list of 0-n {@link Resolvable}s. This list in turn itself implements {@link Resolvable}.
  */
 @ThreadSafe
-public final class MsgList implements Resolvable {
+public final class ResolvableList implements Resolvable {
 
-  private static final MsgList EMPTY = new MsgList(MsgListConfiguration.INSTANCE, List.of());
-  private final MsgListConfiguration configuration;
-  private final List<? extends Resolvable> messages;
+  private static final ResolvableList EMPTY = new ResolvableList(
+    ResolvableListConfiguration.INSTANCE,
+    List.of()
+  );
+  private final ResolvableListConfiguration configuration;
+  private final List<? extends Resolvable> elements;
 
-  private MsgList(MsgListConfiguration configuration, List<? extends Resolvable> messages) {
+  private ResolvableList(
+    ResolvableListConfiguration configuration,
+    List<? extends Resolvable> elements
+  ) {
     this.configuration = configuration;
-    this.messages = messages;
+    this.elements = elements;
   }
 
-  public static MsgList fromStream(
-    MsgListConfiguration configuration,
-    Stream<? extends Resolvable> messages
+  public static ResolvableList from(
+    ResolvableListConfiguration configuration,
+    Stream<? extends Resolvable> elements
   ) {
-    return new MsgList(configuration, messages.collect(Collectors.toUnmodifiableList()));
+    return new ResolvableList(configuration, elements.collect(Collectors.toUnmodifiableList()));
   }
 
-  public static MsgList fromStream(Stream<? extends Resolvable> messages) {
-    return fromStream(MsgListConfiguration.INSTANCE, messages);
+  public static ResolvableList from(Stream<? extends Resolvable> elements) {
+    return from(ResolvableListConfiguration.INSTANCE, elements);
   }
 
-  public static MsgList fromList(
-    MsgListConfiguration configuration,
-    List<? extends Resolvable> messages
+  public static ResolvableList from(
+    ResolvableListConfiguration configuration,
+    List<? extends Resolvable> resolvable
   ) {
-    return new MsgList(configuration, Collections.unmodifiableList(messages));
+    return new ResolvableList(configuration, Collections.unmodifiableList(resolvable));
   }
 
-  public static MsgList fromList(List<? extends Resolvable> messages) {
-    return new MsgList(MsgListConfiguration.INSTANCE, Collections.unmodifiableList(messages));
+  public static ResolvableList from(List<? extends Resolvable> elements) {
+    return new ResolvableList(
+      ResolvableListConfiguration.INSTANCE,
+      Collections.unmodifiableList(elements)
+    );
   }
 
-  public static MsgList empty(MsgListConfiguration configuration) {
-    return new MsgList(configuration, List.of());
+  public static ResolvableList empty(ResolvableListConfiguration configuration) {
+    return new ResolvableList(configuration, List.of());
   }
 
-  public static MsgList empty() {
+  public static ResolvableList empty() {
     return EMPTY;
   }
 
-  public List<? extends Resolvable> messages() {
-    return messages;
+  public List<? extends Resolvable> elements() {
+    return elements;
   }
 
-  public MsgListConfiguration configuration() {
+  public ResolvableListConfiguration configuration() {
     return configuration;
   }
 
   @Override
   public String conciseDebugString() {
-    return WithConciseDebugString.build(this.messages);
+    return WithConciseDebugString.build(this.elements);
   }
 
   @Override
   public String get(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale) {
-    var messages = this.messages;
+    var messages = this.elements;
     var numberOfMessages = messages.size();
     switch (numberOfMessages) {
       case 0:
@@ -96,7 +104,7 @@ public final class MsgList implements Resolvable {
   @Nullable
   @Override
   public String maybe(Resources resources, Locale locale) {
-    var messages = this.messages;
+    var messages = this.elements;
     if (messages.isEmpty()) {
       return resources.str().maybe(configuration.empty(), locale);
     } else {

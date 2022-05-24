@@ -113,12 +113,12 @@ interface is called `com.company.MyBundle`, the `.properties`-file must be locat
 
 ### Custom bundle layout
 
-You might want to have all your resouces in one single `messages.properties` instead of one properties-file per bundle.
+You might want to have all your resources in one single `messages.properties` instead of one properties-file per bundle.
 That's currently not implemented (but might be implemented eventually). In the meantime, you can implement that
 yourself: see for example `MsgStrBackend`. Note: Du not abuse the `@RenamePackage` annotation to achieve that (
 validation won't work anymore if you solve this that way).
 
-### Why are there two resouce types that produce strings?
+### Why are there two resource types that produce strings?
 
 There's `MsgRes` and `StrRes`: Other libraries / frameworks work differently, [spring](https://spring.io/) for example
 does not (unless configured otherwise) format (using `MessageFormat`) if there are no arguments and formats the message
@@ -135,10 +135,38 @@ interface MyBundle {
 fileNotFound=File {0} not found.
 ```
 
-... how shoud the validator know what's correct?
+... how should the validator know what's correct?
 
 * Maybe the developer has forgotten the filename in the argument and the method should look like
   this `UnspecifiedRes fileNotFound(String filename)`?
 * Or is this intentional and the developer really wants the literal text `File {0} not found.`?
 
 By using `StrRes` and `MsgRes` instead of `UnspecifiedRes`, the validator knows.
+
+### Why use a static `INSTANCE` field instead of spring injection?
+
+A simple bundle looks like this:
+
+```java
+interface MyBundle {
+    MyBundle INSTANCE = TyRes.create(MyBundle.class);
+
+    MsgRes myMessage(String information);
+
+    StrRes enumConstantOneDisplayName();
+}
+```
+
+Why not let spring create the instance (for example using a `FactoryBean`) instead of
+using `INSTANCE = TyRes.create(MyBundle.class)`? While this was technically possible, there are some cases where you
+can't get the spring context. Say for example you want to do something like this:
+
+```java
+enum MyEnum {
+    CONSTANT_ONE(MyBundle.INSTANCE.enumConstantOneDisplayName());
+    /// <...>   
+}
+```
+
+... and it's also not possible for non-spring applications / applications that don't use DI. So by using `INSTANCE`, we
+don't lose much but gain uniformity (all bundles look the same and are instantiated the same). 

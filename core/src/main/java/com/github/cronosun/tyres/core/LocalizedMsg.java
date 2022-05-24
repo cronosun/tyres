@@ -1,6 +1,7 @@
-package com.github.cronosun.tyres.defaults;
+package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.*;
+import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -320,5 +321,18 @@ public final class LocalizedMsg implements Resolvable {
     public static final CacheMarkerNotFound INSTANCE = new CacheMarkerNotFound();
 
     private CacheMarkerNotFound() {}
+  }
+
+  private static final class LocaleUtil {
+
+    private static final ResourceBundle.Control RES_BUNDLE_CONTROL = ResourceBundle.Control.getControl(
+      FORMAT_PROPERTIES
+    );
+
+    private LocaleUtil() {}
+
+    public static List<Locale> getCandidateLocales(Locale locale) {
+      return RES_BUNDLE_CONTROL.getCandidateLocales("", locale);
+    }
   }
 }

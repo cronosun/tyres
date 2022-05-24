@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.defaults.inheritance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.defaults.Implementation;
@@ -13,7 +14,9 @@ public class InheritanceTest {
   @Test
   void bundleValidates() {
     var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
-    resources.common().validate(TheBundle.INSTANCE, Set.of(Locale.GERMAN, Locale.ENGLISH));
+    assertNull(
+      resources.common().validate(TheBundle.INSTANCE, Set.of(Locale.GERMAN, Locale.ENGLISH))
+    );
   }
 
   @Test
