@@ -61,7 +61,6 @@ public interface Resources {
      * see {@link ResInfo.Str#defaultValue()}).
      */
     String fallbackFor(ResInfo resInfo, Object[] args);
-
     /*@Nullable
     Locale currentLocale();*/
   }
