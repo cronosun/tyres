@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.implementation.no_args_parsing;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ public class NoArgsParsingTest {
 
   @Test
   void msgResAlwaysUsesMsgFormatWhileStrResNeverUsesMsgFormat() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     // TODO: oder doch nicht so?
 

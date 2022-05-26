@@ -2,14 +2,12 @@ package com.github.cronosun.tyres.core.experiment;
 
 import java.util.Locale;
 import java.util.Objects;
-
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A resource that produces text. A specialization is {@link Fmt} (formatted and with 0-n arguments).
  */
 public interface Text extends Resolvable {
-
   @Nullable
   String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig);
 
@@ -17,7 +15,10 @@ public interface Text extends Resolvable {
     var localeNonNull = Objects.requireNonNull(locale, "Locale is missing");
     var notFoundConfigNotNull = Objects.requireNonNull(notFoundConfig, "Not-found config");
     var text = getText(localeNonNull, notFoundConfigNotNull.withNullAndDefault());
-    return Objects.requireNonNull(text, "Given text returned by the implementation is null (this violates the contract).");
+    return Objects.requireNonNull(
+      text,
+      "Given text returned by the implementation is null (this violates the contract)."
+    );
   }
 
   default String get(Locale locale) {
@@ -26,12 +27,18 @@ public interface Text extends Resolvable {
 
   default String get() {
     var text = getText(null, NotFoundConfig.WithNullAndDefault.DEFAULT);
-    return Objects.requireNonNull(text, "Given text returned by the implementation is null (this violates the contract).");
+    return Objects.requireNonNull(
+      text,
+      "Given text returned by the implementation is null (this violates the contract)."
+    );
   }
 
   default String get(NotFoundConfig notFoundConfig) {
     var text = getText(null, notFoundConfig.withNullAndDefault());
-    return Objects.requireNonNull(text, "Given text returned by the implementation is null (this violates the contract).");
+    return Objects.requireNonNull(
+      text,
+      "Given text returned by the implementation is null (this violates the contract)."
+    );
   }
 
   @Nullable

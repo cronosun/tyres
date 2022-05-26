@@ -2,7 +2,7 @@ package com.github.cronosun.tyres.implementation.resolvable_list;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.ResolvableList;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import com.github.cronosun.tyres.implementation.WorkingBundle;
 import java.util.List;
 import java.util.Locale;
@@ -13,7 +13,7 @@ class ResolvableListTest {
 
   @Test
   void simpleResolvableList() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var elements = List.of(
       WorkingBundle.INSTANCE.colour(),
@@ -31,7 +31,7 @@ class ResolvableListTest {
 
   @Test
   void singleElementResolvableList() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var elements = List.of(WorkingBundle.INSTANCE.colour());
     var list = ResolvableList.from(elements);
@@ -42,7 +42,7 @@ class ResolvableListTest {
 
   @Test
   void emptyResolvableList() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var list = ResolvableList.empty();
     var messageString = source.resolver().get(list, Locale.UK);
@@ -52,7 +52,7 @@ class ResolvableListTest {
 
   @Test
   void resolvableListWithCustomConfigurationMultipleItems() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var elements = List.of(
       WorkingBundle.INSTANCE.colour(),
@@ -76,7 +76,7 @@ class ResolvableListTest {
 
   @Test
   void resolvableListWithCustomConfigurationEmptyList() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var list = ResolvableList.from(CustomResolvableListConfiguration.INSTANCE, List.of());
 
@@ -89,7 +89,7 @@ class ResolvableListTest {
 
   @Test
   void resolvableListWithCustomConfigurationOneItemInList() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var elements = List.of(WorkingBundle.INSTANCE.colour());
     var list = ResolvableList.from(CustomResolvableListConfiguration.INSTANCE, elements);

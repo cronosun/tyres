@@ -2,14 +2,14 @@ package com.github.cronosun.tyres.implementation.service_tests;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
 import com.github.cronosun.tyres.core.Resources;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 public class MyService {
 
   private final CurrentLocaleService currentLocale = new CurrentLocaleService();
-  private final Resources resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+  private final Resources resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
   public void doSomethingWithAmount(UUID id, @Nullable Integer amount) {
     if (amount == null) {

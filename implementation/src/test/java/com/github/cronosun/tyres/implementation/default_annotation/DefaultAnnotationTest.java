@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.implementation.default_annotation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ public class DefaultAnnotationTest {
 
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInTheProperties() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources
       .msg()
       .get(
@@ -26,7 +26,7 @@ public class DefaultAnnotationTest {
 
   @Test
   void defaultValueIsNotUsedIfThereIsAValueInThePropertiesForStringRes() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources
       .str()
       .get(
@@ -38,7 +38,7 @@ public class DefaultAnnotationTest {
 
   @Test
   void defaultValueIsUsedIfMissingInProperties() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources
       .msg()
       .get(DefaultAnnotationTestBundle.INSTANCE.withConfiguredDefault("ABC"), Locale.ENGLISH);
@@ -47,7 +47,7 @@ public class DefaultAnnotationTest {
 
   @Test
   void defaultValueIsUsedIfMissingInPropertiesForString() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = resources
       .str()
       .get(DefaultAnnotationTestBundle.INSTANCE.stringResWithConfiguredDefault(), Locale.ENGLISH);

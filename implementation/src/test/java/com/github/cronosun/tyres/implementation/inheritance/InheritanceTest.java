@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ public class InheritanceTest {
 
   @Test
   void bundleValidates() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     assertNull(
       resources.common().validate(TheBundle.INSTANCE, Set.of(Locale.GERMAN, Locale.ENGLISH))
     );
@@ -21,7 +21,7 @@ public class InheritanceTest {
 
   @Test
   void bundleResultsInCorrectStrings() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var locale = Locale.US;
 
     // values declared in parent

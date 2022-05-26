@@ -18,7 +18,7 @@ class WorkingBundleTest {
 
   @Test
   void basicTestsWithDifferentLocales() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var msgColourUk = source.msg().get(WorkingBundle.INSTANCE.colour(), Locale.UK);
     Assertions.assertEquals("Colour", msgColourUk);
@@ -30,7 +30,7 @@ class WorkingBundleTest {
 
   @Test
   void inheritance() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var msg = source.msg().get(WorkingBundle.INSTANCE.somethingFromParent(), Locale.UK);
     Assertions.assertEquals("Message from parent interface", msg);
@@ -38,7 +38,7 @@ class WorkingBundleTest {
 
   @Test
   void inheritanceWithArg() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var msg = source
       .msg()
@@ -48,7 +48,7 @@ class WorkingBundleTest {
 
   @Test
   void fallbackMessage() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.FALLBACK);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.FALLBACK);
 
     var msg = source
       .msg()
@@ -61,7 +61,7 @@ class WorkingBundleTest {
 
   @Test
   void returnsNullIfCannotBeFound() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var msg = source
       .msg()
@@ -71,7 +71,7 @@ class WorkingBundleTest {
 
   @Test
   void msgAsArgumentIsResolved() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var monday = WorkingBundle.INSTANCE.monday();
     var friday = WorkingBundle.INSTANCE.friday();
@@ -90,7 +90,7 @@ class WorkingBundleTest {
 
   @Test
   void ifAnArgumentCannotBeResolvedTheEntireMessageCannotBeResolved() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var monday = WorkingBundle.INSTANCE.monday();
     var doesNotExist = WorkingBundle.INSTANCE.somethingThatIsMissing();
@@ -109,7 +109,7 @@ class WorkingBundleTest {
 
   @Test
   void umlautsWork() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var somethingWithUmlauts = WorkingBundle.INSTANCE.somethingWithUmlauts();
     var msgEn = source.msg().get(somethingWithUmlauts, Locale.UK);
@@ -121,7 +121,7 @@ class WorkingBundleTest {
 
   @Test
   void testLocalizedMsg() {
-    var source = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var localizedMsg = LocalizedMsg
       .builder()
       .with(Locale.GERMAN, "ein farbenfrohes Bier")

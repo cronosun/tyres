@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.github.cronosun.tyres.core.LocalizedMsg;
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -89,7 +89,7 @@ public class LocalizedMsgTest {
 
   @Test
   void testFromResourcesMessage() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = LocalizedMsg.fromResources(
       resources,
       LocalizedMsgBundle.INSTANCE.sayHello("Simon"),
@@ -105,7 +105,7 @@ public class LocalizedMsgTest {
 
   @Test
   void testFromResourcesStr() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = LocalizedMsg.fromResources(
       resources,
       LocalizedMsgBundle.INSTANCE.colour(),
@@ -118,7 +118,7 @@ public class LocalizedMsgTest {
 
   @Test
   void testFromResourcesOptional() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var msg = LocalizedMsg.fromResources(
       resources,
       LocalizedMsgBundle.INSTANCE.messageNotPresentForSomeLocales(),

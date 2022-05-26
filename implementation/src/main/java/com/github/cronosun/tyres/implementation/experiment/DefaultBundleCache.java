@@ -1,5 +1,7 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
+import com.github.cronosun.tyres.core.Resources;
+import com.github.cronosun.tyres.core.experiment.Resources2;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,7 +12,7 @@ final class DefaultBundleCache implements BundleCache {
   private final Object lock = new Object();
 
   @Override
-  public <T> T bundle(Class<T> bundleClass, BundleFactory factory, EffectiveNameGenerator effectiveNameGenerator) {
+  public <T> T bundle(Resources2 resources, Class<T> bundleClass, BundleFactory factory) {
     // fast cache: last bundle (will usually be the correct one), compare identity only.
     var lastEntry = this.lastEntry;
     if (lastEntry != null && lastEntry.bundleClass == bundleClass) {
@@ -18,19 +20,23 @@ final class DefaultBundleCache implements BundleCache {
       return (T) lastEntry.bundle;
     }
 
-    var cacheEntry = bundleNoFastCache(bundleClass, factory,effectiveNameGenerator);
+    var cacheEntry = bundleNoFastCache(resources, bundleClass, factory);
     this.lastEntry = cacheEntry;
     return cacheEntry.bundle;
   }
 
-  private <T> CacheEntry<T> bundleNoFastCache(Class<T> bundleClass, BundleFactory factory, EffectiveNameGenerator effectiveNameGenerator) {
+  private <T> CacheEntry<T> bundleNoFastCache(
+    Resources2 resources,
+    Class<T> bundleClass,
+    BundleFactory factory
+  ) {
     var fromCache = this.cache.get(bundleClass);
     if (fromCache == null) {
       synchronized (lock) {
         fromCache = this.cache.get(bundleClass);
         if (fromCache == null) {
           // ok, still not here, ask the factory
-          var bundle = factory.createBundle(bundleClass, effectiveNameGenerator);
+          var bundle = factory.createBundle(resources, bundleClass);
           var cacheEntry = new CacheEntry<>(bundleClass, bundle);
           this.cache.put(bundleClass, cacheEntry);
           return cacheEntry;

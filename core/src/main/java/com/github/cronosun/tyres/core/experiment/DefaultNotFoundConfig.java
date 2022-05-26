@@ -26,7 +26,6 @@ public enum DefaultNotFoundConfig {
   public NotFoundConfig.WithNullNoDefault withNull() {
     return withNull;
   }
-
   // TODO
   /*public DefaultNotFoundConfig with(NotFoundConfig notFoundConfig) {
     switch (notFoundConfig) {

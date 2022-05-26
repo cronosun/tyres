@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.implementation.delegate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ public class DelegateTest {
 
   @Test
   void testDelegateUsingLocalizedMsg() {
-    var originalResources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var originalResources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var resources = new ExtendedResources(originalResources);
 
     var msg = resources.toLocalizedMsg(ExtendedResourcesBundle.INSTANCE.sayHello());
@@ -24,14 +24,14 @@ public class DelegateTest {
 
   @Test
   void testDelegateUsingValidate() {
-    var originalResources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var originalResources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var resources = new ExtendedResources(originalResources);
     resources.validate(ExtendedResourcesBundle.INSTANCE);
   }
 
   @Test
   void testDelegateUsingAsIntMethod() {
-    var originalResources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var originalResources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var resources = new ExtendedResources(originalResources);
     assertEquals(
       10,

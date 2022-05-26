@@ -36,7 +36,7 @@ public enum NotFoundConfig {
 
   public WithNullNoDefault toWithNull(DefaultNotFoundConfig defaultNotFoundConfig) {
     var withNull = this.withNullAndDefault.withNullNoDefault;
-    if (withNull!=null) {
+    if (withNull != null) {
       return withNull;
     } else {
       return defaultNotFoundConfig.withNull();
@@ -63,9 +63,13 @@ public enum NotFoundConfig {
 
     @Nullable
     private final NotFoundConfig notFoundConfig;
+
     private final WithNullAndDefault withNullAndDefault;
 
-    WithNullNoDefault(@Nullable NotFoundConfig notFoundConfig, WithNullAndDefault withNullAndDefault) {
+    WithNullNoDefault(
+      @Nullable NotFoundConfig notFoundConfig,
+      WithNullAndDefault withNullAndDefault
+    ) {
       this.notFoundConfig = notFoundConfig;
       this.withNullAndDefault = withNullAndDefault;
     }
@@ -91,6 +95,17 @@ public enum NotFoundConfig {
 
     WithNullAndDefault(@Nullable NotFoundConfig.WithNullNoDefault withNullNoDefault) {
       this.withNullNoDefault = withNullNoDefault;
+    }
+
+    public NotFoundConfig.WithNullNoDefault withNullNoDefault(
+      DefaultNotFoundConfig defaultNotFoundConfig
+    ) {
+      var withNullNoDefault = this.withNullNoDefault;
+      if (withNullNoDefault != null) {
+        return withNullNoDefault;
+      } else {
+        return defaultNotFoundConfig.withNull();
+      }
     }
   }
 }

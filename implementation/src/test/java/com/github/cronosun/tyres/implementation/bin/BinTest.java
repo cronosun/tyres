@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +15,7 @@ public class BinTest {
 
   @Test
   void testNoLocalization() throws IOException {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var root = resources.bin().get(BinTestBundle.INSTANCE.resourceNoLocalization(), Locale.ROOT);
     assertEquals("Content from no_localization.txt", toString(root));
@@ -27,7 +27,7 @@ public class BinTest {
 
   @Test
   void testLocalized() throws IOException {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
 
     var root = resources.bin().get(BinTestBundle.INSTANCE.resourceLocalized(), Locale.ROOT);
     assertEquals("The default.", toString(root));
@@ -41,7 +41,7 @@ public class BinTest {
 
   @Test
   void testOnlyGerman() throws IOException {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var root = resources.bin().maybe(BinTestBundle.INSTANCE.onlyGerman(), Locale.ROOT);
     assertNull(root);
     var de = resources.bin().get(BinTestBundle.INSTANCE.onlyGerman(), Locale.GERMAN);

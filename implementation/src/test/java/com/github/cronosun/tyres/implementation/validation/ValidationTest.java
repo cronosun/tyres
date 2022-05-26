@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.implementation.validation;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.implementation.Implementation;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ public class ValidationTest {
 
   @Test
   void validatedWithoutErrors() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     assertNull(
       resources
         .common()
@@ -25,7 +25,7 @@ public class ValidationTest {
 
   @Test
   void validateThrowsSinceThereIsNoItalianAvailable() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     assertNotNull(
       resources.common().validate(ValidatesCorrectlyBundle.INSTANCE, Set.of(Locale.ITALIAN))
     );
@@ -33,7 +33,7 @@ public class ValidationTest {
 
   @Test
   void validationDetectsMissingFileForLocale() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     // english is ok (there's a file for that).
     assertNull(
       resources
@@ -53,7 +53,7 @@ public class ValidationTest {
 
   @Test
   void validationDetectsMissingMessageForLocale() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     // english is ok (there's a message in the .properties file).
     assertNull(
       resources
@@ -73,7 +73,7 @@ public class ValidationTest {
 
   @Test
   void validationDetectsInvalidPattern() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     // will take the ROOT locale, this locale is ok.
     assertNull(resources.common().validate(InvalidPatternBundle.INSTANCE, Set.of(Locale.ITALIAN)));
     // But in the english translation, there's a problem.
@@ -85,7 +85,7 @@ public class ValidationTest {
 
   @Test
   void validationRespectsTheDefaultValue() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     // Validator detects the Default annotation and is happy.
     assertNull(
       resources
@@ -99,7 +99,7 @@ public class ValidationTest {
 
   @Test
   void validatorDetectsErrorsInPatternsInTheDefaultAnnotation() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     // There's a problem with the pattern or the method (wrong number of arguments).
     assertNotNull(
       resources
@@ -110,7 +110,7 @@ public class ValidationTest {
 
   @Test
   void validatorDetectsSuperfluousResources() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     // See the .properties file, there's 'butThisIsSomethingThatIsNoLongerInUse' (that's not referenced in the interface).
     assertNotNull(
       resources.common().validate(SuperfluousResourceBundle.INSTANCE, Set.of(Locale.ITALIAN))
@@ -119,7 +119,7 @@ public class ValidationTest {
 
   @Test
   void validatorRespectsTheOptionalPropertyButIfItIsPresentHasToBeValid() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     // german and english validate: english has a correct message pattern; german has no such translation (which is
     // ok, see the @Validation annotation).
     assertNull(
@@ -135,7 +135,7 @@ public class ValidationTest {
 
   @Test
   void patternsAreOnlyValidatedForMsgResNotForStrRes() {
-    var resources = Implementation.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
     var locale = Locale.ENGLISH;
     assertNull(resources.common().validate(InvalidPatternInStrResBundle.INSTANCE, Set.of(locale)));
 
