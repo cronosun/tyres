@@ -1,9 +1,10 @@
 package com.github.cronosun.tyres.core;
 
+import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
-public final class Filename {
+public final class Filename implements WithConciseDebugString {
 
   private static final char EXTENSION_SEPARATOR = '.';
   private final String value;
@@ -58,5 +59,10 @@ public final class Filename {
   @Override
   public int hashCode() {
     return Objects.hash(value);
+  }
+
+  @Override
+  public String conciseDebugString() {
+    return WithConciseDebugString.build(List.of(value));
   }
 }

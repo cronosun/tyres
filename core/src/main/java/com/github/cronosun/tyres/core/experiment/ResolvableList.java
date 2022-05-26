@@ -54,7 +54,7 @@ public class ResolvableList implements Resolvable {
     }
 
     @Override
-    public Text get(Resources2 resources) {
+    public Text resolve(Resources2 resources) {
         var configuration = resources.get(this.configuration);
         return new ListText(resources, configuration);
     }
@@ -97,7 +97,7 @@ public class ResolvableList implements Resolvable {
                         if (atLeastOneIsMissing[0]) {
                             return "";
                         }
-                        var maybeMessage = resolvable.get(this.resources).getText(locale, notFoundConfig);
+                        var maybeMessage = resolvable.resolve(this.resources).getText(locale, notFoundConfig);
                         if (maybeMessage==null) {
                             atLeastOneIsMissing[0] = true;
                             return "";

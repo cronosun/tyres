@@ -2,13 +2,14 @@ package com.github.cronosun.tyres.implementation.experiment;
 
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.experiment.*;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Nullable;
 
 final class DefaultBundleFactory implements BundleFactory {
 
@@ -20,14 +21,17 @@ final class DefaultBundleFactory implements BundleFactory {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> T createBundle(Class<T> bundleClass) {
-    var bundleInfo = BundleInfo.reflect(bundleClass);
-    var resourcesMap = ResourcesMap.from(bundleInfo, backend);
+  public <T> T createBundle(Class<T> bundleClass, EffectiveNameGenerator effectiveNameGenerator) {
+    var originalBundleInfo = BundleInfo.reflect(bundleClass);
+    var effectiveBaseName = effectiveNameGenerator.effectiveBaseName(bundleClass, originalBundleInfo.baseName());
+    var bundleInfo = originalBundleInfo.withEffectiveBaseName(effectiveBaseName);
+
+    var resourcesMap = ResourcesMap.from(bundleInfo, backend, effectiveNameGenerator);
     var invocationHandler = new InvocationHandler(resourcesMap);
     return (T) Proxy.newProxyInstance(
-      bundleClass.getClassLoader(),
-      new Class[] { bundleClass },
-      invocationHandler
+            bundleClass.getClassLoader(),
+            new Class[]{bundleClass},
+            invocationHandler
     );
   }
 
@@ -40,7 +44,7 @@ final class DefaultBundleFactory implements BundleFactory {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
       return resourcesMap.get(method, args);
     }
   }
@@ -61,11 +65,11 @@ final class DefaultBundleFactory implements BundleFactory {
       var entry = map.get(name);
       if (entry == null) {
         throw new TyResException(
-          "Entry '" +
-          name +
-          "' not found in bundle " +
-          bundleInfo.conciseDebugString() +
-          "' (this should not happen, could be a TyRes implementation error)."
+                "Entry '" +
+                        name +
+                        "' not found in bundle " +
+                        bundleInfo.conciseDebugString() +
+                        "' (this should not happen, could be a TyRes implementation error)."
         );
       }
       if (args != null && args.length != 0) {
@@ -75,170 +79,165 @@ final class DefaultBundleFactory implements BundleFactory {
       }
     }
 
-    public static ResourcesMap from(BundleInfo bundleInfo, ResourcesBackend backend) {
+    public static ResourcesMap from(BundleInfo bundleInfo, ResourcesBackend backend, ResInfo.EffectiveNameGenerator effectiveNameGenerator) {
       var numberOfMethods = bundleInfo.numberOfMethods();
       var map = bundleInfo
-        .unvalidatedMethods()
-        .map(methodInfo -> {
-          var key = methodInfo.method().getName();
-          var value = (WithArguments) ResourcesMap.fromMethodInfoToImplementation(
-            bundleInfo,
-            methodInfo,
-            backend
-          );
-          return new MapEntry<>(key, value);
-        })
-        .collect(Collectors.toUnmodifiableMap(item -> item.key, item -> item.value));
+              .resources(effectiveNameGenerator)
+              .map(resInfo -> {
+                var key = resInfo.method().getName();
+                var value = (WithArguments) ResourcesMap.fromMethodInfoToImplementation(
+                        resInfo,
+                        backend
+                );
+                return new MapEntry<>(key, value);
+              })
+              .collect(Collectors.toUnmodifiableMap(item -> item.key, item -> item.value));
       if (map.size() != numberOfMethods) {
         var methodNames = bundleInfo
-          .unvalidatedMethods()
-          .map(item -> item.method().getName())
-          .collect(Collectors.joining(", "));
+                .resources(effectiveNameGenerator)
+                .map(item -> item.method().getName())
+                .collect(Collectors.joining(", "));
         throw new TyResException(
-          "Bundle '" +
-          bundleInfo.conciseDebugString() +
-          "' contains at least two methods with the same name. That's not supported. Methods: [" +
-          methodNames +
-          "]."
+                "Bundle '" +
+                        bundleInfo.conciseDebugString() +
+                        "' contains at least two methods with the same name. That's not supported. Methods: [" +
+                        methodNames +
+                        "]."
         );
       }
       return new ResourcesMap(bundleInfo, map);
     }
 
     private static WithArguments<?> fromMethodInfoToImplementation(
-      BundleInfo bundleInfo,
-      MethodInfo methodInfo,
-      ResourcesBackend backend
+            ResInfo resInfo,
+            ResourcesBackend backend
     ) {
-      methodInfo.assertValid();
-      var returnType = methodInfo.returnType();
-      switch (returnType) {
-        case TEXT:
-          return new TextImpl(bundleInfo, methodInfo, backend);
-        case FMT:
-          return new FmtImpl(bundleInfo, methodInfo, backend);
-        case BIN:
-          return new BinImpl(bundleInfo, methodInfo, backend);
-        default:
-          throw new TyResException("Unknown resource type: " + returnType);
-      }
-    }
-  }
-
-  private static final class TextImpl implements Text, WithArguments<TextImpl> {
-
-    private final BundleInfo bundleInfo;
-    private final MethodInfo methodInfo;
-    private final ResourcesBackend backend;
-
-    private TextImpl(BundleInfo bundleInfo, MethodInfo methodInfo, ResourcesBackend backend) {
-      this.bundleInfo = bundleInfo;
-      this.methodInfo = methodInfo;
-      this.backend = backend;
-    }
-
-    @Override
-    public TextImpl withArguments(Object[] args) {
-      if (args.length == 0) {
-        return this;
-      }
-      throw new TyResException("Texts (not formatted) cannot have arguments");
-    }
-
-    @Override
-    public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
-      return backend.getText(bundleInfo, methodInfo, locale, notFoundConfig);
-    }
-  }
-
-  private static final class FmtImpl implements Fmt, WithArguments<Fmt> {
-
-    private static final Object[] NO_ARGS = new Object[] {};
-    private final BundleInfo bundleInfo;
-    private final MethodInfo methodInfo;
-    private final ResourcesBackend backend;
-
-    private FmtImpl(BundleInfo bundleInfo, MethodInfo methodInfo, ResourcesBackend backend) {
-      this.bundleInfo = bundleInfo;
-      this.methodInfo = methodInfo;
-      this.backend = backend;
-    }
-
-    @Override
-    public Fmt withArguments(Object[] args) {
-      if (args.length == 0) {
-        return this;
+      if (resInfo instanceof ResInfo.Text) {
+        var text = (ResInfo.Text) resInfo;
+        switch (text.type()) {
+          case TEXT:
+            return new TextImpl(text, backend);
+          case FMT:
+            return new FmtImpl(text, backend);
+          default:
+            throw new TyResException("Unknown text type: " + text.type());
+        }
+      } else if (resInfo instanceof ResInfo.Bin) {
+        var bin = (ResInfo.Bin) resInfo;
+        return new BinImpl(bin, backend);
       } else {
-        return new FmtWithArgsImpl(this, args, backend);
+        throw new TyResException("Unknown resource type: " + resInfo);
       }
     }
 
-    @Override
-    public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
-      return backend.getFmt(bundleInfo, methodInfo, NO_ARGS, locale, notFoundConfig);
-    }
-  }
+    private static final class TextImpl implements Text, WithArguments<TextImpl> {
 
-  private static final class FmtWithArgsImpl implements Fmt {
+      private final ResInfo.Text info;
+      private final ResourcesBackend backend;
 
-    private final FmtImpl noArgs;
-    private final Object[] args;
-
-    private FmtWithArgsImpl(FmtImpl noArgs, Object[] args, ResourcesBackend backend) {
-      this.noArgs = noArgs;
-      this.args = args;
-    }
-
-    @Override
-    public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
-      return noArgs.backend.getFmt(
-              noArgs.bundleInfo,
-              noArgs.methodInfo,
-              args,
-              locale,
-              notFoundConfig
-      );
-    }
-  }
-
-  private static final class BinImpl implements Bin, WithArguments<BinImpl> {
-
-    private final BundleInfo bundleInfo;
-    private final MethodInfo methodInfo;
-    private final ResourcesBackend backend;
-
-    private BinImpl(BundleInfo bundleInfo, MethodInfo methodInfo, ResourcesBackend backend) {
-      this.bundleInfo = bundleInfo;
-      this.methodInfo = methodInfo;
-      this.backend = backend;
-    }
-
-    @Override
-    public BinImpl withArguments(Object[] args) {
-      if (args.length == 0) {
-        return this;
+      private TextImpl(ResInfo.Text info, ResourcesBackend backend) {
+        this.info = info;
+        this.backend = backend;
       }
-      throw new TyResException("Binary cannot have arguments");
+
+      @Override
+      public TextImpl withArguments(Object[] args) {
+        if (args.length == 0) {
+          return this;
+        }
+        throw new TyResException("Texts (not formatted) cannot have arguments");
+      }
+
+      @Override
+      public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+        return backend.getText(info, locale, notFoundConfig);
+      }
     }
 
-    @Override
-    public @Nullable InputStream getInputStream(@Nullable Locale locale, boolean required) {
-      return backend.getInputStream(bundleInfo, methodInfo, locale, required);
+    private static final class FmtImpl implements Fmt, WithArguments<Fmt> {
+
+      private static final Object[] NO_ARGS = new Object[]{};
+      private final ResInfo.Text info;
+      private final ResourcesBackend backend;
+
+      private FmtImpl(ResInfo.Text info, ResourcesBackend backend) {
+        this.info = info;
+        this.backend = backend;
+      }
+
+      @Override
+      public Fmt withArguments(Object[] args) {
+        if (args.length == 0) {
+          return this;
+        } else {
+          return new FmtWithArgsImpl(this, args);
+        }
+      }
+
+      @Override
+      public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+        return backend.getFmt(info, NO_ARGS, locale, notFoundConfig);
+      }
     }
-  }
 
-  interface WithArguments<TSelf> {
-    TSelf withArguments(Object[] args);
-  }
+    private static final class FmtWithArgsImpl implements Fmt {
 
-  private static final class MapEntry<K, V> {
+      private final FmtImpl noArgs;
+      private final Object[] args;
 
-    private final K key;
-    private final V value;
+      private FmtWithArgsImpl(FmtImpl noArgs, Object[] args) {
+        this.noArgs = noArgs;
+        this.args = args;
+      }
 
-    private MapEntry(K key, V value) {
-      this.key = key;
-      this.value = value;
+      @Override
+      public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+        return noArgs.backend.getFmt(
+                noArgs.info,
+                args,
+                locale,
+                notFoundConfig
+        );
+      }
+    }
+
+    private static final class BinImpl implements Bin, WithArguments<BinImpl> {
+
+      private final ResInfo.Bin info;
+      private final ResourcesBackend backend;
+
+      private BinImpl(ResInfo.Bin info, ResourcesBackend backend) {
+        this.info = info;
+        this.backend = backend;
+      }
+
+      @Override
+      public BinImpl withArguments(Object[] args) {
+        if (args.length == 0) {
+          return this;
+        }
+        throw new TyResException("Binary cannot have arguments");
+      }
+
+      @Override
+      public @Nullable InputStream getInputStream(@Nullable Locale locale, boolean required) {
+        return backend.getInputStream(info, locale, required);
+      }
+    }
+
+    interface WithArguments<TSelf> {
+      TSelf withArguments(Object[] args);
+    }
+
+    private static final class MapEntry<K, V> {
+
+      private final K key;
+      private final V value;
+
+      private MapEntry(K key, V value) {
+        this.key = key;
+        this.value = value;
+      }
     }
   }
 }

@@ -11,22 +11,24 @@ public final class DefaultResources2 implements Resources2 {
   private final BundleCache bundleCache;
   private final BundleFactory bundleFactory;
   private final CurrentLocaleProvider currentLocaleProvider;
+  private final EffectiveNameGenerator effectiveNameGenerator;
 
   public DefaultResources2(
     DefaultNotFoundConfig defaultNotFoundConfig,
     BundleCache bundleCache,
     BundleFactory bundleFactory,
-    CurrentLocaleProvider currentLocaleProvider
-  ) {
+    CurrentLocaleProvider currentLocaleProvider,
+    EffectiveNameGenerator effectiveNameGenerator) {
     this.defaultNotFoundConfig = defaultNotFoundConfig;
     this.bundleCache = bundleCache;
     this.bundleFactory = bundleFactory;
     this.currentLocaleProvider = currentLocaleProvider;
+    this.effectiveNameGenerator = effectiveNameGenerator;
   }
 
   @Override
   public <T> T get(Class<T> bundleClass) {
-    return bundleCache.bundle(bundleClass, this.bundleFactory);
+    return bundleCache.bundle(bundleClass, this.bundleFactory, effectiveNameGenerator);
   }
 
   @Override

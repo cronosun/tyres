@@ -46,7 +46,7 @@ public interface Text extends Resolvable {
   }
 
   @Override
-  default Text get(Resources2 resources) {
+  default Text resolve(Resources2 resources) {
     return this;
   }
 }

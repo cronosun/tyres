@@ -10,7 +10,7 @@ final class DefaultBundleCache implements BundleCache {
   private final Object lock = new Object();
 
   @Override
-  public <T> T bundle(Class<T> bundleClass, BundleFactory factory) {
+  public <T> T bundle(Class<T> bundleClass, BundleFactory factory, EffectiveNameGenerator effectiveNameGenerator) {
     // fast cache: last bundle (will usually be the correct one), compare identity only.
     var lastEntry = this.lastEntry;
     if (lastEntry != null && lastEntry.bundleClass == bundleClass) {
@@ -18,19 +18,19 @@ final class DefaultBundleCache implements BundleCache {
       return (T) lastEntry.bundle;
     }
 
-    var cacheEntry = bundleNoFastCache(bundleClass, factory);
+    var cacheEntry = bundleNoFastCache(bundleClass, factory,effectiveNameGenerator);
     this.lastEntry = cacheEntry;
     return cacheEntry.bundle;
   }
 
-  private <T> CacheEntry<T> bundleNoFastCache(Class<T> bundleClass, BundleFactory factory) {
+  private <T> CacheEntry<T> bundleNoFastCache(Class<T> bundleClass, BundleFactory factory, EffectiveNameGenerator effectiveNameGenerator) {
     var fromCache = this.cache.get(bundleClass);
     if (fromCache == null) {
       synchronized (lock) {
         fromCache = this.cache.get(bundleClass);
         if (fromCache == null) {
           // ok, still not here, ask the factory
-          var bundle = factory.createBundle(bundleClass);
+          var bundle = factory.createBundle(bundleClass, effectiveNameGenerator);
           var cacheEntry = new CacheEntry<>(bundleClass, bundle);
           this.cache.put(bundleClass, cacheEntry);
           return cacheEntry;

@@ -2,10 +2,7 @@ package com.github.cronosun.tyres.implementation.experiment;
 
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.WithConciseDebugString;
-import com.github.cronosun.tyres.core.experiment.BundleInfo;
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
-import com.github.cronosun.tyres.core.experiment.MethodInfo;
-import com.github.cronosun.tyres.core.experiment.NotFoundConfig;
+import com.github.cronosun.tyres.core.experiment.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -30,42 +27,42 @@ public class DefaultResourcesBackend implements ResourcesBackend {
     }
 
     @Override
-    public @Nullable String getText(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+    public @Nullable String getText(ResInfo.Text info, @Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
         var localeToUse = locale(locale);
         if (localeToUse==null) {
-            return handleReturnForText(null, bundleInfo, methodInfo, null, NO_ARGS, notFoundConfig);
+            return handleReturnForText(null, info, null, NO_ARGS, notFoundConfig);
         }
-        var value =  this.textBackend.maybeText(bundleInfo, methodInfo, localeToUse);
-        return handleReturnForText(value, bundleInfo, methodInfo, localeToUse, NO_ARGS, notFoundConfig);
+        var value =  this.textBackend.maybeText(info, localeToUse);
+        return handleReturnForText(value, info, localeToUse, NO_ARGS, notFoundConfig);
     }
 
     @Override
-    public @Nullable String getFmt(BundleInfo bundleInfo, MethodInfo methodInfo, Object[] args, @Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+    public @Nullable String getFmt(ResInfo.Text info,  Object[] args, @Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
         var localeToUse = locale(locale);
         if (localeToUse==null) {
-            return handleReturnForText(null, bundleInfo, methodInfo, null, args, notFoundConfig);
+            return handleReturnForText(null, info, null, args, notFoundConfig);
         }
-        var value =  this.textBackend.maybeFmt(bundleInfo, methodInfo, args, localeToUse);
-        return handleReturnForText(value, bundleInfo, methodInfo, localeToUse, args, notFoundConfig);
+        var value =  this.textBackend.maybeFmt(info, args, localeToUse);
+        return handleReturnForText(value, info, localeToUse, args, notFoundConfig);
     }
 
     @Override
-    public @Nullable InputStream getInputStream(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale, boolean required) {
+    public @Nullable InputStream getInputStream(ResInfo.Bin info, @Nullable Locale locale, boolean required) {
         var localeToUse = locale(locale);
         final InputStream inputStream;
         if (localeToUse==null) {
             inputStream = null;
         } else {
-            inputStream = this.binBackend.maybeBin(bundleInfo, methodInfo,localeToUse );
+            inputStream = this.binBackend.maybeBin(info,localeToUse );
         }
         if (inputStream==null && required) {
-            return throwNotFound(bundleInfo, methodInfo, localeToUse);
+            return throwNotFound(info, localeToUse);
         } else {
             return inputStream;
         }
     }
 
-    private String handleReturnForText(@Nullable String text, BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale, Object[] args, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+    private String handleReturnForText(@Nullable String text, ResInfo.Text info, @Nullable Locale locale, Object[] args, NotFoundConfig.WithNullAndDefault notFoundConfig) {
         final DefaultNotFoundConfig defaultNotFoundConfig;
         switch (notFoundConfig) {
             case THROW:
@@ -85,20 +82,20 @@ public class DefaultResourcesBackend implements ResourcesBackend {
         }
         switch (defaultNotFoundConfig) {
             case THROW:
-                return throwNotFound(bundleInfo, methodInfo, locale);
+                return throwNotFound(info, locale);
             case FALLBACK:
-                return fallbackGenerator.fallbackMsgFor(bundleInfo, methodInfo, locale, args);
+                return fallbackGenerator.fallbackMsgFor(info, locale, args);
             default:
                 throw new TyResException("Unknown not found config: " +defaultNotFoundConfig);
         }
     }
 
-    private <T> T throwNotFound(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale) {
+    private <T> T throwNotFound(ResInfo resInfo, @Nullable Locale locale) {
         if (locale==null) {
-            var debugString = WithConciseDebugString.build(List.of(bundleInfo, methodInfo));
+            var debugString = resInfo.conciseDebugString();
             throw new TyResException("No locale found resolving '" + debugString + "'.");
         } else {
-            var debugString = WithConciseDebugString.build(List.of(locale.toLanguageTag(), bundleInfo, methodInfo));
+            var debugString = WithConciseDebugString.build(List.of(locale.toLanguageTag(), resInfo));
             throw new TyResException("Resource '" + debugString + "' not found.");
         }
     }

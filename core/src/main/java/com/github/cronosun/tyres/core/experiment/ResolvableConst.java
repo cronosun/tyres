@@ -22,7 +22,7 @@ final class ResolvableConst<T> implements Resolvable {
   private final Function<T, Text> function;
 
   @Override
-  public Text get(Resources2 resources) {
+  public Text resolve(Resources2 resources) {
     var cachedText = this.cachedText;
     if (cachedText != null) {
       return cachedText;

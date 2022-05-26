@@ -9,5 +9,8 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.METHOD)
 public @interface File {
+  /**
+   * The filename, such as "my_data.json" or "my_image.png".
+   */
   String value();
 }

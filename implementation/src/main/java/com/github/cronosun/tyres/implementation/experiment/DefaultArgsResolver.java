@@ -23,7 +23,7 @@ final class DefaultArgsResolver implements ArgsResolver {
                 if (newArgs==null) {
                     newArgs = args.clone();
                 }
-                var resolvedValue = resolvable.get(resources).getText(locale, notFoundConfig.withNullAndDefault());
+                var resolvedValue = resolvable.resolve(resources).getText(locale, notFoundConfig.withNullAndDefault());
                 if (resolvedValue==null) {
                     // not able to resolve one argument means: Can't resolve the entire message
                     return null;

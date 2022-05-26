@@ -11,6 +11,10 @@ public interface Resources2 {
    */
   <T> T get(Class<T> bundleClass);
 
+  default Text resolve(Resolvable resolvable) {
+    return resolvable.resolve(this);
+  }
+
   /**
    * Returns the current locale - if any. Returns <code>null</code> if there's no current locale.
    */
