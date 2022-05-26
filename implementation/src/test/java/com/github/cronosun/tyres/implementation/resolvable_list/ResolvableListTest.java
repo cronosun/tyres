@@ -1,11 +1,11 @@
 package com.github.cronosun.tyres.implementation.resolvable_list;
 
-import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.core.ResolvableList;
+import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.experiment.ResolvableList;
 import com.github.cronosun.tyres.implementation.TestUtil;
-import com.github.cronosun.tyres.implementation.WorkingBundle;
 import java.util.List;
 import java.util.Locale;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,91 +13,96 @@ class ResolvableListTest {
 
   @Test
   void simpleResolvableList() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(ResolvableListBundle.class);
 
     var elements = List.of(
-      WorkingBundle.INSTANCE.colour(),
-      WorkingBundle.INSTANCE.somethingFromParent(),
-      WorkingBundle.INSTANCE.somethingFromParentWithArgument("TheArgument")
+            bundle.colour(),
+            bundle.aluminium(),
+            bundle.somethingWithArgument("TheArgument")
     );
     var list = ResolvableList.from(elements);
-    var messageString = resources.resolver().get(list, Locale.UK);
+    var messageString = resources.resolve(list).get(Locale.UK);
 
     Assertions.assertEquals(
-      "Colour, Message from parent interface, Hello, TheArgument!",
+      "Colour, Aluminium, Hello, TheArgument!",
       messageString
     );
   }
 
   @Test
   void singleElementResolvableList() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(ResolvableListBundle.class);
 
-    var elements = List.of(WorkingBundle.INSTANCE.colour());
+    var elements = List.of(bundle.colour());
     var list = ResolvableList.from(elements);
-    var messageString = resources.resolver().get(list, Locale.UK);
+    var messageString = resources.resolve(list).get(Locale.UK);
 
     Assertions.assertEquals("Colour", messageString);
   }
 
   @Test
   void emptyResolvableList() {
-    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
 
     var list = ResolvableList.empty();
-    var messageString = source.resolver().get(list, Locale.UK);
+    var messageString = resources.resolve(list).get(Locale.UK);
 
     Assertions.assertEquals("", messageString);
   }
 
   @Test
   void resolvableListWithCustomConfigurationMultipleItems() {
-    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(ResolvableListBundle.class);
 
     var elements = List.of(
-      WorkingBundle.INSTANCE.colour(),
-      WorkingBundle.INSTANCE.somethingFromParent(),
-      WorkingBundle.INSTANCE.somethingFromParentWithArgument("TheArgument")
+            bundle.colour(),
+            bundle.aluminium(),
+            bundle.somethingWithArgument("TheArgument")
     );
-    var list = ResolvableList.from(CustomResolvableListConfiguration.INSTANCE, elements);
 
-    var messageEn = source.resolver().get(list, Locale.UK);
+    var list = ResolvableList.from(CustomResolvableListConfiguration.class, elements);
+
+    var messageEn = resources.resolve(list).get(Locale.UK);
     Assertions.assertEquals(
-      "\"Colour, Message from parent interface, Hello, TheArgument!\"",
+      "\"Colour, Aluminium, Hello, TheArgument!\"",
       messageEn
     );
 
-    var messageDe = source.resolver().get(list, Locale.GERMAN);
+    var messageDe = resources.resolve(list).get(Locale.GERMAN);
     Assertions.assertEquals(
-      "<<Farbe; Meldung vom Elter-Interface; Hallo, TheArgument!>>",
+      "<<Farbe; Aluminium; Hallo, TheArgument!>>",
       messageDe
     );
   }
 
   @Test
   void resolvableListWithCustomConfigurationEmptyList() {
-    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var list = ResolvableList.from(CustomResolvableListConfiguration.class, List.of());
 
-    var list = ResolvableList.from(CustomResolvableListConfiguration.INSTANCE, List.of());
-
-    var messageEn = source.resolver().get(list, Locale.UK);
+    var messageEn = resources.resolve(list).get(Locale.UK);
     Assertions.assertEquals("Nothing in this list", messageEn);
 
-    var messageDe = source.resolver().get(list, Locale.GERMAN);
+    var messageDe = resources.resolve(list).get( Locale.GERMAN);
     Assertions.assertEquals("Nichts in der Liste", messageDe);
   }
 
   @Test
   void resolvableListWithCustomConfigurationOneItemInList() {
-    var source = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(ResolvableListBundle.class);
+    var elements = List.of(
+            bundle.colour()
+    );
+    var list = ResolvableList.from(CustomResolvableListConfiguration.class, elements);
 
-    var elements = List.of(WorkingBundle.INSTANCE.colour());
-    var list = ResolvableList.from(CustomResolvableListConfiguration.INSTANCE, elements);
-
-    var messageEn = source.resolver().get(list, Locale.UK);
+    var messageEn = resources.resolve(list).get(Locale.UK);
     Assertions.assertEquals("Only one: [Colour]", messageEn);
 
-    var messageDe = source.resolver().get(list, Locale.GERMAN);
+    var messageDe = resources.resolve(list).get(Locale.GERMAN);
     Assertions.assertEquals("Nur eines: [Farbe]", messageDe);
   }
 }

@@ -1,28 +1,28 @@
 package com.github.cronosun.tyres.implementation.inheritance;
 
 import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.experiment.Fmt;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 public interface TheBundle extends ParentBundle {
-  TheBundle INSTANCE = TyRes.create(TheBundle.class);
+  Fmt anotherMessage();
 
-  MsgRes anotherMessage();
-
-  StrRes anotherString();
+  Text anotherString();
 
   /**
    * The {@link Rename} annotation in {@link ParentBundle} has no effect, since method is declared again.
    */
-  StrRes anotherThingFromParent();
+  Text anotherThingFromParent();
 
   @Default("this is the default value")
-  StrRes somethingWithDefault();
+  Text somethingWithDefault();
 
   @Rename("thisIsTheCorrectName")
-  StrRes somethingIsWrongWithThisName();
+  Text somethingIsWrongWithThisName();
 
   @Rename("thisRenameHereIsEffective")
-  StrRes stringWithOverwrittenRenameInSubInterface();
+  Text stringWithOverwrittenRenameInSubInterface();
 
   @Default("Default value from sub-interface")
-  StrRes withDefaultAnnotation2();
+  Text withDefaultAnnotation2();
 }

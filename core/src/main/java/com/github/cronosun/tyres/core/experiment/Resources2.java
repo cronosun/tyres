@@ -25,4 +25,21 @@ public interface Resources2 {
    * Returns what to do if a resource cannot be found: Throw or return the fallback resource.
    */
   DefaultNotFoundConfig defaultNotFoundConfig();
+
+  /**
+   * Validates the given bundle for the given locale. Throws {@link com.github.cronosun.tyres.core.TyResException}
+   * if the bundle does not validate.
+   *
+   * Note: This is highly implementation specific. Implementations must at least check whether {@link #get(Class)}
+   * works. Implementations - however - should do more:
+   *
+   * <ul>
+   *     <li>Assert all resouces are available for the given locale (unless marked as optional, see {@link com.github.cronosun.tyres.core.Validation})</li>
+   * <li>Assert that there are no unused/superflous resouces.</li>
+   * <li>Assert that all patterns for the messages are valid.</li>
+   * </ul>
+   */
+  default void validate(Class<?> bundleClass, Locale locale) {
+    get(bundleClass);
+  }
 }

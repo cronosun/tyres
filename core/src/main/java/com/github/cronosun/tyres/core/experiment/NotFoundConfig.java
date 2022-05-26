@@ -51,36 +51,27 @@ public enum NotFoundConfig {
     /**
      * See {@link NotFoundConfig#THROW}
      */
-    THROW(NotFoundConfig.THROW, WithNullAndDefault.THROW),
+    THROW,
     /**
      * See {@link NotFoundConfig#FALLBACK}
      */
-    FALLBACK(NotFoundConfig.FALLBACK, WithNullAndDefault.FALLBACK),
+    FALLBACK,
     /**
      * If the resource (or a component of the resource) cannot be found: return <code>null</code>.
      */
-    NULL(null, WithNullAndDefault.NULL);
-
-    @Nullable
-    private final NotFoundConfig notFoundConfig;
-
-    private final WithNullAndDefault withNullAndDefault;
-
-    WithNullNoDefault(
-      @Nullable NotFoundConfig notFoundConfig,
-      WithNullAndDefault withNullAndDefault
-    ) {
-      this.notFoundConfig = notFoundConfig;
-      this.withNullAndDefault = withNullAndDefault;
-    }
-
-    @Nullable
-    public NotFoundConfig notFoundConfig() {
-      return notFoundConfig;
-    }
+    NULL;
 
     public WithNullAndDefault withNullAndDefault() {
-      return withNullAndDefault;
+      switch (this) {
+        case THROW:
+          return WithNullAndDefault.THROW;
+        case FALLBACK:
+          return WithNullAndDefault.FALLBACK;
+        case NULL:
+          return WithNullAndDefault.NULL;
+        default:
+          throw new IllegalArgumentException("Unknown type: " + this);
+      }
     }
   }
 

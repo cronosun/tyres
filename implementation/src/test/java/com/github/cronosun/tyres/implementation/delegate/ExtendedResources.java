@@ -24,4 +24,10 @@ public final class ExtendedResources extends DelegatingResources {
     var asString = resource.get(locale, NotFoundConfig.THROW);
     return Integer.parseInt(asString);
   }
+
+    public void validate(Class<?> bundleClass) {
+    for (var locale: supportedLocales) {
+      this.validate(bundleClass, locale);
+    }
+    }
 }

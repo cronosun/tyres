@@ -4,32 +4,34 @@ import com.github.cronosun.tyres.core.Default;
 import com.github.cronosun.tyres.core.MsgRes;
 import com.github.cronosun.tyres.core.Rename;
 import com.github.cronosun.tyres.core.StrRes;
+import com.github.cronosun.tyres.core.experiment.Fmt;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 public interface ParentBundle {
-  MsgRes somethingFromParent(String argument);
+  Fmt somethingFromParent(String argument);
 
   /**
    * Rename is ignored, since {@link TheBundle} declares the method again without {@link Rename}-annotation.
    */
   @Rename("rename_is_ignored_since_method_is_declared_in_sub_interface_again")
-  StrRes anotherThingFromParent();
+  Text anotherThingFromParent();
 
   /**
    * This renaming is effective.
    */
   @Rename("newNameDueToRenameAnnotationInParent")
-  StrRes thisIsRenamedInParent();
+  Text thisIsRenamedInParent();
 
   /**
    * This renaming is ignored, since {@link TheBundle} declares the method again with a different
    * {@link Rename} annotation.
    */
   @Rename("this_is_ignored")
-  StrRes stringWithOverwrittenRenameInSubInterface();
+  Text stringWithOverwrittenRenameInSubInterface();
 
   @Default("Default value from parent 1")
-  StrRes withDefaultAnnotation1();
+  Text withDefaultAnnotation1();
 
   @Default("Default value from parent 2")
-  StrRes withDefaultAnnotation2();
+  Text withDefaultAnnotation2();
 }

@@ -9,6 +9,10 @@ import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
+/**
+ * In your application you most likely want to extend {@link com.github.cronosun.tyres.core.experiment.Resources2},
+ * this shows how to do that.
+ */
 public class DelegateTest {
 
   @Test
@@ -28,25 +32,25 @@ public class DelegateTest {
   void testDelegateUsingValidate() {
     var originalResources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     var resources = new ExtendedResources(originalResources);
-    var bundle = resources.get(ExtendedResourcesBundle.class);
-    resources.validate(ExtendedResourcesBundle.INSTANCE);
+    resources.validate(ExtendedResourcesBundle.class);
   }
 
   @Test
   void testDelegateUsingAsIntMethod() {
-    var originalResources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var originalResources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     var resources = new ExtendedResources(originalResources);
+    var bundle = resources.get(ExtendedResourcesBundle.class);
     assertEquals(
       10,
-      resources.asInt(ExtendedResourcesBundle.INSTANCE.holidayLeaveDaysPerYear(), Locale.US)
+      resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.US)
     );
     assertEquals(
       30,
-      resources.asInt(ExtendedResourcesBundle.INSTANCE.holidayLeaveDaysPerYear(), Locale.FRANCE)
+      resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.FRANCE)
     );
     assertEquals(
       29,
-      resources.asInt(ExtendedResourcesBundle.INSTANCE.holidayLeaveDaysPerYear(), Locale.GERMANY)
+      resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.GERMANY)
     );
   }
 }

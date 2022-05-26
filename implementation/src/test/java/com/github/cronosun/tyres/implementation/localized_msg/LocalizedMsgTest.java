@@ -3,19 +3,21 @@ package com.github.cronosun.tyres.implementation.localized_msg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.github.cronosun.tyres.core.LocalizedMsg;
-import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.experiment.Localized;
+import com.github.cronosun.tyres.core.experiment.NotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 public class LocalizedMsgTest {
 
   @Test
   void testFindsCorrectResultsWithoutRoot() {
-    var msg = LocalizedMsg
+    var msg = Localized
       .builder()
       .with(Locale.GERMAN, "Hallo, Welt!")
       .with(Locale.ENGLISH, "Hello, world!")
@@ -43,7 +45,7 @@ public class LocalizedMsgTest {
 
   @Test
   void testFindsCorrectResultsWithRoot() {
-    var msg = LocalizedMsg
+    var msg = Localized
       .builder()
       .with(Locale.GERMAN, "Hallo, Welt!")
       .with(Locale.ENGLISH, "Hello, world!")
@@ -66,7 +68,7 @@ public class LocalizedMsgTest {
   @Test
   void testLocalizedMsgSerialization() {
     // useful if you want to send the localized message to the client (e.g. using Jackson).
-    var msg = LocalizedMsg
+    var msg = Localized
       .builder()
       .with(Locale.GERMAN, "Hallo, Welt!")
       .with(Locale.ENGLISH, "Hello, world!")
@@ -79,7 +81,7 @@ public class LocalizedMsgTest {
   @Test
   void testLocalizedMsgDeserialization() {
     var serialized = Map.of("und", "Hola", "de", "Hallo, Welt!", "en", "Hello, world!");
-    var msg = LocalizedMsg.deserialize(serialized);
+    var msg = Localized.deserialize(serialized);
 
     assertEquals(Set.of(Locale.GERMAN, Locale.ENGLISH, Locale.ROOT), msg.availableLocales());
     assertEquals("Hallo, Welt!", msg.message(Locale.GERMAN));
@@ -89,11 +91,10 @@ public class LocalizedMsgTest {
 
   @Test
   void testFromResourcesMessage() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
-    var msg = LocalizedMsg.fromResources(
-      resources,
-      LocalizedMsgBundle.INSTANCE.sayHello("Simon"),
-      LocalizedMsg.FromResourcesConfig.THROW,
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(LocalizedMsgBundle.class);
+    var msg = Localized.fromText(
+            bundle.sayHello("Simon"),
       Set.of(Locale.FRENCH, Locale.ENGLISH, Locale.GERMAN)
     );
 
@@ -105,11 +106,10 @@ public class LocalizedMsgTest {
 
   @Test
   void testFromResourcesStr() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
-    var msg = LocalizedMsg.fromResources(
-      resources,
-      LocalizedMsgBundle.INSTANCE.colour(),
-      LocalizedMsg.FromResourcesConfig.THROW,
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(LocalizedMsgBundle.class);
+    var msg = Localized.fromText(
+      bundle.colour(),
       Set.of(Locale.FRENCH, Locale.ENGLISH, Locale.GERMAN)
     );
 
@@ -118,11 +118,12 @@ public class LocalizedMsgTest {
 
   @Test
   void testFromResourcesOptional() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
-    var msg = LocalizedMsg.fromResources(
-      resources,
-      LocalizedMsgBundle.INSTANCE.messageNotPresentForSomeLocales(),
-      LocalizedMsg.FromResourcesConfig.MAYBE,
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(LocalizedMsgBundle.class);
+
+    var msg = Localized.fromText(
+            bundle.messageNotPresentForSomeLocales(),
+            NotFoundConfig.WithNullAndDefault.NULL,
       Set.of(Locale.FRENCH, Locale.ENGLISH, Locale.GERMAN)
     );
     // only present for English

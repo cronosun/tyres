@@ -1,15 +1,13 @@
 package com.github.cronosun.tyres.implementation.localized_msg;
 
-import com.github.cronosun.tyres.core.MsgRes;
-import com.github.cronosun.tyres.core.StrRes;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Fmt;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 public interface LocalizedMsgBundle {
-  LocalizedMsgBundle INSTANCE = TyRes.create(LocalizedMsgBundle.class);
 
-  StrRes colour();
+  Text colour();
 
-  MsgRes sayHello(String toWhom);
+  Fmt sayHello(String toWhom);
 
-  MsgRes messageNotPresentForSomeLocales();
+  Fmt messageNotPresentForSomeLocales();
 }

@@ -1,71 +1,70 @@
 package com.github.cronosun.tyres.implementation.inheritance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
-import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 public class InheritanceTest {
 
   @Test
   void bundleValidates() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
-    assertNull(
-      resources.common().validate(TheBundle.INSTANCE, Set.of(Locale.GERMAN, Locale.ENGLISH))
-    );
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    resources.validate(TheBundle.class, Locale.GERMAN);
+    resources.validate(TheBundle.class, Locale.ENGLISH);
   }
 
   @Test
   void bundleResultsInCorrectStrings() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(TheBundle.class);
     var locale = Locale.US;
 
     // values declared in parent
     assertEquals(
       "Message declared in parent: Hello",
-      resources.msg().get(TheBundle.INSTANCE.somethingFromParent("Hello"), locale)
+            bundle.somethingFromParent("Hello").get(locale)
     );
     assertEquals(
       "Something else from parent",
-      resources.str().get(TheBundle.INSTANCE.anotherThingFromParent(), locale)
+            bundle.anotherThingFromParent().get(locale)
     );
     assertEquals(
       "Renamed in parent",
-      resources.str().get(TheBundle.INSTANCE.thisIsRenamedInParent(), locale)
+            bundle.thisIsRenamedInParent().get(locale)
     );
     assertEquals(
       "Rename is effective",
-      resources.str().get(TheBundle.INSTANCE.stringWithOverwrittenRenameInSubInterface(), locale)
+            bundle.stringWithOverwrittenRenameInSubInterface().get(locale)
     );
     assertEquals(
       "Default value from parent 1",
-      resources.str().get(TheBundle.INSTANCE.withDefaultAnnotation1(), locale)
+            bundle.withDefaultAnnotation1().get(locale)
     );
     assertEquals(
       "Default value from sub-interface",
-      resources.str().get(TheBundle.INSTANCE.withDefaultAnnotation2(), locale)
+            bundle.withDefaultAnnotation2().get(locale)
     );
 
     // values declared in sub-interface
     assertEquals(
       "Another message",
-      resources.msg().get(TheBundle.INSTANCE.anotherMessage(), locale)
+            bundle.anotherMessage().get(locale)
     );
     assertEquals(
       "Another string",
-      resources.str().get(TheBundle.INSTANCE.anotherString(), locale)
+            bundle.anotherString().get(locale)
     );
     assertEquals(
       "this is the default value",
-      resources.str().get(TheBundle.INSTANCE.somethingWithDefault(), locale)
+            bundle.somethingWithDefault().get(locale)
     );
     assertEquals(
       "Has been renamed",
-      resources.str().get(TheBundle.INSTANCE.somethingIsWrongWithThisName(), locale)
+            bundle.somethingIsWrongWithThisName().get(locale)
     );
   }
 }

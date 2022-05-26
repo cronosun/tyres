@@ -1,13 +1,10 @@
 package com.github.cronosun.tyres.implementation.no_args_parsing;
 
-import com.github.cronosun.tyres.core.MsgRes;
-import com.github.cronosun.tyres.core.StrRes;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Fmt;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 public interface NoArgsParsingBundle {
-  NoArgsParsingBundle INSTANCE = TyRes.create(NoArgsParsingBundle.class);
+  Fmt msgRes();
 
-  MsgRes msgRes();
-
-  StrRes strRes();
+  Text strRes();
 }
