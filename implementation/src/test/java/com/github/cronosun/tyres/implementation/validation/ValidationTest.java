@@ -3,6 +3,8 @@ package com.github.cronosun.tyres.implementation.validation;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.TyResException;
+import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Set;
@@ -12,172 +14,122 @@ public class ValidationTest {
 
   @Test
   void validatedWithoutErrors() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
-    assertNull(
-      resources
-        .common()
-        .validate(
-          ValidatesCorrectlyBundle.INSTANCE,
-          Set.of(Locale.GERMANY, Locale.ENGLISH, Locale.GERMAN, Locale.US, Locale.CANADA)
-        )
-    );
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    resources.validate(ValidatesCorrectlyBundle.class, Set.of(Locale.GERMANY, Locale.ENGLISH, Locale.GERMAN, Locale.US, Locale.CANADA));
   }
 
   @Test
   void validateThrowsSinceThereIsNoItalianAvailable() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
-    assertNotNull(
-      resources.common().validate(ValidatesCorrectlyBundle.INSTANCE, Set.of(Locale.ITALIAN))
-    );
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    assertThrows(TyResException.class, () -> {
+      resources.validate(ValidatesCorrectlyBundle.class, Locale.ITALIAN);
+    });
   }
 
   @Test
   void validationDetectsMissingFileForLocale() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     // english is ok (there's a file for that).
-    assertNull(
-      resources
-        .common()
-        .validate(FileMissingForGermanBundle.INSTANCE, Set.of(Locale.ENGLISH, Locale.US))
-    );
+    resources.validate(FileMissingForGermanBundle.class, Set.of(Locale.ENGLISH, Locale.US));
     // german should throw (there's no german file).
-    assertNotNull(
-      resources
-        .common()
-        .validate(
-          FileMissingForGermanBundle.INSTANCE,
-          Set.of(Locale.ENGLISH, Locale.US, Locale.GERMAN)
-        )
-    );
+    assertThrows(TyResException.class, ()-> resources.validate(FileMissingForGermanBundle.class, Locale.GERMAN));
   }
 
   @Test
   void validationDetectsMissingMessageForLocale() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     // english is ok (there's a message in the .properties file).
-    assertNull(
-      resources
-        .common()
-        .validate(MissingMessageForGermanBundle.INSTANCE, Set.of(Locale.ENGLISH, Locale.US))
-    );
+    resources.validate(MissingMessageForGermanBundle.class, Set.of(Locale.ENGLISH, Locale.US));
     // german should throw (there's a missing resource in the .properties file).
-    assertNotNull(
-      resources
-        .common()
-        .validate(
-          MissingMessageForGermanBundle.INSTANCE,
-          Set.of(Locale.ENGLISH, Locale.US, Locale.GERMAN)
-        )
-    );
+    assertThrows(TyResException.class, ()-> resources.validate(MissingMessageForGermanBundle.class, Locale.GERMAN));
   }
 
   @Test
   void validationDetectsInvalidPattern() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     // will take the ROOT locale, this locale is ok.
-    assertNull(resources.common().validate(InvalidPatternBundle.INSTANCE, Set.of(Locale.ITALIAN)));
+    resources.validate(InvalidPatternBundle.class, Locale.ITALIAN);
     // But in the english translation, there's a problem.
-    assertNotNull(resources.common().validate(InvalidPatternBundle.INSTANCE, Set.of(Locale.US)));
-    assertNotNull(
-      resources.common().validate(InvalidPatternBundle.INSTANCE, Set.of(Locale.ENGLISH))
-    );
+    assertThrows(TyResException.class, () -> resources.validate(InvalidPatternBundle.class, Locale.ENGLISH));
+    assertThrows(TyResException.class, () -> resources.validate(InvalidPatternBundle.class, Locale.US));
   }
 
   @Test
   void validationRespectsTheDefaultValue() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     // Validator detects the Default annotation and is happy.
-    assertNull(
-      resources
-        .common()
-        .validate(
-          DefaultValueIsConsideredAsPresentBundle.INSTANCE,
-          Set.of(Locale.ITALIAN, Locale.GERMAN, Locale.US)
-        )
-    );
+    resources.validate(DefaultValueIsConsideredAsPresentBundle.class, Set.of(Locale.ITALIAN, Locale.GERMAN, Locale.US));
   }
 
   @Test
   void validatorDetectsErrorsInPatternsInTheDefaultAnnotation() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     // There's a problem with the pattern or the method (wrong number of arguments).
-    assertNotNull(
-      resources
-        .common()
-        .validate(ValidatorAlsoDetectsErrorsInDefaultValues.INSTANCE, Set.of(Locale.ITALIAN))
-    );
+    assertThrows(TyResException.class, () -> resources.validate(ValidatorAlsoDetectsErrorsInDefaultValues.class, Locale.ITALIAN));
   }
 
   @Test
   void validatorDetectsSuperfluousResources() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     // See the .properties file, there's 'butThisIsSomethingThatIsNoLongerInUse' (that's not referenced in the interface).
-    assertNotNull(
-      resources.common().validate(SuperfluousResourceBundle.INSTANCE, Set.of(Locale.ITALIAN))
-    );
+    assertThrows(TyResException.class, () -> resources.validate(SuperfluousResourceBundle.class, Locale.ITALIAN));
   }
 
   @Test
   void validatorRespectsTheOptionalPropertyButIfItIsPresentHasToBeValid() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     // german and english validate: english has a correct message pattern; german has no such translation (which is
     // ok, see the @Validation annotation).
-    assertNull(
-      resources
-        .common()
-        .validate(OptionalResourcesBundle.INSTANCE, Set.of(Locale.ENGLISH, Locale.GERMAN))
-    );
+    resources.validate(OptionalResourcesBundle.class, Set.of(Locale.ENGLISH, Locale.GERMAN));
     // but italy errors: If something is optional, it does not mean that it can be invalid (just means it can be absent).
-    assertNotNull(
-      resources.common().validate(OptionalResourcesBundle.INSTANCE, Set.of(Locale.ITALIAN))
-    );
+    assertThrows(TyResException.class, () -> resources.validate(OptionalResourcesBundle.class, Locale.ITALIAN));
   }
 
   @Test
-  void patternsAreOnlyValidatedForMsgResNotForStrRes() {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+  void patternsAreOnlyValidatedForFormattedResoucesNotForText() {
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     var locale = Locale.ENGLISH;
-    assertNull(resources.common().validate(InvalidPatternInStrResBundle.INSTANCE, Set.of(locale)));
+    var bundle = resources.get(InvalidPatternInStrResBundle.class);
+
+    resources.validate(InvalidPatternInStrResBundle.class, locale);
 
     // can also get the messages
     assertEquals(
       "Too many arguments: {0} {1} {2}",
-      resources.str().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern1(), locale)
+            bundle.invalidPattern1().get(locale)
     );
     assertEquals(
       "Completely invalid: {0,UNKNOWN} {1,_?} {2",
-      resources.str().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern2(), locale)
+      bundle.invalidPattern2().get(locale)
     );
     assertEquals(
       "Is is invalid {0x,??}, {1}",
-      resources.str().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern3(), locale)
+      bundle.invalidPattern3().get(locale)
     );
     assertEquals(
       "Is is invalid {0,,_ {1}",
-      resources.str().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern4(), locale)
+            bundle.invalidPattern4().get(locale)
     );
 
-    // also works using the resolver (StrRes is Resolvable too).
+    // also works using the resolver (Text is Resolvable too).
     assertEquals(
       "Too many arguments: {0} {1} {2}",
-      resources.resolver().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern1(), locale)
+      resources.resolve(bundle.invalidPattern1()).get(locale)
     );
     assertEquals(
       "Completely invalid: {0,UNKNOWN} {1,_?} {2",
-      resources.resolver().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern2(), locale)
+            resources.resolve(bundle.invalidPattern2()).get(locale)
     );
     assertEquals(
       "Is is invalid {0x,??}, {1}",
-      resources.resolver().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern3(), locale)
+            resources.resolve(bundle.invalidPattern3()).get(locale)
     );
     assertEquals(
       "Is is invalid {0,,_ {1}",
-      resources.resolver().get(InvalidPatternInStrResBundle.INSTANCE.invalidPattern4(), locale)
+            resources.resolve(bundle.invalidPattern4()).get(locale)
     );
 
     // ok, this does not validate (missing translations for GERMAN).
-    assertNotNull(
-      resources.common().validate(InvalidPatternInStrResBundle.INSTANCE, Set.of(Locale.GERMAN))
-    );
+    assertThrows(TyResException.class, () -> resources.validate(InvalidPatternInStrResBundle.class, Locale.GERMAN));
   }
 }

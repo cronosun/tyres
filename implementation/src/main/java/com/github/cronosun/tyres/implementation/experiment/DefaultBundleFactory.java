@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.jetbrains.annotations.Nullable;
 
 final class DefaultBundleFactory implements BundleFactory {
@@ -44,6 +46,17 @@ final class DefaultBundleFactory implements BundleFactory {
     );
   }
 
+  @Override
+  public Stream<ResInfo> declaredResoucesForValidation(Object bundle) {
+    var handler = Proxy.getInvocationHandler(bundle);
+    if (handler instanceof InvocationHandler) {
+      var cast = (InvocationHandler)handler;
+      return cast.resourcesMap.map.values().stream().map(ResourcesMap.WithArgumentsAndResInfo::resInfo);
+    } else {
+      throw new TyResException("Unable to get resouces from '" + bundle + "'. The bundle must have been created by this factory (it's not). Read the documentation!");
+    }
+  }
+
   private static final class InvocationHandler implements java.lang.reflect.InvocationHandler {
 
     private final ResourcesMap resourcesMap;
@@ -62,9 +75,9 @@ final class DefaultBundleFactory implements BundleFactory {
   private static final class ResourcesMap {
 
     private final BundleInfo bundleInfo;
-    private final Map<String, WithArguments> map;
+    private final Map<String, WithArgumentsAndResInfo> map;
 
-    private ResourcesMap(BundleInfo bundleInfo, Map<String, WithArguments> map) {
+    private ResourcesMap(BundleInfo bundleInfo, Map<String, WithArgumentsAndResInfo> map) {
       this.bundleInfo = bundleInfo;
       this.map = map;
     }
@@ -99,7 +112,7 @@ final class DefaultBundleFactory implements BundleFactory {
         .resources(effectiveNameGenerator)
         .map(resInfo -> {
           var key = resInfo.method().getName();
-          var value = (WithArguments) ResourcesMap.fromMethodInfoToImplementation(
+          var value = (WithArgumentsAndResInfo) ResourcesMap.fromMethodInfoToImplementation(
             resources,
             resInfo,
             backend
@@ -123,7 +136,7 @@ final class DefaultBundleFactory implements BundleFactory {
       return new ResourcesMap(bundleInfo, map);
     }
 
-    private static WithArguments<?> fromMethodInfoToImplementation(
+    private static WithArgumentsAndResInfo<?> fromMethodInfoToImplementation(
       Resources2 resources,
       ResInfo resInfo,
       ResourcesBackend backend
@@ -146,7 +159,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
     }
 
-    private static final class TextImpl implements Text, WithArguments<TextImpl> {
+    private static final class TextImpl implements Text, WithArgumentsAndResInfo<TextImpl> {
 
       private final Resources2 resources;
       private final ResInfo.TextResInfo info;
@@ -164,6 +177,11 @@ final class DefaultBundleFactory implements BundleFactory {
           return this;
         }
         throw new TyResException("Texts (not formatted) cannot have arguments");
+      }
+
+      @Override
+      public ResInfo resInfo() {
+        return info;
       }
 
       @Override
@@ -199,7 +217,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
     }
 
-    private static final class FmtImpl implements Fmt, WithArguments<Fmt> {
+    private static final class FmtImpl implements Fmt, WithArgumentsAndResInfo<Fmt> {
 
       private static final Object[] NO_ARGS = new Object[] {};
       private final Resources2 resources;
@@ -219,6 +237,11 @@ final class DefaultBundleFactory implements BundleFactory {
         } else {
           return new FmtWithArgsImpl(this, args);
         }
+      }
+
+      @Override
+      public ResInfo resInfo() {
+        return info;
       }
 
       @Override
@@ -291,7 +314,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
     }
 
-    private static final class BinImpl implements Bin, WithArguments<BinImpl> {
+    private static final class BinImpl implements Bin, WithArgumentsAndResInfo<BinImpl> {
 
       private final Resources2 resources;
       private final ResInfo.BinResInfo info;
@@ -309,6 +332,11 @@ final class DefaultBundleFactory implements BundleFactory {
           return this;
         }
         throw new TyResException("Binary cannot have arguments");
+      }
+
+      @Override
+      public ResInfo resInfo() {
+        return info;
       }
 
       @Override
@@ -339,8 +367,9 @@ final class DefaultBundleFactory implements BundleFactory {
       }
     }
 
-    interface WithArguments<TSelf> {
+    interface WithArgumentsAndResInfo<TSelf> {
       TSelf withArguments(Object[] args);
+      ResInfo resInfo();
     }
 
     private static final class MapEntry<K, V> {

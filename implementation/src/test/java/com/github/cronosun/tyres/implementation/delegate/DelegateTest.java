@@ -40,17 +40,8 @@ public class DelegateTest {
     var originalResources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     var resources = new ExtendedResources(originalResources);
     var bundle = resources.get(ExtendedResourcesBundle.class);
-    assertEquals(
-      10,
-      resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.US)
-    );
-    assertEquals(
-      30,
-      resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.FRANCE)
-    );
-    assertEquals(
-      29,
-      resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.GERMANY)
-    );
+    assertEquals(10, resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.US));
+    assertEquals(30, resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.FRANCE));
+    assertEquals(29, resources.asInt(bundle.holidayLeaveDaysPerYear(), Locale.GERMANY));
   }
 }

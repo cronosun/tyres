@@ -1,16 +1,17 @@
 package com.github.cronosun.tyres.implementation.validation;
 
 import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.experiment.Bin;
+import com.github.cronosun.tyres.core.experiment.Fmt;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 public interface ValidatesCorrectlyBundle {
-  ValidatesCorrectlyBundle INSTANCE = TyRes.create(ValidatesCorrectlyBundle.class);
+  Fmt present();
 
-  MsgRes present();
+  Text presentToo();
 
-  StrRes presentToo();
-
-  MsgRes msgWithArgument(String value);
+  Fmt msgWithArgument(String value);
 
   @File("some_text.txt")
-  BinRes someText();
+  Bin someText();
 }

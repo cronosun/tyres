@@ -44,6 +44,15 @@ public abstract class ResInfo implements WithConciseDebugString {
     return validationAnnotation;
   }
 
+  public final boolean validationOptional() {
+    var validationAnnotation = validationAnnotation();
+    if (validationAnnotation != null) {
+      return validationAnnotation.optional();
+    } else {
+      return false;
+    }
+  }
+
   public static final class TextResInfo extends ResInfo {
 
     private final TextType type;
@@ -183,8 +192,8 @@ public abstract class ResInfo implements WithConciseDebugString {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
-      BinResInfo bin = (BinResInfo) o;
-      return filename.equals(bin.filename) && effectiveFilename.equals(bin.effectiveFilename);
+      BinResInfo that = (BinResInfo) o;
+      return filename.equals(that.filename) && effectiveFilename.equals(that.effectiveFilename);
     }
 
     @Override

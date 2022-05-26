@@ -1,15 +1,14 @@
 package com.github.cronosun.tyres.core.experiment;
 
+import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
+
 import com.github.cronosun.tyres.core.ThreadSafe;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.WithConciseDebugString;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Contains 0-n localized messages / texts.
@@ -39,10 +38,7 @@ public final class Localized implements Resolvable {
     return new Builder();
   }
 
-  public static Localized fromText(
-          Text text,
-          Set<Locale> locales
-  ) {
+  public static Localized fromText(Text text, Set<Locale> locales) {
     return fromText(text, NotFoundConfig.WithNullAndDefault.DEFAULT, locales);
   }
 
@@ -63,8 +59,8 @@ public final class Localized implements Resolvable {
 
   @Nullable
   private static String fromTextSingleLocale(
-          Text text,
-          NotFoundConfig.WithNullAndDefault notFoundConfig,
+    Text text,
+    NotFoundConfig.WithNullAndDefault notFoundConfig,
     Locale locale
   ) {
     return text.getText(locale, notFoundConfig);
@@ -234,6 +230,7 @@ public final class Localized implements Resolvable {
   }
 
   private static final class LocalizedText implements Text {
+
     private final Localized localized;
     private final Resources2 resources;
 
@@ -243,31 +240,43 @@ public final class Localized implements Resolvable {
     }
 
     @Override
-    public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+    public @Nullable String getText(
+      @Nullable Locale locale,
+      NotFoundConfig.WithNullAndDefault notFoundConfig
+    ) {
       final String message;
       Locale resolvedLocale;
-      if (locale!=null) {
+      if (locale != null) {
         resolvedLocale = locale;
       } else {
         resolvedLocale = resources.currentLocale();
       }
-      if (resolvedLocale!=null) {
+      if (resolvedLocale != null) {
         message = localized.messageWithCandidates(resolvedLocale);
       } else {
         message = null;
       }
       if (message == null) {
-        var notFoundConfigNoDefault = notFoundConfig.withNullNoDefault(resources.defaultNotFoundConfig());
+        var notFoundConfigNoDefault = notFoundConfig.withNullNoDefault(
+          resources.defaultNotFoundConfig()
+        );
         switch (notFoundConfigNoDefault) {
           case THROW:
-            if (resolvedLocale!=null) {
-              throw new TyResException("Text for locale " + resolvedLocale + " not found in '" + localized + "'.");
+            if (resolvedLocale != null) {
+              throw new TyResException(
+                "Text for locale " + resolvedLocale + " not found in '" + localized + "'."
+              );
             } else {
               throw new TyResException("No locale found to get text from " + localized + "'.");
             }
           case FALLBACK:
-            if (resolvedLocale!=null) {
-              return WithConciseDebugString.build(List.of("localized_msg", Objects.requireNonNullElse(locale, resolvedLocale.toLanguageTag())));
+            if (resolvedLocale != null) {
+              return WithConciseDebugString.build(
+                List.of(
+                  "localized_msg",
+                  Objects.requireNonNullElse(locale, resolvedLocale.toLanguageTag())
+                )
+              );
             } else {
               return WithConciseDebugString.build(List.of("localized_msg", "missing_locale"));
             }
@@ -296,10 +305,7 @@ public final class Localized implements Resolvable {
 
     @Override
     public String toString() {
-      return "LocalizedText{" +
-              "localized=" + localized +
-              ", resources2=" + resources +
-              '}';
+      return "LocalizedText{" + "localized=" + localized + ", resources2=" + resources + '}';
     }
   }
 

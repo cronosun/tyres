@@ -6,6 +6,8 @@ import com.github.cronosun.tyres.core.experiment.*;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 public class DefaultResourcesBackend implements ResourcesBackend {
@@ -98,6 +100,37 @@ public class DefaultResourcesBackend implements ResourcesBackend {
       return throwNotFound(info, localeToUse);
     } else {
       return inputStream;
+    }
+  }
+
+  @Override
+  public void validateAllResoucesFromBundle(Supplier<Stream<ResInfo>> resInfo, Locale locale) {
+    // first make sure everything is here
+    var resInfoStream = resInfo.get();
+    resInfoStream.forEach(item -> this.validateSingleResouce(item, locale));
+    // now ask the text backend whether there are superflous resources
+    var textResources = resInfo.get()
+      .filter(info -> info instanceof ResInfo.TextResInfo)
+      .map(info -> (ResInfo.TextResInfo) info);
+    textBackend.validateNoSuperfuousResouces(textResources, locale);
+  }
+
+  private void validateSingleResouce(ResInfo resInfo, Locale locale) {
+    if (resInfo instanceof ResInfo.TextResInfo) {
+      var cast = (ResInfo.TextResInfo) resInfo;
+      switch (cast.type()) {
+        case TEXT:
+          textBackend.validateText(cast, locale);
+          break;
+        case FMT:
+          textBackend.validateFmt(cast, locale);
+          break;
+        default:
+          throw new TyResException("Unknown text type: " + cast.type());
+      }
+    } else if (resInfo instanceof ResInfo.BinResInfo) {
+      var cast = (ResInfo.BinResInfo) resInfo;
+      this.binBackend.validate(cast, locale);
     }
   }
 

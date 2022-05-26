@@ -5,6 +5,8 @@ import com.github.cronosun.tyres.core.experiment.ResInfo;
 import com.github.cronosun.tyres.core.experiment.Resources2;
 import java.io.InputStream;
 import java.util.Locale;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 public interface ResourcesBackend {
@@ -32,4 +34,6 @@ public interface ResourcesBackend {
     @Nullable Locale locale,
     boolean required
   );
+
+  void validateAllResoucesFromBundle(Supplier<Stream<ResInfo>> resInfo, Locale locale);
 }

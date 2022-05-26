@@ -1,22 +1,19 @@
 package com.github.cronosun.tyres.implementation.validation;
 
 import com.github.cronosun.tyres.core.Default;
-import com.github.cronosun.tyres.core.StrRes;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 /**
- * Patterns are only validated for {@link com.github.cronosun.tyres.core.MsgRes}, not for {@link StrRes}.
+ * Patterns are only validated for {@link com.github.cronosun.tyres.core.experiment.Fmt}, not for {@link Text}.
  */
 public interface InvalidPatternInStrResBundle {
-  InvalidPatternInStrResBundle INSTANCE = TyRes.create(InvalidPatternInStrResBundle.class);
+  Text invalidPattern1();
 
-  StrRes invalidPattern1();
-
-  StrRes invalidPattern2();
+  Text invalidPattern2();
 
   @Default("Is is invalid {0x,??}, {1}")
-  StrRes invalidPattern3();
+  Text invalidPattern3();
 
   @Default("Is is invalid {0,,_ {1}")
-  StrRes invalidPattern4();
+  Text invalidPattern4();
 }

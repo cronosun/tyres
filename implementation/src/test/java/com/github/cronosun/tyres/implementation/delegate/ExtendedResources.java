@@ -1,7 +1,6 @@
 package com.github.cronosun.tyres.implementation.delegate;
 
 import com.github.cronosun.tyres.core.experiment.*;
-
 import java.util.Locale;
 import java.util.Set;
 
@@ -25,9 +24,9 @@ public final class ExtendedResources extends DelegatingResources {
     return Integer.parseInt(asString);
   }
 
-    public void validate(Class<?> bundleClass) {
-    for (var locale: supportedLocales) {
+  public void validate(Class<?> bundleClass) {
+    for (var locale : supportedLocales) {
       this.validate(bundleClass, locale);
     }
-    }
+  }
 }

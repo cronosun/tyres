@@ -27,9 +27,7 @@ public class DefaultAnnotationTest {
     var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     var bundle = resources.get(DefaultAnnotationTestBundle.class);
 
-    var msg = bundle.stringResourceThatIsAlsoFoundInProperty().get(
-        Locale.ENGLISH
-      );
+    var msg = bundle.stringResourceThatIsAlsoFoundInProperty().get(Locale.ENGLISH);
     assertEquals("I am a string from the property file", msg);
   }
 

@@ -4,7 +4,10 @@ import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
 
 import com.github.cronosun.tyres.core.BaseName;
 import com.github.cronosun.tyres.core.Filename;
+import com.github.cronosun.tyres.core.TyResException;
+import com.github.cronosun.tyres.core.Validation;
 import com.github.cronosun.tyres.core.experiment.ResInfo;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
@@ -35,6 +38,25 @@ final class ResourceBundleBinBackend implements BinBackend {
   public @Nullable InputStream maybeBin(ResInfo.BinResInfo info, Locale locale) {
     var filename = info.effectiveFilename();
     return maybeGet(info, filename, locale);
+  }
+
+  @Override
+  public void validate(ResInfo.BinResInfo info, Locale locale) {
+    try (var inputStream = maybeBin(info, locale)) {
+      if (inputStream == null && !info.validationOptional()) {
+        throw new TyResException(
+          "Binary resource " +
+          info.conciseDebugString() +
+          " for locale '" +
+          locale.toLanguageTag() +
+          "' not found. If this resouce is optional, see the @" +
+          Validation.class.getSimpleName() +
+          " annotation."
+        );
+      }
+    } catch (IOException e) {
+      throw new TyResException("Unable to load binary " + info.conciseDebugString() + ".", e);
+    }
   }
 
   @Nullable

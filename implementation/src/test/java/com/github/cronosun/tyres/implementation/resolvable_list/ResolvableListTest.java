@@ -5,7 +5,6 @@ import com.github.cronosun.tyres.core.experiment.ResolvableList;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.List;
 import java.util.Locale;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,17 +16,14 @@ class ResolvableListTest {
     var bundle = resources.get(ResolvableListBundle.class);
 
     var elements = List.of(
-            bundle.colour(),
-            bundle.aluminium(),
-            bundle.somethingWithArgument("TheArgument")
+      bundle.colour(),
+      bundle.aluminium(),
+      bundle.somethingWithArgument("TheArgument")
     );
     var list = ResolvableList.from(elements);
     var messageString = resources.resolve(list).get(Locale.UK);
 
-    Assertions.assertEquals(
-      "Colour, Aluminium, Hello, TheArgument!",
-      messageString
-    );
+    Assertions.assertEquals("Colour, Aluminium, Hello, TheArgument!", messageString);
   }
 
   @Test
@@ -58,24 +54,18 @@ class ResolvableListTest {
     var bundle = resources.get(ResolvableListBundle.class);
 
     var elements = List.of(
-            bundle.colour(),
-            bundle.aluminium(),
-            bundle.somethingWithArgument("TheArgument")
+      bundle.colour(),
+      bundle.aluminium(),
+      bundle.somethingWithArgument("TheArgument")
     );
 
     var list = ResolvableList.from(CustomResolvableListConfiguration.class, elements);
 
     var messageEn = resources.resolve(list).get(Locale.UK);
-    Assertions.assertEquals(
-      "\"Colour, Aluminium, Hello, TheArgument!\"",
-      messageEn
-    );
+    Assertions.assertEquals("\"Colour, Aluminium, Hello, TheArgument!\"", messageEn);
 
     var messageDe = resources.resolve(list).get(Locale.GERMAN);
-    Assertions.assertEquals(
-      "<<Farbe; Aluminium; Hallo, TheArgument!>>",
-      messageDe
-    );
+    Assertions.assertEquals("<<Farbe; Aluminium; Hallo, TheArgument!>>", messageDe);
   }
 
   @Test
@@ -86,7 +76,7 @@ class ResolvableListTest {
     var messageEn = resources.resolve(list).get(Locale.UK);
     Assertions.assertEquals("Nothing in this list", messageEn);
 
-    var messageDe = resources.resolve(list).get( Locale.GERMAN);
+    var messageDe = resources.resolve(list).get(Locale.GERMAN);
     Assertions.assertEquals("Nichts in der Liste", messageDe);
   }
 
@@ -94,9 +84,7 @@ class ResolvableListTest {
   void resolvableListWithCustomConfigurationOneItemInList() {
     var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     var bundle = resources.get(ResolvableListBundle.class);
-    var elements = List.of(
-            bundle.colour()
-    );
+    var elements = List.of(bundle.colour());
     var list = ResolvableList.from(CustomResolvableListConfiguration.class, elements);
 
     var messageEn = resources.resolve(list).get(Locale.UK);

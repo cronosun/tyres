@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
-
 import org.junit.jupiter.api.Test;
 
 public class NoArgsParsingTest {
@@ -19,11 +18,11 @@ public class NoArgsParsingTest {
     // the MessageFormat - parsing rules apply - while the other (Text) does not.
     assertEquals(
       "The  character must be escaped in messages if you want this character.",
-            bundle.msgRes().get(Locale.ROOT)
+      bundle.msgRes().get(Locale.ROOT)
     );
     assertEquals(
       "The ' character must be escaped in messages if you want this character.",
-            bundle.strRes().get(Locale.ROOT)
+      bundle.strRes().get(Locale.ROOT)
     );
   }
 }

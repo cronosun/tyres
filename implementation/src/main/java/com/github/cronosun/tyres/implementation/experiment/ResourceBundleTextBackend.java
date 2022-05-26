@@ -1,13 +1,16 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
+import com.github.cronosun.tyres.core.BaseName;
+import com.github.cronosun.tyres.core.TyResException;
+import com.github.cronosun.tyres.core.Validation;
+import com.github.cronosun.tyres.core.WithConciseDebugString;
 import com.github.cronosun.tyres.core.experiment.BundleInfo;
 import com.github.cronosun.tyres.core.experiment.ResInfo;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.spi.ResourceBundleProvider;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 final class ResourceBundleTextBackend implements TextBackend {
@@ -37,6 +40,27 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Override
+  public void validateFmt(ResInfo.TextResInfo info, Locale locale) {
+    var pattern = maybeText(info, locale);
+    if (pattern != null) {
+      var numberOfArguments = info.method().getParameterCount();
+      this.messageFormatBackend.validatePattern(pattern, locale, numberOfArguments);
+    } else {
+      if (!info.validationOptional()) {
+        throw new TyResException(
+          "Text (fmt) " +
+          info.conciseDebugString() +
+          " for locale '" +
+          locale.toLanguageTag() +
+          "' not found and it's not marked as optional (see @" +
+          Validation.class.getSimpleName() +
+          "' annotation)."
+        );
+      }
+    }
+  }
+
+  @Override
   public @Nullable String maybeText(ResInfo.TextResInfo info, Locale locale) {
     var bundle = getResourceBundleForMessages(info.bundleInfo(), locale);
     var string = getString(bundle, info);
@@ -45,6 +69,83 @@ final class ResourceBundleTextBackend implements TextBackend {
       return info.defaultValue();
     } else {
       return string;
+    }
+  }
+
+  @Override
+  public void validateText(ResInfo.TextResInfo info, Locale locale) {
+    var text = maybeText(info, locale);
+    if (text == null && !info.validationOptional()) {
+      throw new TyResException(
+        "Text " +
+        info.conciseDebugString() +
+        " for locale '" +
+        locale.toLanguageTag() +
+        "' not found and it's not marked as optional (see @" +
+        Validation.class.getSimpleName() +
+        "' annotation)."
+      );
+    }
+  }
+
+  @Override
+  public void validateNoSuperfuousResouces(
+    Stream<ResInfo.TextResInfo> allTextResoucesFromBundle,
+    Locale locale
+  ) {
+    var iterator = allTextResoucesFromBundle.iterator();
+    BaseName baseName = null;
+    BaseName originalBasename = null;
+    var usedKeys = new HashSet<String>();
+    while (iterator.hasNext()) {
+      var item = iterator.next();
+      var bundle = item.bundleInfo();
+
+      // note: if base name != effective base name, we can't perform the validation, since multiple bundles
+      // might use the same bundle.
+      if (!bundle.effectiveBaseName().equals(bundle.baseName())) {
+        return;
+      }
+
+      if (baseName == null) {
+        baseName = bundle.effectiveBaseName();
+        originalBasename = bundle.baseName();
+      } else {
+        if (!baseName.equals(bundle.effectiveBaseName())) {
+          var baseNames = WithConciseDebugString.build(
+            List.of(baseName, bundle.effectiveBaseName())
+          );
+          throw new TyResException(
+            "Unable to validate, there are resources in the set with different base names: '" +
+            baseNames +
+            "'."
+          );
+        }
+      }
+      usedKeys.add(item.effectiveName());
+    }
+
+    if (baseName != null) {
+      var bundle = getBundle(baseName.value(), locale);
+      if (bundle != null) {
+        var allKeysFromBundle = bundle.getKeys();
+        while (allKeysFromBundle.hasMoreElements()) {
+          var keyFromBundle = allKeysFromBundle.nextElement();
+          if (!usedKeys.contains(keyFromBundle)) {
+            throw new TyResException(
+              "The key '" +
+              keyFromBundle +
+              "' in bundle " +
+              baseName.conciseDebugString() +
+              " (locale '" +
+              locale.toLanguageTag() +
+              "') is not in use in the bunde (original base name " +
+              originalBasename.conciseDebugString() +
+              "). Remove it, or use it!"
+            );
+          }
+        }
+      }
     }
   }
 

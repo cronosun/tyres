@@ -1,12 +1,9 @@
 package com.github.cronosun.tyres.implementation.validation;
 
-import com.github.cronosun.tyres.core.BinRes;
 import com.github.cronosun.tyres.core.File;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Bin;
 
 public interface FileMissingForGermanBundle {
-  FileMissingForGermanBundle INSTANCE = TyRes.create(FileMissingForGermanBundle.class);
-
   @File("will_only_be_available_for_english.txt")
-  BinRes fileThatIsOnlyAvailableInEnglish();
+  Bin fileThatIsOnlyAvailableInEnglish();
 }

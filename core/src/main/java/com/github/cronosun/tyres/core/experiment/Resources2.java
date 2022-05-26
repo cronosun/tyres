@@ -42,4 +42,10 @@ public interface Resources2 {
   default void validate(Class<?> bundleClass, Locale locale) {
     get(bundleClass);
   }
+
+  default void validate(Class<?> bundleClass, Iterable<Locale> locales) {
+    for (var locale : locales) {
+      validate(bundleClass, locale);
+    }
+  }
 }

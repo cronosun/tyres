@@ -1,10 +1,7 @@
 package com.github.cronosun.tyres.implementation.validation;
 
-import com.github.cronosun.tyres.core.MsgRes;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Fmt;
 
 public interface MissingMessageForGermanBundle {
-  MissingMessageForGermanBundle INSTANCE = TyRes.create(MissingMessageForGermanBundle.class);
-
-  MsgRes missingForGerman(String argument);
+  Fmt missingForGerman(String argument);
 }

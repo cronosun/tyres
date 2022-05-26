@@ -22,11 +22,14 @@ public final class DefaultResources2 implements Resources2 {
       fallbackGenerator
     );
     var effectiveNameGenerator = EffectiveNameGenerator.empty();
+    var bundleFactory = new DefaultBundleFactory(resourcesBackend, effectiveNameGenerator);
+    var validatorBackend = new DefaultValidator(bundleFactory, resourcesBackend);
     return new DefaultResources2(
       defaultNotFoundConfig,
       BundleCache.newDefault(),
-      new DefaultBundleFactory(resourcesBackend, effectiveNameGenerator),
-      currentLocaleProvider
+      bundleFactory,
+      currentLocaleProvider,
+      validatorBackend
     );
   }
 
@@ -34,17 +37,20 @@ public final class DefaultResources2 implements Resources2 {
   private final BundleCache bundleCache;
   private final BundleFactory bundleFactory;
   private final CurrentLocaleProvider currentLocaleProvider;
+  private final ValidatorBackend validatorBackend;
 
   public DefaultResources2(
     DefaultNotFoundConfig defaultNotFoundConfig,
     BundleCache bundleCache,
     BundleFactory bundleFactory,
-    CurrentLocaleProvider currentLocaleProvider
+    CurrentLocaleProvider currentLocaleProvider,
+    ValidatorBackend validatorBackend
   ) {
     this.defaultNotFoundConfig = Objects.requireNonNull(defaultNotFoundConfig);
     this.bundleCache = Objects.requireNonNull(bundleCache);
     this.bundleFactory = Objects.requireNonNull(bundleFactory);
     this.currentLocaleProvider = Objects.requireNonNull(currentLocaleProvider);
+    this.validatorBackend = validatorBackend;
   }
 
   @Override
@@ -60,5 +66,10 @@ public final class DefaultResources2 implements Resources2 {
   @Override
   public DefaultNotFoundConfig defaultNotFoundConfig() {
     return defaultNotFoundConfig;
+  }
+
+  @Override
+  public void validate(Class<?> bundleClass, Locale locale) {
+    this.validatorBackend.validateManually(this, bundleClass, locale);
   }
 }

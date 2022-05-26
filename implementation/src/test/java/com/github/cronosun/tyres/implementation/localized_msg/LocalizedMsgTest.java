@@ -10,7 +10,6 @@ import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 
 public class LocalizedMsgTest {
@@ -94,7 +93,7 @@ public class LocalizedMsgTest {
     var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
     var bundle = resources.get(LocalizedMsgBundle.class);
     var msg = Localized.fromText(
-            bundle.sayHello("Simon"),
+      bundle.sayHello("Simon"),
       Set.of(Locale.FRENCH, Locale.ENGLISH, Locale.GERMAN)
     );
 
@@ -122,8 +121,8 @@ public class LocalizedMsgTest {
     var bundle = resources.get(LocalizedMsgBundle.class);
 
     var msg = Localized.fromText(
-            bundle.messageNotPresentForSomeLocales(),
-            NotFoundConfig.WithNullAndDefault.NULL,
+      bundle.messageNotPresentForSomeLocales(),
+      NotFoundConfig.WithNullAndDefault.NULL,
       Set.of(Locale.FRENCH, Locale.ENGLISH, Locale.GERMAN)
     );
     // only present for English

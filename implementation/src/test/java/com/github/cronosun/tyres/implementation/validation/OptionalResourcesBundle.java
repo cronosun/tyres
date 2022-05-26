@@ -1,12 +1,9 @@
 package com.github.cronosun.tyres.implementation.validation;
 
-import com.github.cronosun.tyres.core.MsgRes;
-import com.github.cronosun.tyres.core.TyRes;
 import com.github.cronosun.tyres.core.Validation;
+import com.github.cronosun.tyres.core.experiment.Fmt;
 
 public interface OptionalResourcesBundle {
-  OptionalResourcesBundle INSTANCE = TyRes.create(OptionalResourcesBundle.class);
-
   @Validation(optional = true)
-  MsgRes thisMessageIsOptional(String name);
+  Fmt thisMessageIsOptional(String name);
 }
