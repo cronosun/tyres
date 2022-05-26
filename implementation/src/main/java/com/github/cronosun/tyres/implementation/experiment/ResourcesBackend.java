@@ -11,7 +11,7 @@ public interface ResourcesBackend {
   @Nullable
   String getText(
     Resources2 resources2,
-    ResInfo.Text info,
+    ResInfo.TextResInfo info,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
   );
@@ -19,7 +19,7 @@ public interface ResourcesBackend {
   @Nullable
   String getFmt(
     Resources2 resources2,
-    ResInfo.Text info,
+    ResInfo.TextResInfo info,
     Object[] args,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
@@ -28,7 +28,7 @@ public interface ResourcesBackend {
   @Nullable
   InputStream getInputStream(
     Resources2 resources2,
-    ResInfo.Bin info,
+    ResInfo.BinResInfo info,
     @Nullable Locale locale,
     boolean required
   );

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,40 +16,46 @@ public class BinTest {
 
   @Test
   void testNoLocalization() throws IOException {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(BinTestBundle.class);
 
-    var root = resources.bin().get(BinTestBundle.INSTANCE.resourceNoLocalization(), Locale.ROOT);
+    var root = bundle.resourceNoLocalization().get(Locale.ROOT);
     assertEquals("Content from no_localization.txt", toString(root));
-    var de = resources.bin().get(BinTestBundle.INSTANCE.resourceNoLocalization(), Locale.GERMAN);
+    var de = bundle.resourceNoLocalization().get(Locale.GERMAN);
     assertEquals("Content from no_localization.txt", toString(de));
-    var us = resources.bin().get(BinTestBundle.INSTANCE.resourceNoLocalization(), Locale.US);
+    var us = bundle.resourceNoLocalization().get(Locale.US);
     assertEquals("Content from no_localization.txt", toString(us));
   }
 
   @Test
   void testLocalized() throws IOException {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(BinTestBundle.class);
+    var resourceLocalized = bundle.resourceLocalized();
 
-    var root = resources.bin().get(BinTestBundle.INSTANCE.resourceLocalized(), Locale.ROOT);
+    var root = resourceLocalized.get(Locale.ROOT);
     assertEquals("The default.", toString(root));
-    var de = resources.bin().get(BinTestBundle.INSTANCE.resourceLocalized(), Locale.GERMAN);
+    var de = resourceLocalized.get(Locale.GERMAN);
     assertEquals("Das hier ist Deutsch.", toString(de));
-    var us = resources.bin().get(BinTestBundle.INSTANCE.resourceLocalized(), Locale.US);
+    var us = resourceLocalized.get(Locale.US);
     assertEquals("Aluminum in file!", toString(us));
-    var en = resources.bin().get(BinTestBundle.INSTANCE.resourceLocalized(), Locale.ENGLISH);
+    var en = resourceLocalized.get(Locale.ENGLISH);
     assertEquals("English from file.", toString(en));
   }
 
   @Test
   void testOnlyGerman() throws IOException {
-    var resources = TestUtil.newImplementation(MsgNotFoundStrategy.THROW);
-    var root = resources.bin().maybe(BinTestBundle.INSTANCE.onlyGerman(), Locale.ROOT);
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+    var bundle = resources.get(BinTestBundle.class);
+    var onlyGerman = bundle.onlyGerman();
+
+    var root = onlyGerman.maybe(Locale.ROOT);
     assertNull(root);
-    var de = resources.bin().get(BinTestBundle.INSTANCE.onlyGerman(), Locale.GERMAN);
+    var de = onlyGerman.get(Locale.GERMAN);
     assertEquals("Nur auf Deutsch verfügbar.", toString(de));
-    var us = resources.bin().maybe(BinTestBundle.INSTANCE.onlyGerman(), Locale.US);
+    var us = onlyGerman.maybe(Locale.US);
     assertNull(us);
-    var en = resources.bin().maybe(BinTestBundle.INSTANCE.onlyGerman(), Locale.ENGLISH);
+    var en = onlyGerman.maybe(Locale.ENGLISH);
     assertNull(en);
   }
 

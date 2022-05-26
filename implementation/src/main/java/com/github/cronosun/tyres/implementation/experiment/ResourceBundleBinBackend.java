@@ -32,13 +32,13 @@ final class ResourceBundleBinBackend implements BinBackend {
   }
 
   @Override
-  public @Nullable InputStream maybeBin(ResInfo.Bin info, Locale locale) {
+  public @Nullable InputStream maybeBin(ResInfo.BinResInfo info, Locale locale) {
     var filename = info.effectiveFilename();
     return maybeGet(info, filename, locale);
   }
 
   @Nullable
-  private InputStream maybeGet(ResInfo.Bin resInfo, Filename filename, Locale locale) {
+  private InputStream maybeGet(ResInfo.BinResInfo resInfo, Filename filename, Locale locale) {
     var bundleInfo = resInfo.bundleInfo();
     var baseName = bundleInfo.effectiveBaseName();
     var bundleClass = bundleInfo.bundleClass();

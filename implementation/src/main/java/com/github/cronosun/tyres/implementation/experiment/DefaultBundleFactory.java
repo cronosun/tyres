@@ -128,8 +128,8 @@ final class DefaultBundleFactory implements BundleFactory {
       ResInfo resInfo,
       ResourcesBackend backend
     ) {
-      if (resInfo instanceof ResInfo.Text) {
-        var text = (ResInfo.Text) resInfo;
+      if (resInfo instanceof ResInfo.TextResInfo) {
+        var text = (ResInfo.TextResInfo) resInfo;
         switch (text.type()) {
           case TEXT:
             return new TextImpl(resources, text, backend);
@@ -138,8 +138,8 @@ final class DefaultBundleFactory implements BundleFactory {
           default:
             throw new TyResException("Unknown text type: " + text.type());
         }
-      } else if (resInfo instanceof ResInfo.Bin) {
-        var bin = (ResInfo.Bin) resInfo;
+      } else if (resInfo instanceof ResInfo.BinResInfo) {
+        var bin = (ResInfo.BinResInfo) resInfo;
         return new BinImpl(resources, bin, backend);
       } else {
         throw new TyResException("Unknown resource type: " + resInfo);
@@ -149,10 +149,10 @@ final class DefaultBundleFactory implements BundleFactory {
     private static final class TextImpl implements Text, WithArguments<TextImpl> {
 
       private final Resources2 resources;
-      private final ResInfo.Text info;
+      private final ResInfo.TextResInfo info;
       private final ResourcesBackend backend;
 
-      private TextImpl(Resources2 resources, ResInfo.Text info, ResourcesBackend backend) {
+      private TextImpl(Resources2 resources, ResInfo.TextResInfo info, ResourcesBackend backend) {
         this.resources = resources;
         this.info = info;
         this.backend = backend;
@@ -203,10 +203,10 @@ final class DefaultBundleFactory implements BundleFactory {
 
       private static final Object[] NO_ARGS = new Object[] {};
       private final Resources2 resources;
-      private final ResInfo.Text info;
+      private final ResInfo.TextResInfo info;
       private final ResourcesBackend backend;
 
-      private FmtImpl(Resources2 resources, ResInfo.Text info, ResourcesBackend backend) {
+      private FmtImpl(Resources2 resources, ResInfo.TextResInfo info, ResourcesBackend backend) {
         this.resources = resources;
         this.info = info;
         this.backend = backend;
@@ -294,10 +294,10 @@ final class DefaultBundleFactory implements BundleFactory {
     private static final class BinImpl implements Bin, WithArguments<BinImpl> {
 
       private final Resources2 resources;
-      private final ResInfo.Bin info;
+      private final ResInfo.BinResInfo info;
       private final ResourcesBackend backend;
 
-      private BinImpl(Resources2 resources, ResInfo.Bin info, ResourcesBackend backend) {
+      private BinImpl(Resources2 resources, ResInfo.BinResInfo info, ResourcesBackend backend) {
         this.resources = resources;
         this.info = info;
         this.backend = backend;

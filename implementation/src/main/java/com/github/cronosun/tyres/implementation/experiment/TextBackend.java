@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 @ThreadSafe
 public interface TextBackend {
   @Nullable
-  String maybeFmt(ResInfo.Text info, Object[] args, Locale locale);
+  String maybeFmt(ResInfo.TextResInfo info, Object[] args, Locale locale);
 
   @Nullable
-  String maybeText(ResInfo.Text info, Locale locale);
+  String maybeText(ResInfo.TextResInfo info, Locale locale);
 }

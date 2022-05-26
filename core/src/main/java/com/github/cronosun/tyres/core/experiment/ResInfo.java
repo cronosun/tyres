@@ -44,7 +44,7 @@ public abstract class ResInfo implements WithConciseDebugString {
     return validationAnnotation;
   }
 
-  public static final class Text extends ResInfo {
+  public static final class TextResInfo extends ResInfo {
 
     private final TextType type;
     private final String name;
@@ -53,7 +53,7 @@ public abstract class ResInfo implements WithConciseDebugString {
     @Nullable
     private final String defaultValue;
 
-    public Text(
+    public TextResInfo(
       BundleInfo bundleInfo,
       Method method,
       @Nullable Validation validationAnnotation,
@@ -97,7 +97,7 @@ public abstract class ResInfo implements WithConciseDebugString {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
-      Text text = (Text) o;
+      TextResInfo text = (TextResInfo) o;
       return (
         type == text.type &&
         name.equals(text.name) &&
@@ -142,12 +142,12 @@ public abstract class ResInfo implements WithConciseDebugString {
     }
   }
 
-  public static final class Bin extends ResInfo {
+  public static final class BinResInfo extends ResInfo {
 
     private final Filename filename;
     private final Filename effectiveFilename;
 
-    public Bin(
+    public BinResInfo(
       BundleInfo bundleInfo,
       Method method,
       @Nullable Validation validationAnnotation,
@@ -183,7 +183,7 @@ public abstract class ResInfo implements WithConciseDebugString {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
-      Bin bin = (Bin) o;
+      BinResInfo bin = (BinResInfo) o;
       return filename.equals(bin.filename) && effectiveFilename.equals(bin.effectiveFilename);
     }
 
@@ -259,7 +259,7 @@ public abstract class ResInfo implements WithConciseDebugString {
     Filename effectiveNameForBin(BundleInfo bundleInfo, Method method, Filename filename);
   }
 
-  private static ResInfo.Bin newBin(
+  private static BinResInfo newBin(
     BundleInfo bundleInfo,
     Method method,
     Filename filename,
@@ -318,7 +318,7 @@ public abstract class ResInfo implements WithConciseDebugString {
         "]. Arguments are only supported for formatted messages (this is binary). If you want a formatted message, return '" +
         Fmt.class.getSimpleName() +
         "' instead of '" +
-        Bin.class +
+        BinResInfo.class +
         "'."
       );
     }
@@ -327,10 +327,10 @@ public abstract class ResInfo implements WithConciseDebugString {
       method,
       filename
     );
-    return new ResInfo.Bin(bundleInfo, method, validationAnnotation, filename, effectiveFilename);
+    return new BinResInfo(bundleInfo, method, validationAnnotation, filename, effectiveFilename);
   }
 
-  private static ResInfo.Text newText(
+  private static TextResInfo newText(
     BundleInfo bundleInfo,
     Method method,
     EffectiveNameGenerator effectiveNameGenerator
@@ -370,7 +370,7 @@ public abstract class ResInfo implements WithConciseDebugString {
         "]. Arguments are only supported for formatted messages. If you want a formatted message, return '" +
         Fmt.class.getSimpleName() +
         "' instead of '" +
-        Text.class +
+        TextResInfo.class +
         "'."
       );
     }
@@ -386,7 +386,7 @@ public abstract class ResInfo implements WithConciseDebugString {
     } else {
       defaultValue = null;
     }
-    return new ResInfo.Text(
+    return new TextResInfo(
       bundleInfo,
       method,
       validationAnnotation,

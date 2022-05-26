@@ -27,7 +27,7 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Override
-  public @Nullable String maybeFmt(ResInfo.Text info, Object[] args, Locale locale) {
+  public @Nullable String maybeFmt(ResInfo.TextResInfo info, Object[] args, Locale locale) {
     var pattern = maybeText(info, locale);
     if (pattern != null) {
       return this.messageFormatBackend.format(pattern, args, locale);
@@ -37,7 +37,7 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Override
-  public @Nullable String maybeText(ResInfo.Text info, Locale locale) {
+  public @Nullable String maybeText(ResInfo.TextResInfo info, Locale locale) {
     var bundle = getResourceBundleForMessages(info.bundleInfo(), locale);
     var string = getString(bundle, info);
     if (string == null) {
@@ -49,7 +49,7 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Nullable
-  private String getString(@Nullable ResourceBundle bundle, ResInfo.Text info) {
+  private String getString(@Nullable ResourceBundle bundle, ResInfo.TextResInfo info) {
     if (bundle != null) {
       var key = info.effectiveName();
       if (bundle.containsKey(key)) {

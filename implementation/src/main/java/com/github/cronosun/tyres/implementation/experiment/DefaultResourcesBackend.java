@@ -31,7 +31,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
   @Override
   public @Nullable String getText(
     Resources2 resources,
-    ResInfo.Text info,
+    ResInfo.TextResInfo info,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
   ) {
@@ -49,7 +49,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
   @Override
   public @Nullable String getFmt(
     Resources2 resources,
-    ResInfo.Text info,
+    ResInfo.TextResInfo info,
     Object[] args,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
@@ -83,7 +83,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
   @Override
   public @Nullable InputStream getInputStream(
     Resources2 resources,
-    ResInfo.Bin info,
+    ResInfo.BinResInfo info,
     @Nullable Locale locale,
     boolean required
   ) {
@@ -103,7 +103,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
 
   private String handleReturnForText(
     @Nullable String text,
-    ResInfo.Text info,
+    ResInfo.TextResInfo info,
     @Nullable Locale locale,
     Object[] args,
     NotFoundConfig.WithNullNoDefault notFoundConfig

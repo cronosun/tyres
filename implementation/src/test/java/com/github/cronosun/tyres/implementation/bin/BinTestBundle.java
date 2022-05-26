@@ -1,18 +1,15 @@
 package com.github.cronosun.tyres.implementation.bin;
 
-import com.github.cronosun.tyres.core.BinRes;
 import com.github.cronosun.tyres.core.File;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Bin;
 
 public interface BinTestBundle {
-  BinTestBundle INSTANCE = TyRes.create(BinTestBundle.class);
-
   @File("no_localization.txt")
-  BinRes resourceNoLocalization();
+  Bin resourceNoLocalization();
 
   @File("localized.txt")
-  BinRes resourceLocalized();
+  Bin resourceLocalized();
 
   @File("only_german.txt")
-  BinRes onlyGerman();
+  Bin onlyGerman();
 }

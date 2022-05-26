@@ -1,12 +1,10 @@
 package com.github.cronosun.tyres.implementation.delegate;
 
-import com.github.cronosun.tyres.core.StrRes;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 public interface ExtendedResourcesBundle {
-  ExtendedResourcesBundle INSTANCE = TyRes.create(ExtendedResourcesBundle.class);
 
-  StrRes sayHello();
+  Text sayHello();
 
-  StrRes holidayLeaveDaysPerYear();
+  Text holidayLeaveDaysPerYear();
 }

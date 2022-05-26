@@ -1,22 +1,19 @@
 package com.github.cronosun.tyres.implementation.default_annotation;
 
 import com.github.cronosun.tyres.core.Default;
-import com.github.cronosun.tyres.core.MsgRes;
-import com.github.cronosun.tyres.core.StrRes;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Fmt;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 public interface DefaultAnnotationTestBundle {
-  DefaultAnnotationTestBundle INSTANCE = TyRes.create(DefaultAnnotationTestBundle.class);
-
   @Default("This is the message ''{0}''.")
-  MsgRes withConfiguredDefault(String arg);
+  Fmt withConfiguredDefault(String arg);
 
   @Default("No, this default is not taken, since it's also in the properties.")
-  MsgRes somethingThatIsAlsoFoundInProperty();
+  Fmt somethingThatIsAlsoFoundInProperty();
 
   @Default("Yes, this is the string to use")
-  StrRes stringResWithConfiguredDefault();
+  Text stringResWithConfiguredDefault();
 
   @Default("No, this value is not used")
-  StrRes stringResourceThatIsAlsoFoundInProperty();
+  Text stringResourceThatIsAlsoFoundInProperty();
 }

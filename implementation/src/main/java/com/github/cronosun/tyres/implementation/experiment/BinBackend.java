@@ -10,7 +10,7 @@ public interface BinBackend {
    * Maybe get the binary.
    */
   @Nullable
-  InputStream maybeBin(ResInfo.Bin info, Locale locale);
+  InputStream maybeBin(ResInfo.BinResInfo info, Locale locale);
 
   static BinBackend resourceBundleInstance() {
     return ResourceBundleBinBackend.instance();
