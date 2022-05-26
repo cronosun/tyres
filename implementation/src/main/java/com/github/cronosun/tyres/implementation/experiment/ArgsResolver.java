@@ -16,18 +16,11 @@ public interface ArgsResolver {
     /**
      * Resolves the given arguments.
      * <p>
-     * Returns a new array if at least one argument was resolved. If not, might return the given
-     * arguments (unmodified). DOES NEVER modify the given arguments array.
-     */
-    Object[] resolve(Resources2 resources2, @Nullable Locale locale, NotFoundConfig notFoundConfig, Object[] args);
-
-    /**
-     * Resolves the given arguments.
-     * <p>
-     * Returns a new array if at least one argument was resolved. If not, might return the given
-     * arguments (unmodified). DOES NEVER modify the given arguments array. Returns <code>null</code> if at least
-     * one argument could not be resolved (resource not found).
+     * Note 1: DOES NEVER modify the given arguments array. Returns a new array if at least one argument was resolved.
+     * Note 2: The method is allowed to return the given args-array (if there are no arguments to resolve).
+     * Note 3: Returns <code>null</code> if `notFoundConfig` is {@link NotFoundConfig.WithNullNoDefault#NULL} and at least one
+     * argument could not be resolved.
      */
     @Nullable
-    Object[] maybeResolve(Resources2 resources2, @Nullable Locale locale, Object[] args);
+    Object[] resolve(Resources2 resources, Locale locale, NotFoundConfig.WithNullNoDefault notFoundConfig, Object[] args);
 }

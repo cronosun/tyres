@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 
 public final class MethodInfo implements WithConciseDebugString {
 
+  // TODO: Also need the @Validation annotation
+
   private static final Class<?>[] KNOWN_RETURN_TYPES = new Class[] {
     Text.class,
     Fmt.class,

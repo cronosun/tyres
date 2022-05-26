@@ -8,34 +8,23 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 public interface ResourcesBackend {
+  @Nullable
   String getText(
     BundleInfo bundleInfo,
     MethodInfo methodInfo,
     @Nullable Locale locale,
-    NotFoundConfig notFoundConfig
+    NotFoundConfig.WithNullAndDefault notFoundConfig
   );
 
   @Nullable
-  String maybeText(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale);
-
   String getFmt(
     BundleInfo bundleInfo,
     MethodInfo methodInfo,
     Object[] args,
     @Nullable Locale locale,
-    NotFoundConfig notFoundConfig
+    NotFoundConfig.WithNullAndDefault notFoundConfig
   );
 
   @Nullable
-  String maybeFmt(
-    BundleInfo bundleInfo,
-    MethodInfo methodInfo,
-    Object[] args,
-    @Nullable Locale locale
-  );
-
-  InputStream getBin(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale);
-
-  @Nullable
-  InputStream maybeBin(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale);
+  InputStream getInputStream(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale, boolean required);
 }

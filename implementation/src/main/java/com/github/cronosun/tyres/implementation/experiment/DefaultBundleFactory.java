@@ -138,21 +138,16 @@ final class DefaultBundleFactory implements BundleFactory {
     }
 
     @Override
-    public String get(@Nullable Locale locale, NotFoundConfig notFoundConfig) {
-      return backend.getText(bundleInfo, methodInfo, locale, notFoundConfig);
-    }
-
-    @Override
-    public @Nullable String maybe(@Nullable Locale locale) {
-      return backend.maybeText(bundleInfo, methodInfo, locale);
-    }
-
-    @Override
     public TextImpl withArguments(Object[] args) {
       if (args.length == 0) {
         return this;
       }
       throw new TyResException("Texts (not formatted) cannot have arguments");
+    }
+
+    @Override
+    public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+      return backend.getText(bundleInfo, methodInfo, locale, notFoundConfig);
     }
   }
 
@@ -170,22 +165,17 @@ final class DefaultBundleFactory implements BundleFactory {
     }
 
     @Override
-    public String get(@Nullable Locale locale, NotFoundConfig notFoundConfig) {
-      return backend.getFmt(bundleInfo, methodInfo, NO_ARGS, locale, notFoundConfig);
-    }
-
-    @Override
-    public @Nullable String maybe(@Nullable Locale locale) {
-      return backend.maybeFmt(bundleInfo, methodInfo, NO_ARGS, locale);
-    }
-
-    @Override
     public Fmt withArguments(Object[] args) {
       if (args.length == 0) {
         return this;
       } else {
         return new FmtWithArgsImpl(this, args, backend);
       }
+    }
+
+    @Override
+    public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
+      return backend.getFmt(bundleInfo, methodInfo, NO_ARGS, locale, notFoundConfig);
     }
   }
 
@@ -200,19 +190,14 @@ final class DefaultBundleFactory implements BundleFactory {
     }
 
     @Override
-    public String get(@Nullable Locale locale, NotFoundConfig notFoundConfig) {
+    public @Nullable String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig) {
       return noArgs.backend.getFmt(
-        noArgs.bundleInfo,
-        noArgs.methodInfo,
-        args,
-        locale,
-        notFoundConfig
+              noArgs.bundleInfo,
+              noArgs.methodInfo,
+              args,
+              locale,
+              notFoundConfig
       );
-    }
-
-    @Override
-    public @Nullable String maybe(@Nullable Locale locale) {
-      return noArgs.backend.maybeFmt(noArgs.bundleInfo, noArgs.methodInfo, args, locale);
     }
   }
 
@@ -229,21 +214,16 @@ final class DefaultBundleFactory implements BundleFactory {
     }
 
     @Override
-    public InputStream get(@Nullable Locale locale) {
-      return backend.getBin(bundleInfo, methodInfo, locale);
-    }
-
-    @Override
-    public @Nullable InputStream maybe(@Nullable Locale locale) {
-      return backend.maybeBin(bundleInfo, methodInfo, locale);
-    }
-
-    @Override
     public BinImpl withArguments(Object[] args) {
       if (args.length == 0) {
         return this;
       }
       throw new TyResException("Binary cannot have arguments");
+    }
+
+    @Override
+    public @Nullable InputStream getInputStream(@Nullable Locale locale, boolean required) {
+      return backend.getInputStream(bundleInfo, methodInfo, locale, required);
     }
   }
 

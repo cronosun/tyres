@@ -11,13 +11,24 @@ public enum DefaultNotFoundConfig {
   /**
    * If there's no such message, throws a {@link TyResException} exception.
    */
-  THROW,
+  THROW(NotFoundConfig.WithNullNoDefault.THROW),
   /**
    * If there's no such message, returns the fallback value.
    */
-  FALLBACK;
+  FALLBACK(NotFoundConfig.WithNullNoDefault.FALLBACK);
 
-  public DefaultNotFoundConfig with(NotFoundConfig notFoundConfig) {
+  private final NotFoundConfig.WithNullNoDefault withNull;
+
+  DefaultNotFoundConfig(NotFoundConfig.WithNullNoDefault withNull) {
+    this.withNull = withNull;
+  }
+
+  public NotFoundConfig.WithNullNoDefault withNull() {
+    return withNull;
+  }
+
+  // TODO
+  /*public DefaultNotFoundConfig with(NotFoundConfig notFoundConfig) {
     switch (notFoundConfig) {
       case THROW:
         return DefaultNotFoundConfig.THROW;
@@ -28,5 +39,5 @@ public enum DefaultNotFoundConfig {
       default:
         throw new IllegalArgumentException("Unknown not found config: " + this);
     }
-  }
+  }*/
 }
