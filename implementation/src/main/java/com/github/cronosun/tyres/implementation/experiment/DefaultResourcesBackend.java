@@ -20,7 +20,6 @@ public class DefaultResourcesBackend implements ResourcesBackend {
     private final CurrentLocaleProvider currentLocaleProvider;
     private final DefaultNotFoundConfig defaultNotFoundConfig;
 
-
     public DefaultResourcesBackend(TextBackend textBackend, FallbackGenerator fallbackGenerator, CurrentLocaleProvider currentLocaleProvider, DefaultNotFoundConfig defaultNotFoundConfig) {
         this.textBackend = textBackend;
         this.fallbackGenerator = fallbackGenerator;
@@ -68,11 +67,13 @@ public class DefaultResourcesBackend implements ResourcesBackend {
 
     @Override
     public InputStream getBin(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale) {
+        // TODO: Implement me
         return null;
     }
 
     @Override
     public @Nullable InputStream maybeBin(BundleInfo bundleInfo, MethodInfo methodInfo, @Nullable Locale locale) {
+        // TODO: Implement me
         return null;
     }
 
