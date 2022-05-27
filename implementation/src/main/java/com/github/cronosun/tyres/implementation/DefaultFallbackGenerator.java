@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.implementation.experiment;
+package com.github.cronosun.tyres.implementation;
 
 import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.WithConciseDebugString;

@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.implementation.locale_provider;
 
-import com.github.cronosun.tyres.implementation.experiment.CurrentLocaleProvider;
+import com.github.cronosun.tyres.implementation.CurrentLocaleProvider;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 

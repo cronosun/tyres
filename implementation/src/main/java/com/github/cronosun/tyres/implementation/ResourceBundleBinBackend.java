@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.implementation.experiment;
+package com.github.cronosun.tyres.implementation;
 
 import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
 

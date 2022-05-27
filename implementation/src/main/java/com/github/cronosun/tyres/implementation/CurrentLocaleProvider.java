@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.implementation.experiment;
+package com.github.cronosun.tyres.implementation;
 
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
