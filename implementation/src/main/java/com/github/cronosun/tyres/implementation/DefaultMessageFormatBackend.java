@@ -4,7 +4,6 @@ import com.github.cronosun.tyres.core.TyResException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
-import org.jetbrains.annotations.Nullable;
 
 final class DefaultMessageFormatBackend implements MessageFormatBackend {
 

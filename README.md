@@ -10,12 +10,12 @@ Java applications.
 * Typed resources using interfaces.
 * Supports arguments for messages.
 * Supports 3 types of resources:
-    * **Messages**: Messages are formatted patterns with 0-n arguments (see Java's `MessageFormat`).
-    * **Strings**: Similar to messages, but not formatted, without arguments.
+    * **Formatted**: Formatted messages, with 0-n arguments (see Java's `MessageFormat`).
+    * **Text**: Plain string, not formatted and 0 arguments.
     * **Binary** resources (localization is supported too).
 * Supports multiple backend implementations: Spring `MessageSource` and Java `ResourceBundle` are included - or write
   your own.
-* Lightweight & small (few dependencies).
+* Lightweight & small.
 * Validation: Detect missing translations or unused translations.
 * Testing: Easy to test whether services return correct messages (messages can be referenced in tests).
 * Globally configurable what to do if a resource is missing (return a fallback message or throw an exception).
@@ -26,16 +26,11 @@ Write a message bundle (it's just an interface):
 
 ```java
 public interface MyMessages {
-    MyMessages INSTANCE = TyRes.create(MyMessages.class);
-
-    MsgRes amountTooLarge(int amount);
-
-    MsgRes missingAmount();
-
-    StrRes notFormatted();
-
+    Fmt amountTooLarge(int amount);
+    Text missingAmount();
+    Text notFormatted();
     @File("some_data.png")
-    BinRes someBinary();
+    Bin someBinary();
 }
 ```
 
@@ -44,7 +39,7 @@ public interface MyMessages {
 ```properties
 amountTooLarge=Given amount {0,number,integer} is too large!
 missingAmount=Amount is required!
-notFormatted=Somethig that's not formatted.
+notFormatted=Something that's not formatted.
 ```
 
 ... then translate the messages:
@@ -53,20 +48,27 @@ notFormatted=Somethig that's not formatted.
 import java.util.Locale;
 
 class TranslateTest {
-    // Get instance, see ResourcesConstructor (inject if using spring)
+    // Get instance / inject if using spring (see tests on how to obtain an instance).
     private final Resources resources;
 
     public void testTranslations() {
-        var msg1 = resources.msg().get(MyMessages.INSTANCE.missingAmount(), Locale.UK);
+        // validate the bundle (will for example detect missing translations).
+        resources.validate(MyMessages.class, Set.of(Locale.UK));
+        
+        var bundle = resources.get(MyMessages.class);
+        
+        var msg1 = bundle.missingAmount().get(Locale.UK);
         assertEquals("Amount is required!", msg1);
 
-        var msg2 = resources.msg().get(MyMessages.INSTANCE.amountTooLarge(2232), Locale.UK);
+        var msg2 = bundle.amountTooLarge(2232).get(Locale.UK);
         assertEquals("Given amount 2232 is too large!", msg2);
 
-        var msg3 = resources.resolver().get(MyMessages.INSTANCE.notFormatted(), Locale.UK);
-        assertEquals("Somethig that's not formatted.", msg3);
+        // if you don't specify a locale, the locale from the locale provider is taken.
+        var msg3 = bundle.notFormatted().get();
+        assertEquals("Something that's not formatted.", msg3);
 
-        var inputStream = resources.bin().get(MyMessages.INSTANCE.someBinary());
+        // binaries can be localized too.
+        var inputStream = bundle.someBinary().get(Locale.UK);
         assertNotNull(inputStream);
         inputStream.close();
     }
@@ -78,7 +80,7 @@ class TranslateTest {
 * `core`: Contains the API and a default implementation of `TyResImplementation`. You always need this dependency.
 * `implementation`: Contains the default implementation - you most likely want this dependency too (unless you write your own
   implementation from scratch).
-* `spring`: Contains an implementation for spring. You only need this implementation if you use spring.
+* `spring`: Contains an implementation for spring. You only need this implementation if you're using spring.
 
 ## More
 
@@ -109,18 +111,11 @@ interface is called `com.company.MyBundle`, the `.properties`-file must be locat
 * For the Spring implementation: Some spring backends (the `ReloadableResourceBundleMessageSource`) wants the file to be
   in the `resources`-directory, called `com.company.MyBundle.properties`.
 
-### Custom bundle layout
-
-You might want to have all your resources in one single `messages.properties` instead of one properties-file per bundle.
-That's currently not implemented (but might be implemented eventually). In the meantime, you can implement that
-yourself: see for example `MsgStrBackend`. Note: Du not abuse the `@RenamePackage` annotation to achieve that (
-validation won't work anymore if you solve this that way).
-
 ### Why are there two resource types that produce strings?
 
-There's `MsgRes` and `StrRes`: Other libraries / frameworks work differently, [spring](https://spring.io/) for example
+There's `Text` and `Fmt`: Other libraries / frameworks work differently, [spring](https://spring.io/) for example
 does not (unless configured otherwise) format (using `MessageFormat`) if there are no arguments and formats the message
-if there are arguments. Why doesn't TyRes work the same instead of having two resource types (`StrRes` and `MsgRes`)?
+if there are arguments. Why doesn't TyRes work the same instead of having two resource types (`Text` and `Fmt`)?
 It's for validation reasons: Say we have this situation:
 
 ```java
@@ -139,32 +134,4 @@ fileNotFound=File {0} not found.
   this `UnspecifiedRes fileNotFound(String filename)`?
 * Or is this intentional and the developer really wants the literal text `File {0} not found.`?
 
-By using `StrRes` and `MsgRes` instead of `UnspecifiedRes`, the validator knows.
-
-### Why use a static `INSTANCE` field instead of spring injection?
-
-A simple bundle looks like this:
-
-```java
-interface MyBundle {
-    MyBundle INSTANCE = TyRes.create(MyBundle.class);
-
-    MsgRes myMessage(String information);
-
-    StrRes enumConstantOneDisplayName();
-}
-```
-
-Why not let spring create the instance (for example using a `FactoryBean`) instead of
-using `INSTANCE = TyRes.create(MyBundle.class)`? While this was technically possible, there are some cases where you
-can't get the spring context. Say for example you want to do something like this:
-
-```java
-enum MyEnum {
-    CONSTANT_ONE(MyBundle.INSTANCE.enumConstantOneDisplayName());
-    /// <...>   
-}
-```
-
-... and it's also not possible for non-spring applications / applications that don't use DI. So by using `INSTANCE`, we
-don't lose much but gain uniformity (all bundles look the same and are instantiated the same). 
+By using `Text` and `Fmt` instead of `UnspecifiedRes`, the validator knows.

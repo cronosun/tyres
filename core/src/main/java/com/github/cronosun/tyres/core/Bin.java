@@ -1,6 +1,5 @@
 package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Objects;

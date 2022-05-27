@@ -3,7 +3,6 @@ package com.github.cronosun.tyres.implementation.static_translation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
-import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.core.Resources;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;

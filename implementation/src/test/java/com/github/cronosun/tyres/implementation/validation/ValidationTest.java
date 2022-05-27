@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.implementation.validation;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.core.TyResException;

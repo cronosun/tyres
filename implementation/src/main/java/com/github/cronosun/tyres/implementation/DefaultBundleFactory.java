@@ -1,8 +1,6 @@
 package com.github.cronosun.tyres.implementation;
 
 import com.github.cronosun.tyres.core.*;
-import com.github.cronosun.tyres.core.TyResException;
-import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;

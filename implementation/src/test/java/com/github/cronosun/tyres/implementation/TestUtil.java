@@ -3,8 +3,6 @@ package com.github.cronosun.tyres.implementation;
 import com.github.cronosun.tyres.core.Bin;
 import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.core.Resources;
-import com.github.cronosun.tyres.implementation.CurrentLocaleProvider;
-import com.github.cronosun.tyres.implementation.DefaultResources;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;

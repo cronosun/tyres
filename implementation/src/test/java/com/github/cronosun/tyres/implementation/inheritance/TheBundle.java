@@ -1,7 +1,8 @@
 package com.github.cronosun.tyres.implementation.inheritance;
 
-import com.github.cronosun.tyres.core.*;
+import com.github.cronosun.tyres.core.Default;
 import com.github.cronosun.tyres.core.Fmt;
+import com.github.cronosun.tyres.core.Rename;
 import com.github.cronosun.tyres.core.Text;
 
 public interface TheBundle extends ParentBundle {

@@ -1,7 +1,7 @@
 package com.github.cronosun.tyres.implementation.validation;
 
-import com.github.cronosun.tyres.core.*;
 import com.github.cronosun.tyres.core.Bin;
+import com.github.cronosun.tyres.core.File;
 import com.github.cronosun.tyres.core.Fmt;
 import com.github.cronosun.tyres.core.Text;
 
