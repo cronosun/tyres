@@ -10,6 +10,7 @@ package com.github.cronosun.tyres.core;
  *     <li>Non-empty list: {@link #prefix()} ITEM1 {@link #delimiter()} ITEM2 {@link #suffix()}</li>
  * </ul>
  */
+@ThreadSafe
 public interface ResolvableListConfiguration {
   /**
    * Message to use if the list is empty.

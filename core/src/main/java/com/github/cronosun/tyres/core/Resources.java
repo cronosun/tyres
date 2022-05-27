@@ -3,6 +3,7 @@ package com.github.cronosun.tyres.core;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 public interface Resources {
   /**
    * Returns the bundle instance.

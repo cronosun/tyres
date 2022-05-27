@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A resource that produces text. A specialization is {@link Fmt} (formatted and with 0-n arguments).
  */
+@ThreadSafe
 public interface Text extends Resolvable {
   @Nullable
   String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig);

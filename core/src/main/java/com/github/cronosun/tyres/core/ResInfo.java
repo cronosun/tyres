@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 public abstract class ResInfo implements WithConciseDebugString {
 
   private static final Class<?>[] KNOWN_TEXT_TYPES = new Class[] { Text.class, Fmt.class };
@@ -49,6 +50,7 @@ public abstract class ResInfo implements WithConciseDebugString {
     }
   }
 
+  @ThreadSafe
   public static final class TextResInfo extends ResInfo {
 
     private final TextType type;
@@ -147,6 +149,7 @@ public abstract class ResInfo implements WithConciseDebugString {
     }
   }
 
+  @ThreadSafe
   public static final class BinResInfo extends ResInfo {
 
     private final Filename filename;

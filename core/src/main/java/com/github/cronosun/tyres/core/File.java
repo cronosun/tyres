@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.core;
 import java.lang.annotation.*;
 
 /**
- * Marks a method as a file-resouce.
+ * Marks a method as a file-resource.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

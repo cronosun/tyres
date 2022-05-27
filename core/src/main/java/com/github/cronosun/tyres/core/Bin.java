@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Binary resource.
  */
+@ThreadSafe
 public interface Bin extends WithConciseDebugString {
   @Nullable
   InputStream getInputStream(@Nullable Locale locale, boolean required);

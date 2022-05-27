@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.core;
 
 import java.util.function.Function;
 
+@ThreadSafe
 public interface Resolvable extends WithConciseDebugString {
   Text resolve(Resources resources);
 

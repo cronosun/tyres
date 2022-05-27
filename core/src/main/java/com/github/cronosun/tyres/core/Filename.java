@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 public final class Filename implements WithConciseDebugString {
 
   private static final char EXTENSION_SEPARATOR = '.';

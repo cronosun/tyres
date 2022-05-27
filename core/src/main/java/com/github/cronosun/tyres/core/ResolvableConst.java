@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 final class ResolvableConst<T> implements Resolvable {
 
   @Nullable

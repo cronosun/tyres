@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@ThreadSafe
 public final class BundleInfo implements WithConciseDebugString {
 
   private final Class<?> bundleClass;

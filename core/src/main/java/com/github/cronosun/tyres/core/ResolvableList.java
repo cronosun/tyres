@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
+@ThreadSafe
 public class ResolvableList implements Resolvable {
 
   private static final ResolvableList EMPTY = new ResolvableList(
