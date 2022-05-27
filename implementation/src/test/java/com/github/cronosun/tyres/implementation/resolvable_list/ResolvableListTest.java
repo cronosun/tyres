@@ -1,7 +1,7 @@
 package com.github.cronosun.tyres.implementation.resolvable_list;
 
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
-import com.github.cronosun.tyres.core.experiment.ResolvableList;
+import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.ResolvableList;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.List;
 import java.util.Locale;

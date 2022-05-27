@@ -1,15 +1,15 @@
 package com.github.cronosun.tyres.core;
 
-import java.util.Locale;
-import org.jetbrains.annotations.Nullable;
+import java.util.function.Function;
 
-/**
- * Something that can translate itself using the given {@link Resources}.
- */
-@ThreadSafe
 public interface Resolvable extends WithConciseDebugString {
-  String get(Resources resources, MsgNotFoundStrategy notFoundStrategy, Locale locale);
+  Text resolve(Resources resources);
 
-  @Nullable
-  String maybe(Resources resources, Locale locale);
+  /**
+   * Returns a {@link Resolvable} from the given bundle and function. Note: The function must be constant,
+   * as the implementation is allowed to cache the return value of the function.
+   */
+  static <T> Resolvable constant(Class<T> bundleClass, Function<T, Text> function) {
+    return ResolvableConst.of(bundleClass, function);
+  }
 }

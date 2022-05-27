@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.implementation.service_tests;
 
-import com.github.cronosun.tyres.core.experiment.Resolvable;
+import com.github.cronosun.tyres.core.Resolvable;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 

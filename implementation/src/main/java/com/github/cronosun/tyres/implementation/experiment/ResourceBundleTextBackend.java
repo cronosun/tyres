@@ -1,11 +1,11 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
 import com.github.cronosun.tyres.core.BaseName;
+import com.github.cronosun.tyres.core.BundleInfo;
+import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.Validation;
 import com.github.cronosun.tyres.core.WithConciseDebugString;
-import com.github.cronosun.tyres.core.experiment.BundleInfo;
-import com.github.cronosun.tyres.core.experiment.ResInfo;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;

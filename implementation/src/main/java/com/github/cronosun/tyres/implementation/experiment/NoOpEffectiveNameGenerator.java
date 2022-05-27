@@ -1,8 +1,8 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
 import com.github.cronosun.tyres.core.BaseName;
+import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.Filename;
-import com.github.cronosun.tyres.core.experiment.BundleInfo;
 import java.lang.reflect.Method;
 
 final class NoOpEffectiveNameGenerator implements EffectiveNameGenerator {

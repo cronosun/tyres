@@ -4,9 +4,9 @@ import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
 
 import com.github.cronosun.tyres.core.BaseName;
 import com.github.cronosun.tyres.core.Filename;
+import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.Validation;
-import com.github.cronosun.tyres.core.experiment.ResInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;

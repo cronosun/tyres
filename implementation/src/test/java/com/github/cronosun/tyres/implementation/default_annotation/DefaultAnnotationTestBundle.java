@@ -1,8 +1,8 @@
 package com.github.cronosun.tyres.implementation.default_annotation;
 
 import com.github.cronosun.tyres.core.Default;
-import com.github.cronosun.tyres.core.experiment.Fmt;
-import com.github.cronosun.tyres.core.experiment.Text;
+import com.github.cronosun.tyres.core.Fmt;
+import com.github.cronosun.tyres.core.Text;
 
 public interface DefaultAnnotationTestBundle {
   @Default("This is the message ''{0}''.")

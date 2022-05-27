@@ -1,8 +1,8 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
+import com.github.cronosun.tyres.core.*;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.WithConciseDebugString;
-import com.github.cronosun.tyres.core.experiment.*;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +32,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
 
   @Override
   public @Nullable String getText(
-    Resources2 resources,
+    Resources resources,
     ResInfo.TextResInfo info,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
@@ -50,7 +50,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
 
   @Override
   public @Nullable String getFmt(
-    Resources2 resources,
+    Resources resources,
     ResInfo.TextResInfo info,
     Object[] args,
     @Nullable Locale locale,
@@ -84,7 +84,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
 
   @Override
   public @Nullable InputStream getInputStream(
-    Resources2 resources,
+    Resources resources,
     ResInfo.BinResInfo info,
     @Nullable Locale locale,
     boolean required
@@ -104,11 +104,11 @@ public class DefaultResourcesBackend implements ResourcesBackend {
   }
 
   @Override
-  public void validateAllResoucesFromBundle(Supplier<Stream<ResInfo>> resInfo, Locale locale) {
+  public void validateAllResourcesFromBundle(Supplier<Stream<ResInfo>> resInfo, Locale locale) {
     // first make sure everything is here
     var resInfoStream = resInfo.get();
     resInfoStream.forEach(item -> this.validateSingleResouce(item, locale));
-    // now ask the text backend whether there are superflous resources
+    // now ask the text backend whether there are superfluous resources
     var textResources = resInfo
       .get()
       .filter(info -> info instanceof ResInfo.TextResInfo)
@@ -180,7 +180,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
   }
 
   @Nullable
-  private Locale locale(@Nullable Locale locale, Resources2 resources) {
+  private Locale locale(@Nullable Locale locale, Resources resources) {
     if (locale != null) {
       return locale;
     } else {

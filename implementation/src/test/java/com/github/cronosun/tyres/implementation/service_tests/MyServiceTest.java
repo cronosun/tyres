@@ -2,8 +2,8 @@ package com.github.cronosun.tyres.implementation.service_tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
-import com.github.cronosun.tyres.core.experiment.Resolvable;
+import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

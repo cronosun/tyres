@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.implementation.locale_provider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;

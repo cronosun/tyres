@@ -1,8 +1,8 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
-import com.github.cronosun.tyres.core.experiment.NotFoundConfig;
-import com.github.cronosun.tyres.core.experiment.Resolvable;
-import com.github.cronosun.tyres.core.experiment.Resources2;
+import com.github.cronosun.tyres.core.NotFoundConfig;
+import com.github.cronosun.tyres.core.Resolvable;
+import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ final class DefaultArgsResolver implements ArgsResolver {
 
   @Override
   public Object[] resolve(
-    Resources2 resources,
+    Resources resources,
     Locale locale,
     NotFoundConfig.WithNullNoDefault notFoundConfig,
     Object[] args

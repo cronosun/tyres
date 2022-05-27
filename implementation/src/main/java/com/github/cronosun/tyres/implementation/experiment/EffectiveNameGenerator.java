@@ -1,7 +1,7 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
 import com.github.cronosun.tyres.core.BaseName;
-import com.github.cronosun.tyres.core.experiment.ResInfo;
+import com.github.cronosun.tyres.core.ResInfo;
 
 public interface EffectiveNameGenerator extends ResInfo.EffectiveNameGenerator {
   BaseName effectiveBaseName(Class<?> bundleClass, BaseName declaredBaseName);

@@ -1,9 +1,9 @@
 package com.github.cronosun.tyres.implementation.validation;
 
 import com.github.cronosun.tyres.core.*;
-import com.github.cronosun.tyres.core.experiment.Bin;
-import com.github.cronosun.tyres.core.experiment.Fmt;
-import com.github.cronosun.tyres.core.experiment.Text;
+import com.github.cronosun.tyres.core.Bin;
+import com.github.cronosun.tyres.core.Fmt;
+import com.github.cronosun.tyres.core.Text;
 
 public interface ValidatesCorrectlyBundle {
   Fmt present();

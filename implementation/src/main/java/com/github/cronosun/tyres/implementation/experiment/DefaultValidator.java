@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
-import com.github.cronosun.tyres.core.experiment.Resources2;
+import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
 
 // TODO: Make configurable (disable validation)
@@ -17,16 +17,16 @@ public class DefaultValidator implements ValidatorBackend {
   }
 
   @Override
-  public void validateManually(Resources2 resources, Class<?> bundleClass, Locale locale) {
+  public void validateManually(Resources resources, Class<?> bundleClass, Locale locale) {
     var bundle = resources.get(bundleClass);
-    backend.validateAllResoucesFromBundle(
-      () -> bundleFactory.declaredResoucesForValidation(bundle),
+    backend.validateAllResourcesFromBundle(
+      () -> bundleFactory.declaredResourcesForValidation(bundle),
       locale
     );
   }
 
   @Override
-  public void validateOnAccess(Resources2 resources2, Class<?> bundleClass, Locale locale) {
+  public void validateOnAccess(Resources resources2, Class<?> bundleClass, Locale locale) {
     validateManually(resources2, bundleClass, locale);
     // TODO
   }

@@ -2,9 +2,8 @@ package com.github.cronosun.tyres.implementation.validation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
+import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.core.TyResException;
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Set;

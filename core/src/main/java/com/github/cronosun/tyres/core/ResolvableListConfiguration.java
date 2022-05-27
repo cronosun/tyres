@@ -1,6 +1,4 @@
-package com.github.cronosun.tyres.core.experiment;
-
-import com.github.cronosun.tyres.core.*;
+package com.github.cronosun.tyres.core;
 
 /**
  * Configuration for {@link ResolvableList}.

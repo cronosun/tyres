@@ -1,52 +1,80 @@
 package com.github.cronosun.tyres.core;
 
-import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-@ThreadSafe
 public final class BundleInfo implements WithConciseDebugString {
 
   private final Class<?> bundleClass;
   private final BaseName baseName;
-  private final TyResImplementation implementation;
+  private final BaseName effectiveBaseName;
 
-  public BundleInfo(Class<?> bundleClass, BaseName baseName, TyResImplementation implementation) {
+  public BundleInfo(Class<?> bundleClass, BaseName baseName) {
+    this(bundleClass, baseName, baseName);
+  }
+
+  public BundleInfo(Class<?> bundleClass, BaseName baseName, BaseName effectiveBaseName) {
     this.bundleClass = Objects.requireNonNull(bundleClass);
     this.baseName = Objects.requireNonNull(baseName);
-    this.implementation = Objects.requireNonNull(implementation);
+    this.effectiveBaseName = Objects.requireNonNull(effectiveBaseName);
   }
 
-  static BundleInfo reflect(Class<?> bundleClass, TyResImplementation implementation) {
-    return Reflection.reflect(bundleClass, implementation);
+  public static BundleInfo reflect(Class<?> bundleClass) {
+    return new BundleInfo(bundleClass, getBaseName(bundleClass));
   }
 
-  /**
-   * Returns the bundle class (the one that has been used to create the instance,
-   * see {@link TyResImplementation#createInstance(Class)}).
-   * <p>
-   * Note: This is not necessarily the same as the class from method ({@link Method#getDeclaringClass()},
-   * see {@link ResInfo#method()}), since the method might have been declared on one of the
-   * inherited interfaces.
-   */
   public Class<?> bundleClass() {
     return bundleClass;
   }
 
-  /**
-   * Returns the base name.
-   * <p>
-   * See {@link BaseName}, {@link RenameName}, {@link RenamePackage}. If the names are not renamed, the base name
-   * is taken from {@link #bundleClass()}: {@link BaseName#fromClass(Class)} is called with {@link #bundleClass()}.
-   */
   public BaseName baseName() {
     return baseName;
   }
 
   /**
-   * Returns the implementation that has been used to create this.
+   * The base name that is used for lookup in the bundle. It's usually (and initially) the same as
+   * {@link #baseName()} - but the implementation is allowed to change that.
    */
-  public TyResImplementation implementation() {
-    return implementation;
+  public BaseName effectiveBaseName() {
+    return this.effectiveBaseName;
+  }
+
+  public Stream<ResInfo> resources(ResInfo.EffectiveNameGenerator effectiveNameGenerator) {
+    return Arrays
+      .stream(bundleClass.getMethods())
+      .map(method -> ResInfo.reflect(this, method, effectiveNameGenerator));
+  }
+
+  public int numberOfMethods() {
+    return bundleClass.getMethods().length;
+  }
+
+  private static BaseName getBaseName(Class<?> bundleClass) {
+    var renamePackageAnnotation = bundleClass.getAnnotation(RenamePackage.class);
+    var renameNameAnnotation = bundleClass.getAnnotation(RenameName.class);
+
+    if (renamePackageAnnotation == null && renameNameAnnotation == null) {
+      // 99% case
+      return BaseName.fromClass(bundleClass);
+    }
+
+    final String packageName;
+    if (renamePackageAnnotation == null) {
+      packageName = bundleClass.getPackageName();
+    } else {
+      packageName = renamePackageAnnotation.value();
+    }
+
+    final String name;
+    if (renameNameAnnotation == null) {
+      name = bundleClass.getSimpleName();
+    } else {
+      name = renameNameAnnotation.value();
+    }
+
+    return BaseName.fromPackageAndName(packageName, name);
   }
 
   @Override
@@ -57,13 +85,26 @@ public final class BundleInfo implements WithConciseDebugString {
     return (
       bundleClass.equals(that.bundleClass) &&
       baseName.equals(that.baseName) &&
-      implementation.equals(that.implementation)
+      effectiveBaseName.equals(that.effectiveBaseName)
     );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(bundleClass, baseName, implementation);
+    return Objects.hash(bundleClass, baseName, effectiveBaseName);
+  }
+
+  @Override
+  public String conciseDebugString() {
+    return WithConciseDebugString.build(List.of(baseName()));
+  }
+
+  public BundleInfo withEffectiveBaseName(BaseName effectiveBaseName) {
+    if (effectiveBaseName.equals(this.effectiveBaseName())) {
+      return this;
+    } else {
+      return new BundleInfo(bundleClass(), baseName(), effectiveBaseName);
+    }
   }
 
   @Override
@@ -74,50 +115,9 @@ public final class BundleInfo implements WithConciseDebugString {
       bundleClass +
       ", baseName=" +
       baseName +
-      ", implementation=" +
-      implementation +
+      ", effectiveBaseName=" +
+      effectiveBaseName +
       '}'
     );
-  }
-
-  @Override
-  public String conciseDebugString() {
-    return baseName.conciseDebugString();
-  }
-
-  private static final class Reflection {
-
-    private Reflection() {}
-
-    public static BundleInfo reflect(Class<?> bundleClass, TyResImplementation implementation) {
-      var baseName = getBaseName(bundleClass);
-      return new BundleInfo(bundleClass, baseName, implementation);
-    }
-
-    private static BaseName getBaseName(Class<?> bundleClass) {
-      var renamePackageAnnotation = bundleClass.getAnnotation(RenamePackage.class);
-      var renameNameAnnotation = bundleClass.getAnnotation(RenameName.class);
-
-      if (renamePackageAnnotation == null && renameNameAnnotation == null) {
-        // 99% case
-        return BaseName.fromClass(bundleClass);
-      }
-
-      final String packageName;
-      if (renamePackageAnnotation == null) {
-        packageName = bundleClass.getPackageName();
-      } else {
-        packageName = renamePackageAnnotation.value();
-      }
-
-      final String name;
-      if (renameNameAnnotation == null) {
-        name = bundleClass.getSimpleName();
-      } else {
-        name = renameNameAnnotation.value();
-      }
-
-      return BaseName.fromPackageAndName(packageName, name);
-    }
   }
 }

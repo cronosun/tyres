@@ -1,18 +1,18 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
-import com.github.cronosun.tyres.core.experiment.Resources2;
+import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
-public final class DefaultResources2 implements Resources2 {
+public final class DefaultResources implements Resources {
 
-  public static DefaultResources2 todoNewInstance(DefaultNotFoundConfig defaultNotFoundConfig) {
+  public static DefaultResources todoNewInstance(DefaultNotFoundConfig defaultNotFoundConfig) {
     return todoNewInstance(defaultNotFoundConfig, null);
   }
 
-  public static DefaultResources2 todoNewInstance(
+  public static DefaultResources todoNewInstance(
     DefaultNotFoundConfig defaultNotFoundConfig,
     @Nullable CurrentLocaleProvider givenCurrentLocaleProvider
   ) {
@@ -34,7 +34,7 @@ public final class DefaultResources2 implements Resources2 {
     var effectiveNameGenerator = EffectiveNameGenerator.empty();
     var bundleFactory = new DefaultBundleFactory(resourcesBackend, effectiveNameGenerator);
     var validatorBackend = new DefaultValidator(bundleFactory, resourcesBackend);
-    return new DefaultResources2(
+    return new DefaultResources(
       defaultNotFoundConfig,
       BundleCache.newDefault(),
       bundleFactory,
@@ -49,7 +49,7 @@ public final class DefaultResources2 implements Resources2 {
   private final CurrentLocaleProvider currentLocaleProvider;
   private final ValidatorBackend validatorBackend;
 
-  public DefaultResources2(
+  public DefaultResources(
     DefaultNotFoundConfig defaultNotFoundConfig,
     BundleCache bundleCache,
     BundleFactory bundleFactory,

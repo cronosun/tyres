@@ -1,6 +1,5 @@
-package com.github.cronosun.tyres.core.experiment;
+package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -56,7 +55,7 @@ public class ResolvableList implements Resolvable {
   }
 
   @Override
-  public Text resolve(Resources2 resources) {
+  public Text resolve(Resources resources) {
     var configuration = resources.get(this.configuration);
     return new ListText(resources, configuration);
   }
@@ -68,10 +67,10 @@ public class ResolvableList implements Resolvable {
 
   private final class ListText implements Text {
 
-    private final Resources2 resources;
+    private final Resources resources;
     private final ResolvableListConfiguration configuration;
 
-    private ListText(Resources2 resources, ResolvableListConfiguration configuration) {
+    private ListText(Resources resources, ResolvableListConfiguration configuration) {
       this.resources = resources;
       this.configuration = configuration;
     }

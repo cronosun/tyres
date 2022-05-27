@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.implementation.static_translation;
 
-import com.github.cronosun.tyres.core.experiment.Text;
+import com.github.cronosun.tyres.core.Text;
 
 public interface StaticTranslationBundle {
   Text closed();

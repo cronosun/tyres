@@ -1,11 +1,9 @@
 package com.github.cronosun.tyres.implementation.inheritance;
 
 import com.github.cronosun.tyres.core.Default;
-import com.github.cronosun.tyres.core.MsgRes;
+import com.github.cronosun.tyres.core.Fmt;
 import com.github.cronosun.tyres.core.Rename;
-import com.github.cronosun.tyres.core.StrRes;
-import com.github.cronosun.tyres.core.experiment.Fmt;
-import com.github.cronosun.tyres.core.experiment.Text;
+import com.github.cronosun.tyres.core.Text;
 
 public interface ParentBundle {
   Fmt somethingFromParent(String argument);

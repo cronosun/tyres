@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.implementation.static_translation;
 
-import com.github.cronosun.tyres.core.experiment.Resolvable;
+import com.github.cronosun.tyres.core.Resolvable;
 
 public enum DoorInfo {
   OPEN(Resolvable.constant(StaticTranslationBundle.class, StaticTranslationBundle::open)),

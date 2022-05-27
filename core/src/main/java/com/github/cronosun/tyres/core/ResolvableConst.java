@@ -1,6 +1,5 @@
-package com.github.cronosun.tyres.core.experiment;
+package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Locale;
@@ -29,7 +28,7 @@ final class ResolvableConst<T> implements Resolvable {
   private final Function<T, Text> function;
 
   @Override
-  public Text resolve(Resources2 resources) {
+  public Text resolve(Resources resources) {
     var cachedText = this.cachedText;
     if (cachedText != null) {
       return cachedText;

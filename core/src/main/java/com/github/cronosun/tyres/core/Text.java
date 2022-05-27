@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.core.experiment;
+package com.github.cronosun.tyres.core;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -53,7 +53,7 @@ public interface Text extends Resolvable {
   }
 
   @Override
-  default Text resolve(Resources2 resources) {
+  default Text resolve(Resources resources) {
     return this;
   }
 }

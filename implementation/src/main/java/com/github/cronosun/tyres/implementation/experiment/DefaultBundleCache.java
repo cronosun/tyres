@@ -1,7 +1,6 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
 import com.github.cronosun.tyres.core.Resources;
-import com.github.cronosun.tyres.core.experiment.Resources2;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +11,7 @@ final class DefaultBundleCache implements BundleCache {
   private final Object lock = new Object();
 
   @Override
-  public <T> T bundle(Resources2 resources, Class<T> bundleClass, BundleFactory factory) {
+  public <T> T bundle(Resources resources, Class<T> bundleClass, BundleFactory factory) {
     // fast cache: last bundle (will usually be the correct one), compare identity only.
     var lastEntry = this.lastEntry;
     if (lastEntry != null && lastEntry.bundleClass == bundleClass) {
@@ -26,7 +25,7 @@ final class DefaultBundleCache implements BundleCache {
   }
 
   private <T> CacheEntry<T> bundleNoFastCache(
-    Resources2 resources,
+    Resources resources,
     Class<T> bundleClass,
     BundleFactory factory
   ) {

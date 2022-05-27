@@ -2,15 +2,14 @@ package com.github.cronosun.tyres.implementation.delegate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.github.cronosun.tyres.core.MsgNotFoundStrategy;
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
- * In your application you most likely want to extend {@link com.github.cronosun.tyres.core.experiment.Resources2},
+ * In your application you most likely want to extend {@link com.github.cronosun.tyres.core.Resources},
  * this shows how to do that.
  */
 public class DelegateTest {

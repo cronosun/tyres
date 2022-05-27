@@ -1,10 +1,7 @@
-package com.github.cronosun.tyres.core.experiment;
+package com.github.cronosun.tyres.core;
 
 import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
 
-import com.github.cronosun.tyres.core.ThreadSafe;
-import com.github.cronosun.tyres.core.TyResException;
-import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -225,7 +222,7 @@ public final class Localized implements Resolvable {
   }
 
   @Override
-  public Text resolve(Resources2 resources) {
+  public Text resolve(Resources resources) {
     return new LocalizedText(this, resources);
   }
 
@@ -242,9 +239,9 @@ public final class Localized implements Resolvable {
   private static final class LocalizedText implements Text {
 
     private final Localized localized;
-    private final Resources2 resources;
+    private final Resources resources;
 
-    private LocalizedText(Localized localized, Resources2 resources) {
+    private LocalizedText(Localized localized, Resources resources) {
       this.localized = localized;
       this.resources = resources;
     }

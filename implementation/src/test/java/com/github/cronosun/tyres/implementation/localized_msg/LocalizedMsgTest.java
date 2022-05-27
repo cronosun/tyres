@@ -3,9 +3,9 @@ package com.github.cronosun.tyres.implementation.localized_msg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
-import com.github.cronosun.tyres.core.experiment.Localized;
-import com.github.cronosun.tyres.core.experiment.NotFoundConfig;
+import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.Localized;
+import com.github.cronosun.tyres.core.NotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import java.util.Map;

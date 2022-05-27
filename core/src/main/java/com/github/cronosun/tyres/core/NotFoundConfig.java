@@ -1,4 +1,4 @@
-package com.github.cronosun.tyres.core.experiment;
+package com.github.cronosun.tyres.core;
 
 import com.github.cronosun.tyres.core.TyResException;
 import org.jetbrains.annotations.Nullable;

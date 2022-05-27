@@ -1,11 +1,11 @@
 package com.github.cronosun.tyres.implementation.basic_usage;
 
+import com.github.cronosun.tyres.core.Bin;
 import com.github.cronosun.tyres.core.Default;
 import com.github.cronosun.tyres.core.File;
-import com.github.cronosun.tyres.core.experiment.Bin;
-import com.github.cronosun.tyres.core.experiment.Fmt;
-import com.github.cronosun.tyres.core.experiment.Resolvable;
-import com.github.cronosun.tyres.core.experiment.Text;
+import com.github.cronosun.tyres.core.Fmt;
+import com.github.cronosun.tyres.core.Resolvable;
+import com.github.cronosun.tyres.core.Text;
 import java.math.BigDecimal;
 
 public interface DemoBundle {

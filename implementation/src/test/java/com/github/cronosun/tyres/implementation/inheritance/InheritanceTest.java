@@ -2,7 +2,7 @@ package com.github.cronosun.tyres.implementation.inheritance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;

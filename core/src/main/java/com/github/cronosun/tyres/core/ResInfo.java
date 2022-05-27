@@ -1,42 +1,219 @@
 package com.github.cronosun.tyres.core;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
-@ThreadSafe
 public abstract class ResInfo implements WithConciseDebugString {
 
-  private final BundleInfo bundle;
+  private static final Class<?>[] KNOWN_TEXT_TYPES = new Class[] { Text.class, Fmt.class };
+
+  private ResInfo(
+    BundleInfo bundleInfo,
+    Method method,
+    @Nullable Validation validationAnnotation
+  ) {
+    this.bundleInfo = Objects.requireNonNull(bundleInfo);
+    this.method = Objects.requireNonNull(method);
+    this.validationAnnotation = validationAnnotation;
+  }
+
+  private final BundleInfo bundleInfo;
   private final Method method;
 
-  private ResInfo(BundleInfo bundle, Method method) {
-    this.bundle = bundle;
-    this.method = method;
-  }
+  @Nullable
+  private final Validation validationAnnotation;
 
-  static Res<?> reflect(BundleInfo bundleInfo, Method method) {
-    return ResInfoReflection.reflect(bundleInfo, method);
-  }
-
-  /**
-   * Information about the bundle.
-   */
-  public final BundleInfo bundle() {
-    return bundle;
-  }
-
-  /**
-   * The method that has been used to get those {@link ResInfo} from.
-   */
   public final Method method() {
-    return method;
+    return this.method;
   }
 
-  @Override
-  public String toString() {
-    return "ResInfo{" + "bundle=" + bundle + ", method=" + method + '}';
+  public final BundleInfo bundleInfo() {
+    return bundleInfo;
+  }
+
+  @Nullable
+  public final Validation validationAnnotation() {
+    return validationAnnotation;
+  }
+
+  public final boolean validationOptional() {
+    var validationAnnotation = validationAnnotation();
+    if (validationAnnotation != null) {
+      return validationAnnotation.optional();
+    } else {
+      return false;
+    }
+  }
+
+  public static final class TextResInfo extends ResInfo {
+
+    private final TextType type;
+    private final String name;
+    private final String effectiveName;
+
+    @Nullable
+    private final String defaultValue;
+
+    public TextResInfo(
+      BundleInfo bundleInfo,
+      Method method,
+      @Nullable Validation validationAnnotation,
+      TextType type,
+      String name,
+      String effectiveName,
+      @Nullable String defaultValue
+    ) {
+      super(bundleInfo, method, validationAnnotation);
+      this.type = Objects.requireNonNull(type);
+      this.name = Objects.requireNonNull(name);
+      this.effectiveName = Objects.requireNonNull(effectiveName);
+      this.defaultValue = defaultValue;
+    }
+
+    public TextType type() {
+      return type;
+    }
+
+    /**
+     * The name as declared in the bundle. It's either the method name or the value from {@link Rename}.
+     */
+    public String name() {
+      return name;
+    }
+
+    /**
+     * It's usually the same as {@link #name()} (but implementations are allowed to rewrite that).
+     */
+    public String effectiveName() {
+      return effectiveName;
+    }
+
+    @Nullable
+    public String defaultValue() {
+      return defaultValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+      TextResInfo text = (TextResInfo) o;
+      return (
+        type == text.type &&
+        name.equals(text.name) &&
+        effectiveName.equals(text.effectiveName) &&
+        Objects.equals(defaultValue, text.defaultValue)
+      );
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), type, name, effectiveName, defaultValue);
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "Text{" +
+        "type=" +
+        type +
+        ", name='" +
+        name +
+        '\'' +
+        ", effectiveName='" +
+        effectiveName +
+        '\'' +
+        ", defaultValue='" +
+        defaultValue +
+        '\'' +
+        ", bundleInfo=" +
+        bundleInfo() +
+        ", method=" +
+        method() +
+        ", validationAnnotation=" +
+        validationAnnotation() +
+        '}'
+      );
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return WithConciseDebugString.build(List.of(bundleInfo(), method().getName()));
+    }
+  }
+
+  public static final class BinResInfo extends ResInfo {
+
+    private final Filename filename;
+    private final Filename effectiveFilename;
+
+    public BinResInfo(
+      BundleInfo bundleInfo,
+      Method method,
+      @Nullable Validation validationAnnotation,
+      Filename filename,
+      Filename effectiveFilename
+    ) {
+      super(bundleInfo, method, validationAnnotation);
+      this.filename = Objects.requireNonNull(filename);
+      this.effectiveFilename = effectiveFilename;
+    }
+
+    /**
+     * The filename as declared in the bundle, see {@link File} annotation.
+     */
+    public Filename filename() {
+      return filename;
+    }
+
+    /**
+     * This is usually the same as {@link #filename()} (unless the implementation chooses to rewrite the filename).
+     */
+    public Filename effectiveFilename() {
+      return effectiveFilename;
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return WithConciseDebugString.build(List.of(bundleInfo(), method().getName(), filename));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+      BinResInfo that = (BinResInfo) o;
+      return filename.equals(that.filename) && effectiveFilename.equals(that.effectiveFilename);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), filename, effectiveFilename);
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "Bin{" +
+        "filename=" +
+        filename +
+        ", effectiveFilename=" +
+        effectiveFilename +
+        ", bundleInfo=" +
+        bundleInfo() +
+        ", method=" +
+        method() +
+        ", validationAnnotation=" +
+        validationAnnotation() +
+        '}'
+      );
+    }
   }
 
   @Override
@@ -44,271 +221,212 @@ public abstract class ResInfo implements WithConciseDebugString {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ResInfo resInfo = (ResInfo) o;
-    return bundle.equals(resInfo.bundle) && method.equals(resInfo.method);
+    return (
+      bundleInfo.equals(resInfo.bundleInfo) &&
+      method.equals(resInfo.method) &&
+      Objects.equals(validationAnnotation, resInfo.validationAnnotation)
+    );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(bundle, method);
+    return Objects.hash(bundleInfo, method, validationAnnotation);
+  }
+
+  public enum TextType {
+    TEXT,
+    FMT,
   }
 
   /**
-   * {@link ResInfo} for string and message resouces.
+   * Gets {@link ResInfo} by using reflection. This is the default implementation - implementations of
+   * {@link Resources} can use a different implementation, but should behave the same.
+   *
+   * Throws {@link TyResException} if the method is invalid.
    */
-  public static final class Str extends ResInfo {
-
-    private final String name;
-
-    @Nullable
-    private final String defaultValue;
-
-    public Str(BundleInfo bundle, Method method, String name, @Nullable String defaultValue) {
-      super(bundle, method);
-      this.name = name;
-      this.defaultValue = defaultValue;
-    }
-
-    /**
-     * The name. This is either {@link Method#getName()} or the name from the {@link Rename}-annotation (if
-     * this annotation is present).
-     */
-    public String name() {
-      return name;
-    }
-
-    /**
-     * The default value from the {@link Default}-annotation or null if there's no such annotation.
-     * <p>
-     * Note: The default value is not the same as the fallback value. The default value is a "normal" value that
-     * is considered to be OK. This default value can be used instead of writing a message bundle for the default
-     * locale.
-     * <p>
-     * Example with default values in the bundle:
-     * <pre>
-     *     messages.properties    -> values for the default locale
-     *     messages_de.properties -> german translation
-     * </pre>
-     * <p>
-     * Instead of doing that, you can use the {@link Default}-annotation instead of <code>messages.properties</code>.
-     */
-    @Nullable
-    public String defaultValue() {
-      return defaultValue;
-    }
-
-    @Override
-    public String conciseDebugString() {
-      if (defaultValue != null) {
-        return WithConciseDebugString.build(List.of(bundle(), name, defaultValue));
-      } else {
-        return WithConciseDebugString.build(List.of(bundle(), name));
-      }
-    }
-
-    @Override
-    public String toString() {
-      return (
-        "Str{" +
-        "bundle=" +
-        bundle() +
-        ", method=" +
-        method() +
-        ", name='" +
-        name +
-        '\'' +
-        ", defaultValue='" +
-        defaultValue +
-        '\'' +
-        '}'
-      );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
-      Str str = (Str) o;
-      return name.equals(str.name) && Objects.equals(defaultValue, str.defaultValue);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(super.hashCode(), name, defaultValue);
+  public static ResInfo reflect(
+    BundleInfo bundleInfo,
+    Method method,
+    EffectiveNameGenerator effectiveNameGenerator
+  ) {
+    var fileAnnotation = method.getAnnotation(File.class);
+    var filename = determineFilename(fileAnnotation);
+    if (filename == null) {
+      // if it has no filename, it must be a text
+      return newText(bundleInfo, method, effectiveNameGenerator);
+    } else {
+      return newBin(bundleInfo, method, filename, effectiveNameGenerator);
     }
   }
 
-  public static final class Bin extends ResInfo {
-
-    private final Filename filename;
-
-    public Bin(BundleInfo bundleInfo, Method method, Filename filename) {
-      super(bundleInfo, method);
-      this.filename = filename;
-    }
-
-    public Filename filename() {
-      return filename;
-    }
-
-    @Override
-    public String conciseDebugString() {
-      return WithConciseDebugString.build(
-        List.of(bundle(), "file", WithConciseDebugString.text(filename.value()))
-      );
-    }
-
-    @Override
-    public String toString() {
-      return (
-        "Bin{" + "bundle=" + bundle() + ", method=" + method() + ", filename=" + filename + '}'
-      );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
-      Bin bin = (Bin) o;
-      return filename.equals(bin.filename);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(super.hashCode(), filename);
-    }
+  public interface EffectiveNameGenerator {
+    String effectiveNameForText(BundleInfo bundleInfo, Method method, String name);
+    Filename effectiveNameForBin(BundleInfo bundleInfo, Method method, Filename filename);
   }
 
-  private static final class ResInfoReflection {
-
-    private static final String CREATE_METHOD_NAME = "create";
-
-    private ResInfoReflection() {}
-
-    public static Res<?> reflect(BundleInfo bundleInfo, Method method) {
-      var createMethod = getReturnTypeCreateMethod(method);
-      var fileAnnotation = method.getAnnotation(File.class);
-      var renameAnnotation = method.getAnnotation(Rename.class);
-      var defaultAnnotation = method.getAnnotation(Default.class);
-      if (fileAnnotation != null) {
-        // it's a file
-        if (renameAnnotation != null) {
-          throw new TyResException(
-            "Method '" +
-            method +
-            "' has the " +
-            File.class.getSimpleName() +
-            " and the " +
-            Rename.class.getSimpleName() +
-            " annotations; cannot have both (one is for string resources and " +
-            "the other one for file resources)."
-          );
-        }
-        if (defaultAnnotation != null) {
-          throw new TyResException(
-            "Method '" +
-            method +
-            "' has the " +
-            File.class.getSimpleName() +
-            " and the " +
-            Default.class.getSimpleName() +
-            " annotations; cannot have both (one is for string resources and " +
-            "the other one for file resources)."
-          );
-        }
-        return createReturnValue(
-          createMethod,
-          reflectFileResource(bundleInfo, method, fileAnnotation)
-        );
-      } else {
-        // it's a string resource
-        return createReturnValue(
-          createMethod,
-          reflectStringResouce(bundleInfo, method, renameAnnotation, defaultAnnotation)
-        );
-      }
+  private static BinResInfo newBin(
+    BundleInfo bundleInfo,
+    Method method,
+    Filename filename,
+    EffectiveNameGenerator effectiveNameGenerator
+  ) {
+    var validationAnnotation = method.getAnnotation(Validation.class);
+    if (method.getAnnotation(Rename.class) != null) {
+      throw new TyResException(
+        "Annotation @" +
+        Rename.class.getSimpleName() +
+        " is not supported for binary resources. See method '" +
+        method.getName() +
+        "' in '" +
+        bundleInfo.bundleClass().getSimpleName() +
+        "'."
+      );
     }
-
-    private static Res<?> createReturnValue(Method createMethod, ResInfo resInfo) {
-      try {
-        var returnValue = createMethod.invoke(null, resInfo);
-        if (!(returnValue instanceof Res)) {
-          throw new TyResException(
-            "Return value constructor '" +
-            createMethod +
-            "' returned incompatible value (" +
-            returnValue +
-            ") - must be of type '" +
-            returnValue.getClass().getSimpleName() +
-            "'."
-          );
-        }
-        return (Res<?>) returnValue;
-      } catch (Exception exception) {
-        throw new TyResException(
-          "Unable to create return value using method '" + createMethod + "'.",
-          exception
-        );
-      }
+    if (method.getAnnotation(Default.class) != null) {
+      throw new TyResException(
+        "Annotation @" +
+        Default.class.getSimpleName() +
+        " is not supported for binary resources. See method '" +
+        method.getName() +
+        "' in '" +
+        bundleInfo.bundleClass().getSimpleName() +
+        "'."
+      );
     }
+    var returnType = method.getReturnType();
+    if (!returnType.equals(Bin.class)) {
+      throw new TyResException(
+        "Method '" +
+        method.getName() +
+        "' in '" +
+        bundleInfo.bundleClass().getSimpleName() +
+        "' has return type '" +
+        returnType.getSimpleName() +
+        "'; this is invalid for binary resources, must be type '" +
+        Bin.class.getSimpleName() +
+        "'"
+      );
+    }
+    var numberOfArguments = method.getParameterCount();
+    if (numberOfArguments > 0) {
+      var arguments = Arrays
+        .stream(method.getParameterTypes())
+        .map(Class::getSimpleName)
+        .collect(Collectors.joining(", "));
+      throw new TyResException(
+        "Method '" +
+        method.getName() +
+        "' in '" +
+        bundleInfo.bundleClass().getSimpleName() +
+        "' has arguments [" +
+        arguments +
+        "]. Arguments are only supported for formatted messages (this is binary). If you want a formatted message, return '" +
+        Fmt.class.getSimpleName() +
+        "' instead of '" +
+        BinResInfo.class +
+        "'."
+      );
+    }
+    var effectiveFilename = effectiveNameGenerator.effectiveNameForBin(
+      bundleInfo,
+      method,
+      filename
+    );
+    return new BinResInfo(bundleInfo, method, validationAnnotation, filename, effectiveFilename);
+  }
 
-    private static Method getReturnTypeCreateMethod(Method method) {
+  private static TextResInfo newText(
+    BundleInfo bundleInfo,
+    Method method,
+    EffectiveNameGenerator effectiveNameGenerator
+  ) {
+    var textType = determineTextType(method);
+    if (textType == null) {
       var returnType = method.getReturnType();
-      if (!Res.class.isAssignableFrom(returnType)) {
-        throw new TyResException(
-          "Method '" +
-          method +
-          "' return type is '" +
-          returnType.getSimpleName() +
-          "'. Methods must return something that implements '" +
-          Res.class.getSimpleName() +
-          "'."
-        );
-      }
-      try {
-        return returnType.getDeclaredMethod(CREATE_METHOD_NAME, ResInfo.class);
-      } catch (NoSuchMethodException e) {
-        throw new TyResException(
-          "Return type (" +
-          returnType.getSimpleName() +
-          ") of method '" +
-          method +
-          "' must provide a static method called '" +
-          CREATE_METHOD_NAME +
-          "' with correct arguments."
-        );
-      }
+      var validReturnTypes = Arrays
+        .stream(KNOWN_TEXT_TYPES)
+        .map(Class::getSimpleName)
+        .collect(Collectors.joining(", "));
+      throw new TyResException(
+        "Method '" +
+        method.getName() +
+        "' in '" +
+        bundleInfo.bundleClass().getSimpleName() +
+        "' returns '" +
+        returnType.getSimpleName() +
+        "'. Text resources must return one of [" +
+        validReturnTypes +
+        "]."
+      );
+    }
+    var numberOfArguments = method.getParameterCount();
+    if (numberOfArguments > 0 && textType == TextType.TEXT) {
+      var arguments = Arrays
+        .stream(method.getParameterTypes())
+        .map(Class::getSimpleName)
+        .collect(Collectors.joining(", "));
+      throw new TyResException(
+        "Method '" +
+        method.getName() +
+        "' in '" +
+        bundleInfo.bundleClass().getSimpleName() +
+        "' has arguments [" +
+        arguments +
+        "]. Arguments are only supported for formatted messages. If you want a formatted message, return '" +
+        Fmt.class.getSimpleName() +
+        "' instead of '" +
+        TextResInfo.class +
+        "'."
+      );
     }
 
-    private static ResInfo reflectStringResouce(
-      BundleInfo bundleInfo,
-      Method method,
-      @Nullable Rename renameAnnotation,
-      @Nullable Default defaultAnnotation
-    ) {
-      final String name;
-      if (renameAnnotation != null) {
-        name = renameAnnotation.value();
-      } else {
-        name = method.getName();
-      }
-      final String defaultValue;
-      if (defaultAnnotation != null) {
-        defaultValue = defaultAnnotation.value();
-      } else {
-        defaultValue = null;
-      }
-      return new ResInfo.Str(bundleInfo, method, name, defaultValue);
+    var validationAnnotation = method.getAnnotation(Validation.class);
+    var renameAnnotation = method.getAnnotation(Rename.class);
+    var name = determineName(method, renameAnnotation);
+    var effectiveName = effectiveNameGenerator.effectiveNameForText(bundleInfo, method, name);
+    var defaultValueAnnotation = method.getAnnotation(Default.class);
+    final String defaultValue;
+    if (defaultValueAnnotation != null) {
+      defaultValue = defaultValueAnnotation.value();
+    } else {
+      defaultValue = null;
     }
+    return new TextResInfo(
+      bundleInfo,
+      method,
+      validationAnnotation,
+      textType,
+      name,
+      effectiveName,
+      defaultValue
+    );
+  }
 
-    private static ResInfo reflectFileResource(
-      BundleInfo bundleInfo,
-      Method method,
-      File fileAnnotation
-    ) {
-      var filename = fileAnnotation.value();
-      return new ResInfo.Bin(bundleInfo, method, Filename.from(filename));
+  private static Filename determineFilename(@Nullable File file) {
+    if (file != null) {
+      return Filename.from(file.value());
+    } else {
+      return null;
+    }
+  }
+
+  private static String determineName(Method method, @Nullable Rename rename) {
+    if (rename == null) {
+      return method.getName();
+    } else {
+      return rename.value();
+    }
+  }
+
+  @Nullable
+  private static TextType determineTextType(Method method) {
+    var returnTypeClass = method.getReturnType();
+    if (returnTypeClass.equals(Text.class)) {
+      return TextType.TEXT;
+    } else if (returnTypeClass.equals(Fmt.class)) {
+      return TextType.FMT;
+    } else {
+      return null;
     }
   }
 }

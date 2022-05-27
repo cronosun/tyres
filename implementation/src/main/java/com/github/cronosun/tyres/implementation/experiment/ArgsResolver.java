@@ -1,12 +1,13 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
-import com.github.cronosun.tyres.core.experiment.NotFoundConfig;
-import com.github.cronosun.tyres.core.experiment.Resources2;
+import com.github.cronosun.tyres.core.NotFoundConfig;
+import com.github.cronosun.tyres.core.Resolvable;
+import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Resolves arguments: Converts {@link com.github.cronosun.tyres.core.experiment.Resolvable} to string.
+ * Resolves arguments: Converts {@link Resolvable} to string.
  */
 public interface ArgsResolver {
   static ArgsResolver defaultInstance() {
@@ -23,7 +24,7 @@ public interface ArgsResolver {
    */
   @Nullable
   Object[] resolve(
-    Resources2 resources,
+    Resources resources,
     Locale locale,
     NotFoundConfig.WithNullNoDefault notFoundConfig,
     Object[] args

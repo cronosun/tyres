@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.core;
 
-import com.github.cronosun.tyres.core.Resources;
+import java.util.Locale;
+import org.jetbrains.annotations.Nullable;
 
 public class DelegatingResources implements Resources {
 
@@ -11,27 +12,22 @@ public class DelegatingResources implements Resources {
   }
 
   @Override
-  public final Messages msg() {
-    return resources.msg();
+  public final Text resolve(Resolvable resolvable) {
+    return resources.resolve(resolvable);
   }
 
   @Override
-  public final Strings str() {
-    return resources.str();
+  public final <T> T get(Class<T> bundleClass) {
+    return resources.get(bundleClass);
   }
 
   @Override
-  public final Binaries bin() {
-    return resources.bin();
+  public final @Nullable Locale currentLocale() {
+    return resources.currentLocale();
   }
 
   @Override
-  public final Resolver resolver() {
-    return resources.resolver();
-  }
-
-  @Override
-  public final Common common() {
-    return resources.common();
+  public final DefaultNotFoundConfig defaultNotFoundConfig() {
+    return resources.defaultNotFoundConfig();
   }
 }

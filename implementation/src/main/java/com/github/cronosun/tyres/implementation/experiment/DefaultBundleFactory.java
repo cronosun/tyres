@@ -1,8 +1,8 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
+import com.github.cronosun.tyres.core.*;
 import com.github.cronosun.tyres.core.TyResException;
 import com.github.cronosun.tyres.core.WithConciseDebugString;
-import com.github.cronosun.tyres.core.experiment.*;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -26,7 +26,7 @@ final class DefaultBundleFactory implements BundleFactory {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> T createBundle(Resources2 resources, Class<T> bundleClass) {
+  public <T> T createBundle(Resources resources, Class<T> bundleClass) {
     var originalBundleInfo = BundleInfo.reflect(bundleClass);
     var effectiveBaseName = effectiveNameGenerator.effectiveBaseName(
       bundleClass,
@@ -44,7 +44,7 @@ final class DefaultBundleFactory implements BundleFactory {
   }
 
   @Override
-  public Stream<ResInfo> declaredResoucesForValidation(Object bundle) {
+  public Stream<ResInfo> declaredResourcesForValidation(Object bundle) {
     var handler = Proxy.getInvocationHandler(bundle);
     if (handler instanceof InvocationHandler) {
       var cast = (InvocationHandler) handler;
@@ -106,7 +106,7 @@ final class DefaultBundleFactory implements BundleFactory {
     }
 
     public static ResourcesMap from(
-      Resources2 resources,
+      Resources resources,
       BundleInfo bundleInfo,
       ResourcesBackend backend,
       ResInfo.EffectiveNameGenerator effectiveNameGenerator
@@ -141,7 +141,7 @@ final class DefaultBundleFactory implements BundleFactory {
     }
 
     private static WithArgumentsAndResInfo<?> fromMethodInfoToImplementation(
-      Resources2 resources,
+      Resources resources,
       ResInfo resInfo,
       ResourcesBackend backend
     ) {
@@ -165,11 +165,11 @@ final class DefaultBundleFactory implements BundleFactory {
 
     private static final class TextImpl implements Text, WithArgumentsAndResInfo<TextImpl> {
 
-      private final Resources2 resources;
+      private final Resources resources;
       private final ResInfo.TextResInfo info;
       private final ResourcesBackend backend;
 
-      private TextImpl(Resources2 resources, ResInfo.TextResInfo info, ResourcesBackend backend) {
+      private TextImpl(Resources resources, ResInfo.TextResInfo info, ResourcesBackend backend) {
         this.resources = resources;
         this.info = info;
         this.backend = backend;
@@ -229,11 +229,11 @@ final class DefaultBundleFactory implements BundleFactory {
     private static final class FmtImpl implements Fmt, WithArgumentsAndResInfo<Fmt> {
 
       private static final Object[] NO_ARGS = new Object[] {};
-      private final Resources2 resources;
+      private final Resources resources;
       private final ResInfo.TextResInfo info;
       private final ResourcesBackend backend;
 
-      private FmtImpl(Resources2 resources, ResInfo.TextResInfo info, ResourcesBackend backend) {
+      private FmtImpl(Resources resources, ResInfo.TextResInfo info, ResourcesBackend backend) {
         this.resources = resources;
         this.info = info;
         this.backend = backend;
@@ -335,11 +335,11 @@ final class DefaultBundleFactory implements BundleFactory {
 
     private static final class BinImpl implements Bin, WithArgumentsAndResInfo<BinImpl> {
 
-      private final Resources2 resources;
+      private final Resources resources;
       private final ResInfo.BinResInfo info;
       private final ResourcesBackend backend;
 
-      private BinImpl(Resources2 resources, ResInfo.BinResInfo info, ResourcesBackend backend) {
+      private BinImpl(Resources resources, ResInfo.BinResInfo info, ResourcesBackend backend) {
         this.resources = resources;
         this.info = info;
         this.backend = backend;

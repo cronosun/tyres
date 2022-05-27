@@ -1,8 +1,8 @@
 package com.github.cronosun.tyres.implementation.inheritance;
 
 import com.github.cronosun.tyres.core.*;
-import com.github.cronosun.tyres.core.experiment.Fmt;
-import com.github.cronosun.tyres.core.experiment.Text;
+import com.github.cronosun.tyres.core.Fmt;
+import com.github.cronosun.tyres.core.Text;
 
 public interface TheBundle extends ParentBundle {
   Fmt anotherMessage();
