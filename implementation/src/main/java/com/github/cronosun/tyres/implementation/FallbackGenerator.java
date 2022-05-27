@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 public interface FallbackGenerator {
   String fallbackMsgFor(ResInfo resInfo, @Nullable Locale locale, Object[] args);
 
+  /**
+   * The default fallback generator. This is the right choice for most cases.
+   */
   static FallbackGenerator defaultInstance() {
     return DefaultFallbackGenerator.instance();
   }

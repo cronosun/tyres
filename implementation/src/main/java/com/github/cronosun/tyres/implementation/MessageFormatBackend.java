@@ -3,6 +3,9 @@ package com.github.cronosun.tyres.implementation;
 import java.util.Locale;
 
 public interface MessageFormatBackend {
+  /**
+   * The default implementation that uses {@link java.text.MessageFormat}.
+   */
   static MessageFormatBackend defaultInstance() {
     return DefaultMessageFormatBackend.instance();
   }

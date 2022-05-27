@@ -111,7 +111,7 @@ public class DefaultResourcesBackend implements ResourcesBackend {
       .get()
       .filter(info -> info instanceof ResInfo.TextResInfo)
       .map(info -> (ResInfo.TextResInfo) info);
-    textBackend.validateNoSuperfuousResouces(textResources, locale);
+    textBackend.validateNoSuperfluousResources(textResources, locale);
   }
 
   private void validateSingleResouce(ResInfo resInfo, Locale locale) {

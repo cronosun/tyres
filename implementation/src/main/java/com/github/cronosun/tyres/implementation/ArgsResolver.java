@@ -19,8 +19,8 @@ public interface ArgsResolver {
    * <p>
    * Note 1: DOES NEVER modify the given arguments array. Returns a new array if at least one argument was resolved.
    * Note 2: The method is allowed to return the given args-array (if there are no arguments to resolve).
-   * Note 3: Returns <code>null</code> if `notFoundConfig` is {@link NotFoundConfig.WithNullNoDefault#NULL} and at least one
-   * argument could not be resolved.
+   * Note 3: Returns <code>null</code> if `notFoundConfig` is {@link NotFoundConfig.WithNullNoDefault#NULL} and at
+   * least one argument could not be resolved.
    */
   @Nullable
   Object[] resolve(

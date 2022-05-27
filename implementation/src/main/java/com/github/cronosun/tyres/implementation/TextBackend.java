@@ -15,11 +15,11 @@ public interface TextBackend {
    * Validates the format, throws {@link com.github.cronosun.tyres.core.TyResException}
    * on error.
    *
-   * Note: This is an optional operation. If the implementaton does not support validation,
+   * Note: This is an optional operation. If the implementation does not support validation,
    * this is a no-op. If it's implemented, implementations should do this:
    *
    * <ul>
-   *     <li>If it's not optional (see {@link com.github.cronosun.tyres.core.Validation}) asserts that the resouce is present.</li>
+   *     <li>If it's not optional (see {@link com.github.cronosun.tyres.core.Validation}) asserts that the resource is present.</li>
    *    <li>Asserts that the pattern is valid and number of arguments in the pattern match the number of arguments in the method.</li>
    * </ul>
    */
@@ -31,20 +31,20 @@ public interface TextBackend {
   /**
    * Validates the text, throws {@link com.github.cronosun.tyres.core.TyResException} on error.
    *
-   * Note: This is an optional operation. If the implementaton does not support validation,
+   * Note: This is an optional operation. If the implementation does not support validation,
    * this is a no-op. If it's implemented, implementations should do this:
    */
   void validateText(ResInfo.TextResInfo info, Locale locale);
 
   /**
-   * Asserts that there are no superflous resources, throws {@link com.github.cronosun.tyres.core.TyResException}
+   * Asserts that there are no superfluous resources, throws {@link com.github.cronosun.tyres.core.TyResException}
    * if there are.
    *
    * Note 1: This is an optional operation (if this is not supported, the method is a no-op).
    * Note 2: You MUST deliver all text resources from a bundle.
    */
-  void validateNoSuperfuousResouces(
-    Stream<ResInfo.TextResInfo> allTextResoucesFromBundle,
+  void validateNoSuperfluousResources(
+    Stream<ResInfo.TextResInfo> allTextResourcesFromBundle,
     Locale locale
   );
 }

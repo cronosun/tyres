@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface BinBackend {
   /**
-   * Maybe get the binary.
+   * Get the binary if found or <code>null</code> if there's no such binary.
    */
   @Nullable
   InputStream maybeBin(ResInfo.BinResInfo info, Locale locale);
@@ -17,8 +17,8 @@ public interface BinBackend {
   }
 
   /**
-   * Validates the resource. Throws a {@link com.github.cronosun.tyres.core.TyResException} if there's
-   * a validation error.
+   * Validates the resource (asserts it exists and can be read). Throws a
+   * {@link com.github.cronosun.tyres.core.TyResException} if there's a validation error.
    * <p>
    * Note: This is an optional operation. If the implementation does not support validation, this method
    * does nothing.

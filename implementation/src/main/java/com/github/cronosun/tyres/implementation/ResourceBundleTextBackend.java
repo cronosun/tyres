@@ -84,11 +84,11 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Override
-  public void validateNoSuperfuousResouces(
-    Stream<ResInfo.TextResInfo> allTextResoucesFromBundle,
+  public void validateNoSuperfluousResources(
+    Stream<ResInfo.TextResInfo> allTextResourcesFromBundle,
     Locale locale
   ) {
-    var iterator = allTextResoucesFromBundle.iterator();
+    var iterator = allTextResourcesFromBundle.iterator();
     BaseName baseName = null;
     BaseName originalBasename = null;
     var usedKeys = new HashSet<String>();

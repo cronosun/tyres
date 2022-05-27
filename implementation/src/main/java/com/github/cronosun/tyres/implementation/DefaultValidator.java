@@ -26,7 +26,7 @@ public class DefaultValidator implements ValidatorBackend {
   }
 
   @Override
-  public void validateOnAccess(Resources resources2, Class<?> bundleClass, Locale locale) {
+  public void validateOnBundleCreation(Resources resources2, Class<?> bundleClass, Locale locale) {
     validateManually(resources2, bundleClass, locale);
     // TODO
   }
