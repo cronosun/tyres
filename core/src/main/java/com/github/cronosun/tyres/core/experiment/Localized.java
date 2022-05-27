@@ -229,6 +229,16 @@ public final class Localized implements Resolvable {
     return new LocalizedText(this, resources);
   }
 
+  @Override
+  public String conciseDebugString() {
+    return WithConciseDebugString.build(
+      serialized()
+        .entrySet()
+        .stream()
+        .map(entry -> WithConciseDebugString.association(entry.getKey(), entry.getValue()))
+    );
+  }
+
   private static final class LocalizedText implements Text {
 
     private final Localized localized;
@@ -306,6 +316,11 @@ public final class Localized implements Resolvable {
     @Override
     public String toString() {
       return "LocalizedText{" + "localized=" + localized + ", resources2=" + resources + '}';
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return localized.conciseDebugString();
     }
   }
 

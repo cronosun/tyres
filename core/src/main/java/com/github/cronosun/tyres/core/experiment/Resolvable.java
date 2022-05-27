@@ -1,8 +1,9 @@
 package com.github.cronosun.tyres.core.experiment;
 
+import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.util.function.Function;
 
-public interface Resolvable {
+public interface Resolvable extends WithConciseDebugString {
   Text resolve(Resources2 resources);
 
   /**

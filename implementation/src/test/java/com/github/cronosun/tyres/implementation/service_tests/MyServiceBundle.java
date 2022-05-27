@@ -1,14 +1,12 @@
 package com.github.cronosun.tyres.implementation.service_tests;
 
-import com.github.cronosun.tyres.core.MsgRes;
-import com.github.cronosun.tyres.core.TyRes;
+import com.github.cronosun.tyres.core.experiment.Fmt;
+import com.github.cronosun.tyres.core.experiment.Text;
 
 public interface MyServiceBundle {
-  MyServiceBundle INSTANCE = TyRes.create(MyServiceBundle.class);
+  Text amountIsMissing();
 
-  MsgRes amountIsMissing();
+  Fmt amountIsTooSmall(int givenAmount);
 
-  MsgRes amountIsTooSmall(int givenAmount);
-
-  MsgRes amountIsTooLarge(int givenAmount);
+  Fmt amountIsTooLarge(int givenAmount);
 }

@@ -1,5 +1,9 @@
 package com.github.cronosun.tyres.core.experiment;
 
+import com.github.cronosun.tyres.core.WithConciseDebugString;
+import java.lang.reflect.Proxy;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
@@ -8,6 +12,9 @@ final class ResolvableConst<T> implements Resolvable {
 
   @Nullable
   private transient volatile Text cachedText;
+
+  @Nullable
+  private transient volatile String cachedConciseDebugString;
 
   private ResolvableConst(Class<T> bundleClass, Function<T, Text> function) {
     this.bundleClass = bundleClass;
@@ -44,5 +51,85 @@ final class ResolvableConst<T> implements Resolvable {
   @Override
   public int hashCode() {
     return Objects.hash(bundleClass, function);
+  }
+
+  @Override
+  public String conciseDebugString() {
+    var maybeCachedText = this.cachedText;
+    if (maybeCachedText != null) {
+      return maybeCachedText.conciseDebugString();
+    } else {
+      var maybeCachedConciseDebugString = this.cachedConciseDebugString;
+      if (maybeCachedConciseDebugString != null) {
+        return maybeCachedConciseDebugString;
+      } else {
+        // that's a bit tricky to get the correct information. We create a proxy to get the method name
+        Object[] callInformation = null;
+        try {
+          callInformation = tryToExtractCallInformation();
+        } catch (Exception ignored) {}
+        final String newConciseDebugString;
+        if (callInformation != null) {
+          newConciseDebugString =
+            WithConciseDebugString.build(
+              List.of("resolvable", bundleClass.getSimpleName(), callInformation)
+            );
+        } else {
+          newConciseDebugString =
+            WithConciseDebugString.build(List.of("resolvable", bundleClass.getSimpleName()));
+        }
+        this.cachedConciseDebugString = newConciseDebugString;
+        return newConciseDebugString;
+      }
+    }
+  }
+
+  @Override
+  public String toString() {
+    return (
+      "ResolvableConst{" +
+      "conciseDebugString=" +
+      conciseDebugString() +
+      ", bundleClass=" +
+      bundleClass +
+      ", function=" +
+      function +
+      '}'
+    );
+  }
+
+  private Object[] tryToExtractCallInformation() {
+    // that's a bit tricky to get the correct information. We create a proxy to get the method name
+    final Object[] callInformation = new Object[] { null, null };
+    @SuppressWarnings("unchecked")
+    var proxy = (T) Proxy.newProxyInstance(
+      this.bundleClass.getClassLoader(),
+      new Class[] { this.bundleClass },
+      (_ignored, method, args) -> {
+        callInformation[0] = method.getName();
+        callInformation[1] = args;
+        return TextForConciseDebugString.INSTANCE;
+      }
+    );
+    this.function.apply(proxy);
+    return callInformation;
+  }
+
+  private static final class TextForConciseDebugString implements Fmt {
+
+    private static final TextForConciseDebugString INSTANCE = new TextForConciseDebugString();
+
+    @Override
+    public String conciseDebugString() {
+      return "";
+    }
+
+    @Override
+    public String getText(
+      @Nullable Locale locale,
+      NotFoundConfig.WithNullAndDefault notFoundConfig
+    ) {
+      return "";
+    }
   }
 }

@@ -109,7 +109,8 @@ public class DefaultResourcesBackend implements ResourcesBackend {
     var resInfoStream = resInfo.get();
     resInfoStream.forEach(item -> this.validateSingleResouce(item, locale));
     // now ask the text backend whether there are superflous resources
-    var textResources = resInfo.get()
+    var textResources = resInfo
+      .get()
       .filter(info -> info instanceof ResInfo.TextResInfo)
       .map(info -> (ResInfo.TextResInfo) info);
     textBackend.validateNoSuperfuousResouces(textResources, locale);

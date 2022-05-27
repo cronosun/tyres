@@ -19,7 +19,10 @@ public class DefaultValidator implements ValidatorBackend {
   @Override
   public void validateManually(Resources2 resources, Class<?> bundleClass, Locale locale) {
     var bundle = resources.get(bundleClass);
-    backend.validateAllResoucesFromBundle(() -> bundleFactory.declaredResoucesForValidation(bundle), locale);
+    backend.validateAllResoucesFromBundle(
+      () -> bundleFactory.declaredResoucesForValidation(bundle),
+      locale
+    );
   }
 
   @Override

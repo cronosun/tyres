@@ -1,5 +1,6 @@
 package com.github.cronosun.tyres.core.experiment;
 
+import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -58,6 +59,11 @@ public class ResolvableList implements Resolvable {
   public Text resolve(Resources2 resources) {
     var configuration = resources.get(this.configuration);
     return new ListText(resources, configuration);
+  }
+
+  @Override
+  public String conciseDebugString() {
+    return WithConciseDebugString.build(elements);
   }
 
   private final class ListText implements Text {
@@ -121,6 +127,11 @@ public class ResolvableList implements Resolvable {
             return resultString;
           }
       }
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return ResolvableList.this.conciseDebugString();
     }
   }
 }

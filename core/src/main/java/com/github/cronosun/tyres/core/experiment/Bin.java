@@ -1,5 +1,6 @@
 package com.github.cronosun.tyres.core.experiment;
 
+import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Objects;
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Binary resource.
  */
-public interface Bin {
+public interface Bin extends WithConciseDebugString {
   @Nullable
   InputStream getInputStream(@Nullable Locale locale, boolean required);
 

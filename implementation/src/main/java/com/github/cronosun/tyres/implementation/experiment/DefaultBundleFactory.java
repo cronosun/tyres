@@ -1,17 +1,14 @@
 package com.github.cronosun.tyres.implementation.experiment;
 
 import com.github.cronosun.tyres.core.TyResException;
+import com.github.cronosun.tyres.core.WithConciseDebugString;
 import com.github.cronosun.tyres.core.experiment.*;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.jetbrains.annotations.Nullable;
 
 final class DefaultBundleFactory implements BundleFactory {
@@ -50,10 +47,17 @@ final class DefaultBundleFactory implements BundleFactory {
   public Stream<ResInfo> declaredResoucesForValidation(Object bundle) {
     var handler = Proxy.getInvocationHandler(bundle);
     if (handler instanceof InvocationHandler) {
-      var cast = (InvocationHandler)handler;
-      return cast.resourcesMap.map.values().stream().map(ResourcesMap.WithArgumentsAndResInfo::resInfo);
+      var cast = (InvocationHandler) handler;
+      return cast.resourcesMap.map
+        .values()
+        .stream()
+        .map(ResourcesMap.WithArgumentsAndResInfo::resInfo);
     } else {
-      throw new TyResException("Unable to get resouces from '" + bundle + "'. The bundle must have been created by this factory (it's not). Read the documentation!");
+      throw new TyResException(
+        "Unable to get resouces from '" +
+        bundle +
+        "'. The bundle must have been created by this factory (it's not). Read the documentation!"
+      );
     }
   }
 
@@ -215,6 +219,11 @@ final class DefaultBundleFactory implements BundleFactory {
           "TextImpl{" + "resources=" + resources + ", info=" + info + ", backend=" + backend + '}'
         );
       }
+
+      @Override
+      public String conciseDebugString() {
+        return info.conciseDebugString();
+      }
     }
 
     private static final class FmtImpl implements Fmt, WithArgumentsAndResInfo<Fmt> {
@@ -273,6 +282,11 @@ final class DefaultBundleFactory implements BundleFactory {
       public int hashCode() {
         return Objects.hash(resources, info, backend);
       }
+
+      @Override
+      public String conciseDebugString() {
+        return info.conciseDebugString();
+      }
     }
 
     private static final class FmtWithArgsImpl implements Fmt {
@@ -311,6 +325,11 @@ final class DefaultBundleFactory implements BundleFactory {
         int result = Objects.hash(noArgs);
         result = 31 * result + Arrays.hashCode(args);
         return result;
+      }
+
+      @Override
+      public String conciseDebugString() {
+        return WithConciseDebugString.build(List.of(noArgs.info, args));
       }
     }
 
@@ -364,6 +383,11 @@ final class DefaultBundleFactory implements BundleFactory {
         return (
           "BinImpl{" + "resources=" + resources + ", info=" + info + ", backend=" + backend + '}'
         );
+      }
+
+      @Override
+      public String conciseDebugString() {
+        return info.conciseDebugString();
       }
     }
 

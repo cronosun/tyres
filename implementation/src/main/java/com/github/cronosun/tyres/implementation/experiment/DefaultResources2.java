@@ -9,11 +9,21 @@ import org.jetbrains.annotations.Nullable;
 public final class DefaultResources2 implements Resources2 {
 
   public static DefaultResources2 todoNewInstance(DefaultNotFoundConfig defaultNotFoundConfig) {
+    return todoNewInstance(defaultNotFoundConfig, null);
+  }
+
+  public static DefaultResources2 todoNewInstance(
+    DefaultNotFoundConfig defaultNotFoundConfig,
+    @Nullable CurrentLocaleProvider givenCurrentLocaleProvider
+  ) {
     var messageFormatBackend = MessageFormatBackend.defaultInstance();
     var textBackend = new ResourceBundleTextBackend(messageFormatBackend, null);
     var binBackend = BinBackend.resourceBundleInstance();
     var fallbackGenerator = FallbackGenerator.defaultInstance();
-    var currentLocaleProvider = CurrentLocaleProvider.nullProvider();
+    var currentLocaleProvider = Objects.requireNonNullElse(
+      givenCurrentLocaleProvider,
+      CurrentLocaleProvider.nullProvider()
+    );
     var argsResolver = ArgsResolver.defaultInstance();
     var resourcesBackend = new DefaultResourcesBackend(
       textBackend,

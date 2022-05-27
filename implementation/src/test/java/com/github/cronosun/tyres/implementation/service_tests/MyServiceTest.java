@@ -1,6 +1,10 @@
 package com.github.cronosun.tyres.implementation.service_tests;
 
-import com.github.cronosun.tyres.core.Resolvable;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.github.cronosun.tyres.core.experiment.DefaultNotFoundConfig;
+import com.github.cronosun.tyres.core.experiment.Resolvable;
+import com.github.cronosun.tyres.implementation.TestUtil;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +16,7 @@ public class MyServiceTest {
   void testAmountIsRequired() {
     validateThrowsValidationExceptionWithMessage(
       () -> myService.doSomethingWithAmount(UUID.randomUUID(), null),
-      MyServiceBundle.INSTANCE.amountIsMissing()
+      Resolvable.constant(MyServiceBundle.class, MyServiceBundle::amountIsMissing)
     );
   }
 
@@ -20,7 +24,7 @@ public class MyServiceTest {
   void testAmountMustNotBeTooSmall() {
     validateThrowsValidationExceptionWithMessage(
       () -> myService.doSomethingWithAmount(UUID.randomUUID(), 4),
-      MyServiceBundle.INSTANCE.amountIsTooSmall(4)
+      Resolvable.constant(MyServiceBundle.class, bundle -> bundle.amountIsTooSmall(4))
     );
   }
 
@@ -28,15 +32,7 @@ public class MyServiceTest {
   void testAmountMustNotBeTooLarge() {
     validateThrowsValidationExceptionWithMessage(
       () -> myService.doSomethingWithAmount(UUID.randomUUID(), 98887),
-      MyServiceBundle.INSTANCE.amountIsTooLarge(98887)
-    );
-  }
-
-  @Test
-  void testAmountMustNotBeTooLargeVariantTwo() {
-    validateThrowsValidationExceptionWithMessage(
-      () -> myService.doSomethingWithAmountVariantTwo(UUID.randomUUID(), 98887),
-      MyServiceBundle.INSTANCE.amountIsTooLarge(98887)
+      Resolvable.constant(MyServiceBundle.class, bundle -> bundle.amountIsTooLarge(98887))
     );
   }
 
@@ -44,19 +40,17 @@ public class MyServiceTest {
     Runnable runnable,
     Resolvable message
   ) {
+    var resources = TestUtil.newInstance(DefaultNotFoundConfig.THROW);
+
     try {
       runnable.run();
       throw new AssertionError("Expected an exception");
     } catch (ValidationException validationException) {
-      if (!validationException.msg().equals(message)) {
-        throw new AssertionError(
-          "Invalid message, expected '" +
-          message.conciseDebugString() +
-          "' but got '" +
-          validationException.msg().conciseDebugString() +
-          "'."
-        );
-      }
+      // only text resources can be used for equals / hashcode, so we have to resolve it.
+      var givenMessage = validationException.message();
+      var resolvedGivenMessage = resources.resolve(givenMessage);
+      var resolvedExpectedMessage = resources.resolve(message);
+      assertEquals(resolvedExpectedMessage, resolvedGivenMessage);
     }
   }
 }

@@ -1,49 +1,17 @@
 package com.github.cronosun.tyres.implementation.service_tests;
 
-import com.github.cronosun.tyres.core.Resolvable;
-import com.github.cronosun.tyres.core.Resources;
-import java.util.Locale;
-import org.jetbrains.annotations.Nullable;
+import com.github.cronosun.tyres.core.experiment.Resolvable;
 
-public final class ValidationException
-  extends RuntimeException
-  implements Localizable<ValidationException> {
+public final class ValidationException extends RuntimeException {
 
-  private final Resolvable resolvable;
+  private final Resolvable message;
 
-  @Nullable
-  private final String localizedMessage;
-
-  public ValidationException(Resolvable resolvable) {
-    this(resolvable, null);
+  public ValidationException(Resolvable message) {
+    super(message.conciseDebugString());
+    this.message = message;
   }
 
-  private ValidationException(Resolvable resolvable, @Nullable String localizedMessage) {
-    this.resolvable = resolvable;
-    this.localizedMessage = localizedMessage;
-  }
-
-  public Resolvable msg() {
-    return resolvable;
-  }
-
-  @Override
-  public ValidationException localize(Resources resources, Locale locale) {
-    var localizedMessage = resources.resolver().get(this.resolvable, locale);
-    return new ValidationException(resolvable, localizedMessage);
-  }
-
-  @Override
-  public String getMessage() {
-    return resolvable.conciseDebugString();
-  }
-
-  @Override
-  public String getLocalizedMessage() {
-    if (localizedMessage == null) {
-      return getMessage();
-    } else {
-      return this.localizedMessage;
-    }
+  public Resolvable message() {
+    return message;
   }
 }
