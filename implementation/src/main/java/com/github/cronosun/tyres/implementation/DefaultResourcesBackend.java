@@ -8,24 +8,27 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
-public class DefaultResourcesBackend implements ResourcesBackend {
+final class DefaultResourcesBackend implements ResourcesBackend {
 
   private static final Object[] NO_ARGS = new Object[] {};
   private final TextBackend textBackend;
   private final BinBackend binBackend;
   private final ArgsResolver argsResolver;
   private final FallbackGenerator fallbackGenerator;
+  private final ValidatorBackend validatorBackend;
 
   public DefaultResourcesBackend(
     TextBackend textBackend,
     BinBackend binBackend,
     ArgsResolver argsResolver,
-    FallbackGenerator fallbackGenerator
+    FallbackGenerator fallbackGenerator,
+    ValidatorBackend validatorBackend
   ) {
     this.textBackend = textBackend;
     this.binBackend = binBackend;
     this.argsResolver = argsResolver;
     this.fallbackGenerator = fallbackGenerator;
+    this.validatorBackend = validatorBackend;
   }
 
   @Override
@@ -42,6 +45,11 @@ public class DefaultResourcesBackend implements ResourcesBackend {
     if (localeToUse == null) {
       return handleReturnForText(null, info, null, NO_ARGS, notFoundConfigWithNullNoDefault);
     }
+    validatorBackend.validate(
+      ValidatorBackend.When.ON_USE,
+      info.bundleInfo().bundleClass(),
+      localeToUse
+    );
     var value = this.textBackend.maybeText(info, localeToUse);
     return handleReturnForText(value, info, localeToUse, NO_ARGS, notFoundConfigWithNullNoDefault);
   }
@@ -71,6 +79,11 @@ public class DefaultResourcesBackend implements ResourcesBackend {
       return handleReturnForText(null, info, localeToUse, args, notFoundConfigWithNullNoDefault);
     }
     var value = this.textBackend.maybeFmt(info, resolvedArgs, localeToUse);
+    validatorBackend.validate(
+      ValidatorBackend.When.ON_USE,
+      info.bundleInfo().bundleClass(),
+      localeToUse
+    );
     return handleReturnForText(
       value,
       info,
@@ -92,6 +105,11 @@ public class DefaultResourcesBackend implements ResourcesBackend {
     if (localeToUse == null) {
       inputStream = null;
     } else {
+      validatorBackend.validate(
+        ValidatorBackend.When.ON_USE,
+        info.bundleInfo().bundleClass(),
+        localeToUse
+      );
       inputStream = this.binBackend.maybeBin(info, localeToUse);
     }
     if (inputStream == null && required) {

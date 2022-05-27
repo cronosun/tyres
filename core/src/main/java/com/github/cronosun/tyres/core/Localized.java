@@ -312,7 +312,7 @@ public final class Localized implements Resolvable {
 
     @Override
     public String toString() {
-      return "LocalizedText{" + "localized=" + localized + ", resources2=" + resources + '}';
+      return "LocalizedText{" + "localized=" + localized + ", resources=" + resources + '}';
     }
 
     @Override

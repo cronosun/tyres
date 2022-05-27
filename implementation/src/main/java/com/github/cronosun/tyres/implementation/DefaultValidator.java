@@ -3,31 +3,28 @@ package com.github.cronosun.tyres.implementation;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
 
-// TODO: Make configurable (disable validation)
-// TODO: Maybe also check on first access (in the #get - Method)
-// TODO: Also cache the validation result
-public class DefaultValidator implements ValidatorBackend {
+final class DefaultValidator implements ValidatorBackend {
 
+  private final Once<Resources> resources;
   private final BundleFactory bundleFactory;
   private final ResourcesBackend backend;
 
-  public DefaultValidator(BundleFactory bundleFactory, ResourcesBackend backend) {
+  public DefaultValidator(
+    Once<Resources> resources,
+    BundleFactory bundleFactory,
+    ResourcesBackend backend
+  ) {
+    this.resources = resources;
     this.bundleFactory = bundleFactory;
     this.backend = backend;
   }
 
   @Override
-  public void validateManually(Resources resources, Class<?> bundleClass, Locale locale) {
-    var bundle = resources.get(bundleClass);
+  public void validate(When when, Class<?> bundleClass, Locale locale) {
+    var bundle = resources.get().get(bundleClass);
     backend.validateAllResourcesFromBundle(
       () -> bundleFactory.declaredResourcesForValidation(bundle),
       locale
     );
-  }
-
-  @Override
-  public void validateOnBundleCreation(Resources resources2, Class<?> bundleClass, Locale locale) {
-    validateManually(resources2, bundleClass, locale);
-    // TODO
   }
 }

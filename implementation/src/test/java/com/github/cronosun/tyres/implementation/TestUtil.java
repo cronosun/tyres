@@ -12,14 +12,24 @@ public final class TestUtil {
   private TestUtil() {}
 
   public static Resources newInstance(DefaultNotFoundConfig notFoundConfig) {
-    return DefaultResources.todoNewInstance(notFoundConfig);
+    return new ImplementationBuilder().defaultNotFoundConfig(notFoundConfig).build();
+  }
+
+  public static Resources newInstanceValidateOnUse(DefaultNotFoundConfig notFoundConfig) {
+    return new ImplementationBuilder()
+      .defaultNotFoundConfig(notFoundConfig)
+      .validateOnBundleUse(true)
+      .build();
   }
 
   public static Resources newInstance(
     DefaultNotFoundConfig notFoundConfig,
     CurrentLocaleProvider currentLocaleProvider
   ) {
-    return DefaultResources.todoNewInstance(notFoundConfig, currentLocaleProvider);
+    return new ImplementationBuilder()
+      .defaultNotFoundConfig(notFoundConfig)
+      .currentLocaleProvider(currentLocaleProvider)
+      .build();
   }
 
   public static String binToString(Bin bin, Locale locale) throws IOException {

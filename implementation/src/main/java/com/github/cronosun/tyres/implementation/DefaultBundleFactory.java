@@ -5,26 +5,30 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 final class DefaultBundleFactory implements BundleFactory {
 
+  private final Once<Resources> resources;
   private final ResourcesBackend backend;
   private final EffectiveNameGenerator effectiveNameGenerator;
 
   public DefaultBundleFactory(
+    Once<Resources> resources,
     ResourcesBackend backend,
     EffectiveNameGenerator effectiveNameGenerator
   ) {
+    this.resources = resources;
     this.backend = backend;
     this.effectiveNameGenerator = effectiveNameGenerator;
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> T createBundle(Resources resources, Class<T> bundleClass) {
+  public <T> T createBundle(Class<T> bundleClass) {
     var originalBundleInfo = BundleInfo.reflect(bundleClass);
     var effectiveBaseName = effectiveNameGenerator.effectiveBaseName(
       bundleClass,
@@ -32,13 +36,17 @@ final class DefaultBundleFactory implements BundleFactory {
     );
     var bundleInfo = originalBundleInfo.withEffectiveBaseName(effectiveBaseName);
 
-    var resourcesMap = ResourcesMap.from(resources, bundleInfo, backend, effectiveNameGenerator);
+    var resourcesMap = ResourcesMap.from(this, bundleInfo);
     var invocationHandler = new InvocationHandler(resourcesMap);
     return (T) Proxy.newProxyInstance(
       bundleClass.getClassLoader(),
       new Class[] { bundleClass },
       invocationHandler
     );
+  }
+
+  private Resources resources() {
+    return this.resources.get();
   }
 
   @Override
@@ -103,28 +111,22 @@ final class DefaultBundleFactory implements BundleFactory {
       }
     }
 
-    public static ResourcesMap from(
-      Resources resources,
-      BundleInfo bundleInfo,
-      ResourcesBackend backend,
-      ResInfo.EffectiveNameGenerator effectiveNameGenerator
-    ) {
+    public static ResourcesMap from(DefaultBundleFactory factory, BundleInfo bundleInfo) {
       var numberOfMethods = bundleInfo.numberOfMethods();
       var map = bundleInfo
-        .resources(effectiveNameGenerator)
+        .resources(factory.effectiveNameGenerator)
         .map(resInfo -> {
           var key = resInfo.method().getName();
           var value = (WithArgumentsAndResInfo) ResourcesMap.fromMethodInfoToImplementation(
-            resources,
-            resInfo,
-            backend
+            factory,
+            resInfo
           );
           return new MapEntry<>(key, value);
         })
         .collect(Collectors.toUnmodifiableMap(item -> item.key, item -> item.value));
       if (map.size() != numberOfMethods) {
         var methodNames = bundleInfo
-          .resources(effectiveNameGenerator)
+          .resources(factory.effectiveNameGenerator)
           .map(item -> item.method().getName())
           .collect(Collectors.joining(", "));
         throw new TyResException(
@@ -139,23 +141,22 @@ final class DefaultBundleFactory implements BundleFactory {
     }
 
     private static WithArgumentsAndResInfo<?> fromMethodInfoToImplementation(
-      Resources resources,
-      ResInfo resInfo,
-      ResourcesBackend backend
+      DefaultBundleFactory factory,
+      ResInfo resInfo
     ) {
       if (resInfo instanceof ResInfo.TextResInfo) {
         var text = (ResInfo.TextResInfo) resInfo;
         switch (text.type()) {
           case TEXT:
-            return new TextImpl(resources, text, backend);
+            return new TextImpl(factory, text);
           case FMT:
-            return new FmtImpl(resources, text, backend);
+            return new FmtImpl(factory, text);
           default:
             throw new TyResException("Unknown text type: " + text.type());
         }
       } else if (resInfo instanceof ResInfo.BinResInfo) {
         var bin = (ResInfo.BinResInfo) resInfo;
-        return new BinImpl(resources, bin, backend);
+        return new BinImpl(factory, bin);
       } else {
         throw new TyResException("Unknown resource type: " + resInfo);
       }
@@ -163,14 +164,12 @@ final class DefaultBundleFactory implements BundleFactory {
 
     private static final class TextImpl implements Text, WithArgumentsAndResInfo<TextImpl> {
 
-      private final Resources resources;
+      private final DefaultBundleFactory factory;
       private final ResInfo.TextResInfo info;
-      private final ResourcesBackend backend;
 
-      private TextImpl(Resources resources, ResInfo.TextResInfo info, ResourcesBackend backend) {
-        this.resources = resources;
+      private TextImpl(DefaultBundleFactory factory, ResInfo.TextResInfo info) {
+        this.factory = factory;
         this.info = info;
-        this.backend = backend;
       }
 
       @Override
@@ -191,7 +190,7 @@ final class DefaultBundleFactory implements BundleFactory {
         @Nullable Locale locale,
         NotFoundConfig.WithNullAndDefault notFoundConfig
       ) {
-        return backend.getText(resources, info, locale, notFoundConfig);
+        return factory.backend.getText(factory.resources(), info, locale, notFoundConfig);
       }
 
       @Override
@@ -199,23 +198,17 @@ final class DefaultBundleFactory implements BundleFactory {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TextImpl text = (TextImpl) o;
-        return (
-          resources.equals(text.resources) &&
-          info.equals(text.info) &&
-          backend.equals(text.backend)
-        );
+        return factory.equals(text.factory) && info.equals(text.info);
       }
 
       @Override
       public int hashCode() {
-        return Objects.hash(resources, info, backend);
+        return Objects.hash(factory, info);
       }
 
       @Override
       public String toString() {
-        return (
-          "TextImpl{" + "resources=" + resources + ", info=" + info + ", backend=" + backend + '}'
-        );
+        return "TextImpl{" + "factory=" + factory + ", info=" + info + '}';
       }
 
       @Override
@@ -227,14 +220,12 @@ final class DefaultBundleFactory implements BundleFactory {
     private static final class FmtImpl implements Fmt, WithArgumentsAndResInfo<Fmt> {
 
       private static final Object[] NO_ARGS = new Object[] {};
-      private final Resources resources;
+      private final DefaultBundleFactory factory;
       private final ResInfo.TextResInfo info;
-      private final ResourcesBackend backend;
 
-      private FmtImpl(Resources resources, ResInfo.TextResInfo info, ResourcesBackend backend) {
-        this.resources = resources;
+      private FmtImpl(DefaultBundleFactory factory, ResInfo.TextResInfo info) {
+        this.factory = factory;
         this.info = info;
-        this.backend = backend;
       }
 
       @Override
@@ -256,14 +247,7 @@ final class DefaultBundleFactory implements BundleFactory {
         @Nullable Locale locale,
         NotFoundConfig.WithNullAndDefault notFoundConfig
       ) {
-        return backend.getFmt(resources, info, NO_ARGS, locale, notFoundConfig);
-      }
-
-      @Override
-      public String toString() {
-        return (
-          "FmtImpl{" + "resources=" + resources + ", info=" + info + ", backend=" + backend + '}'
-        );
+        return factory.backend.getFmt(factory.resources(), info, NO_ARGS, locale, notFoundConfig);
       }
 
       @Override
@@ -271,14 +255,17 @@ final class DefaultBundleFactory implements BundleFactory {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FmtImpl fmt = (FmtImpl) o;
-        return (
-          resources.equals(fmt.resources) && info.equals(fmt.info) && backend.equals(fmt.backend)
-        );
+        return factory.equals(fmt.factory) && info.equals(fmt.info);
       }
 
       @Override
       public int hashCode() {
-        return Objects.hash(resources, info, backend);
+        return Objects.hash(factory, info);
+      }
+
+      @Override
+      public String toString() {
+        return "FmtImpl{" + "factory=" + factory + ", info=" + info + '}';
       }
 
       @Override
@@ -302,7 +289,13 @@ final class DefaultBundleFactory implements BundleFactory {
         @Nullable Locale locale,
         NotFoundConfig.WithNullAndDefault notFoundConfig
       ) {
-        return noArgs.backend.getFmt(noArgs.resources, noArgs.info, args, locale, notFoundConfig);
+        return noArgs.factory.backend.getFmt(
+          noArgs.factory.resources(),
+          noArgs.info,
+          args,
+          locale,
+          notFoundConfig
+        );
       }
 
       @Override
@@ -333,14 +326,12 @@ final class DefaultBundleFactory implements BundleFactory {
 
     private static final class BinImpl implements Bin, WithArgumentsAndResInfo<BinImpl> {
 
-      private final Resources resources;
+      private final DefaultBundleFactory factory;
       private final ResInfo.BinResInfo info;
-      private final ResourcesBackend backend;
 
-      private BinImpl(Resources resources, ResInfo.BinResInfo info, ResourcesBackend backend) {
-        this.resources = resources;
+      private BinImpl(DefaultBundleFactory factory, ResInfo.BinResInfo info) {
+        this.factory = factory;
         this.info = info;
-        this.backend = backend;
       }
 
       @Override
@@ -358,7 +349,7 @@ final class DefaultBundleFactory implements BundleFactory {
 
       @Override
       public @Nullable InputStream getInputStream(@Nullable Locale locale, boolean required) {
-        return backend.getInputStream(resources, info, locale, required);
+        return factory.backend.getInputStream(factory.resources(), info, locale, required);
       }
 
       @Override
@@ -366,21 +357,17 @@ final class DefaultBundleFactory implements BundleFactory {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BinImpl bin = (BinImpl) o;
-        return (
-          resources.equals(bin.resources) && info.equals(bin.info) && backend.equals(bin.backend)
-        );
+        return factory.equals(bin.factory) && info.equals(bin.info);
       }
 
       @Override
       public int hashCode() {
-        return Objects.hash(resources, info, backend);
+        return Objects.hash(factory, info);
       }
 
       @Override
       public String toString() {
-        return (
-          "BinImpl{" + "resources=" + resources + ", info=" + info + ", backend=" + backend + '}'
-        );
+        return "BinImpl{" + "factory=" + factory + ", info=" + info + '}';
       }
 
       @Override
