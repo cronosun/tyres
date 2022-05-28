@@ -11,16 +11,16 @@ import org.jetbrains.annotations.Nullable;
 final class ResourceBundleTextBackend implements TextBackend {
 
   private static final Logger LOGGER = Logger.getLogger(ResourceBundleTextBackend.class.getName());
-  private final MessageFormatBackend messageFormatBackend;
+  private final MessageFormatter messageFormatter;
 
   @Nullable
   private final ResourceBundleProvider resourceBundleProvider;
 
   ResourceBundleTextBackend(
-    MessageFormatBackend messageFormatBackend,
+    MessageFormatter messageFormatter,
     @Nullable ResourceBundleProvider resourceBundleProvider
   ) {
-    this.messageFormatBackend = messageFormatBackend;
+    this.messageFormatter = messageFormatter;
     this.resourceBundleProvider = resourceBundleProvider;
   }
 
@@ -28,7 +28,7 @@ final class ResourceBundleTextBackend implements TextBackend {
   public @Nullable String maybeFmt(ResInfo.TextResInfo info, Object[] args, Locale locale) {
     var pattern = maybeText(info, locale);
     if (pattern != null) {
-      return this.messageFormatBackend.format(pattern, args, locale);
+      return this.messageFormatter.format(pattern, args, locale);
     } else {
       return null;
     }
@@ -39,7 +39,7 @@ final class ResourceBundleTextBackend implements TextBackend {
     var pattern = maybeText(info, locale);
     if (pattern != null) {
       var numberOfArguments = info.method().getParameterCount();
-      this.messageFormatBackend.validatePattern(pattern, locale, numberOfArguments);
+      this.messageFormatter.validatePattern(pattern, locale, numberOfArguments);
     } else {
       if (!info.validationOptional()) {
         throw new TyResException(

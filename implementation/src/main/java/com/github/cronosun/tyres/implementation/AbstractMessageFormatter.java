@@ -5,19 +5,16 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
 
-final class DefaultMessageFormatBackend implements MessageFormatBackend {
+abstract class AbstractMessageFormatter implements MessageFormatter {
 
-  private static final DefaultMessageFormatBackend INSTANCE = new DefaultMessageFormatBackend();
-
-  public static DefaultMessageFormatBackend instance() {
-    return INSTANCE;
+  public static MessageFormatter noCacheInstance() {
+    return NoCacheMessageFormatter.INSTANCE;
   }
 
   @Override
   public String format(String pattern, Object[] args, Locale locale) {
     try {
-      var format = new MessageFormat(pattern, locale);
-      return format.format(args);
+      return formatInternal(pattern, args, locale);
     } catch (Exception exception) {
       throw new TyResException(
         "Invalid pattern or arguments, cannot format '" +
@@ -36,8 +33,7 @@ final class DefaultMessageFormatBackend implements MessageFormatBackend {
   public void validatePattern(String pattern, Locale locale, int numberOfArguments) {
     final int numberOfArgumentsInPattern;
     try {
-      var format = new MessageFormat(pattern, locale);
-      numberOfArgumentsInPattern = format.getFormats().length;
+      numberOfArgumentsInPattern = validateAndReturnNumberOfArguments(pattern, locale);
     } catch (Exception exception) {
       throwInvalidPattern(exception, locale, pattern);
       return;
@@ -50,7 +46,7 @@ final class DefaultMessageFormatBackend implements MessageFormatBackend {
         locale.toLanguageTag() +
         "') has " +
         numberOfArgumentsInPattern +
-        " arguments but the method in the bundly has " +
+        " arguments but the method in the bundle has " +
         numberOfArguments +
         "'. Either fix the pattern (also make sure it's valid) or fix the method in the bundle."
       );
@@ -65,5 +61,34 @@ final class DefaultMessageFormatBackend implements MessageFormatBackend {
       locale.toLanguageTag() +
       "'. Make sure the pattern is correct (make sure escaping is correct, see Java's MessageFormat documentation; ' characters have to be escaped).";
     throw new TyResException(baseMsg, exception);
+  }
+
+  /**
+   * Formats the given pattern. Throws an exception on error (invalid pattern, invalid arguments, ...).
+   *
+   */
+  protected abstract String formatInternal(String pattern, Object[] args, Locale locale);
+
+  /**
+   * Validates the given pattern (throws an exception if pattern is invalid). If the pattern is valid, returns
+   * the number of arguments in the pattern.
+   */
+  protected abstract int validateAndReturnNumberOfArguments(String pattern, Locale locale);
+
+  private static final class NoCacheMessageFormatter extends AbstractMessageFormatter {
+
+    private static final AbstractMessageFormatter INSTANCE = new NoCacheMessageFormatter();
+
+    @Override
+    protected String formatInternal(String pattern, Object[] args, Locale locale) {
+      var format = new MessageFormat(pattern, locale);
+      return format.format(args);
+    }
+
+    @Override
+    protected int validateAndReturnNumberOfArguments(String pattern, Locale locale) {
+      var format = new MessageFormat(pattern, locale);
+      return format.getFormats().length;
+    }
   }
 }

@@ -6,42 +6,28 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
-public final class ImplementationBuilder {
+public final class ResourcesBuilder {
 
+  private boolean built = false;
+
+  /**
+   * Builds {@link Resources}. After calling this method, the builder cannot be re-used.
+   */
   public Resources build() {
-    var resources = resources().get().get();
-    reset();
-    return resources;
-  }
+    if (built) {
+      throw new IllegalStateException("Cannot re-use the builder.");
+    }
+    built = true;
+    return resources().getGet();
 
-  public void reset() {
-    defaultNotFoundConfig().reset();
-    messageFormatBackend().reset();
-    textBackend().reset();
-    binBackend().reset();
-    fallbackGenerator().reset();
-    currentLocaleProvider().reset();
-    argsResolver().reset();
-    resourcesBackend().reset();
-    effectiveNameGenerator().reset();
-    bundleCache().reset();
-    bundleCache().reset();
-    validator().reset();
-    validatorForCache().reset();
-    validateOnBundleUse().reset();
-    resources().reset();
+
   }
 
   private final ValueSupplier<DefaultNotFoundConfig> defaultNotFoundConfig = constant(
     DefaultNotFoundConfig.FALLBACK
   );
-  private final ValueSupplier<MessageFormatBackend> messageFormatBackend = constant(
-    MessageFormatBackend.defaultInstance()
-  );
-  private final ValueSupplier<TextBackend> textBackend = supplier(() -> {
-    var messageFormatBackend = messageFormatBackend().get();
-    return new ResourceBundleTextBackend(messageFormatBackend.get(), null);
-  });
+  private final ValueSupplier<MessageFormatter> messageFormatBackend = supplier(MessageFormatter::newCachedMessageFormatter);
+  private final ValueSupplier<TextBackend> textBackend = supplier(() -> new ResourceBundleTextBackend(messageFormatBackend().getGet(), null));
   private final ValueSupplier<BinBackend> binBackend = constant(
     BinBackend.resourceBundleInstance()
   );
@@ -56,43 +42,41 @@ public final class ImplementationBuilder {
   );
   private final ValueSupplier<ResourcesBackend> resourcesBackend = supplier(() ->
     new DefaultResourcesBackend(
-      textBackend().get().get(),
-      binBackend().get().get(),
-      argsResolver().get().get(),
-      fallbackGenerator().get().get(),
-      validator().get().get()
+      textBackend().getGet(),
+      binBackend().getGet(),
+      argsResolver().getGet(),
+      fallbackGenerator().getGet(),
+      validator().getGet()
     )
   );
   private final ValueSupplier<EffectiveNameGenerator> effectiveNameGenerator = constant(
     EffectiveNameGenerator.empty()
   );
-  private final ValueSupplier<BundleFactory> bundleFactory = supplier(() ->
-    new DefaultBundleFactory(
-      resources().get(),
-      resourcesBackend().get().get(),
-      effectiveNameGenerator().get().get()
-    )
-  );
+  private final ValueSupplier<BundleFactory> bundleFactory = supplier(() -> new DefaultBundleFactory(
+          resources().get(),
+          resourcesBackend().getGet(),
+          effectiveNameGenerator().getGet()
+  ));
   private final ValueSupplier<BundleCache> bundleCache = supplier(() ->
-    BundleCache.newDefault(bundleFactory().get().get())
+    BundleCache.newDefault(bundleFactory().getGet())
   );
   private final ValueSupplier<ValidatorBackend> validatorForCache = supplier(() ->
     new DefaultValidator(
       resources().get(),
-      bundleFactory().get().get(),
-      resourcesBackend().get().get()
+      bundleFactory().getGet(),
+      resourcesBackend().getGet()
     )
   );
   private final ValueSupplier<Boolean> validateOnBundleUse = constant(false);
   private final ValueSupplier<ValidatorBackend> validator = supplier(() ->
-    new CachedConfigurableValidator(validatorForCache().get(), validateOnBundleUse().get().get())
+    new CachedConfigurableValidator(validatorForCache().get(), validateOnBundleUse().getGet())
   );
 
   private final ValueSupplier<Resources> resources = supplier(() ->
     new DefaultResources(
-      defaultNotFoundConfig().get().get(),
-      bundleCache().get().get(),
-      currentLocaleProvider().get().get(),
+      defaultNotFoundConfig().getGet(),
+      bundleCache().getGet(),
+      currentLocaleProvider().getGet(),
       validator().get()
     )
   );
@@ -101,7 +85,7 @@ public final class ImplementationBuilder {
     return defaultNotFoundConfig;
   }
 
-  public ValueSupplier<MessageFormatBackend> messageFormatBackend() {
+  public ValueSupplier<MessageFormatter> messageFormatBackend() {
     return messageFormatBackend;
   }
 
@@ -157,28 +141,28 @@ public final class ImplementationBuilder {
     return validateOnBundleUse;
   }
 
-  public ImplementationBuilder defaultNotFoundConfig(DefaultNotFoundConfig defaultNotFoundConfig) {
+  public ResourcesBuilder defaultNotFoundConfig(DefaultNotFoundConfig defaultNotFoundConfig) {
     this.defaultNotFoundConfig.setValue(defaultNotFoundConfig);
     return this;
   }
 
-  public ImplementationBuilder throwIfNotFound() {
+  public ResourcesBuilder throwIfNotFound() {
     return defaultNotFoundConfig(DefaultNotFoundConfig.THROW);
   }
 
-  public ImplementationBuilder currentLocaleProvider(CurrentLocaleProvider currentLocaleProvider) {
+  public ResourcesBuilder currentLocaleProvider(CurrentLocaleProvider currentLocaleProvider) {
     this.currentLocaleProvider().setValue(currentLocaleProvider);
     return this;
   }
 
-  public ImplementationBuilder effectiveNameGenerator(
+  public ResourcesBuilder effectiveNameGenerator(
     EffectiveNameGenerator effectiveNameGenerator
   ) {
     this.effectiveNameGenerator().setValue(effectiveNameGenerator);
     return this;
   }
 
-  public ImplementationBuilder validateOnBundleUse(boolean validateOnBundleUse) {
+  public ResourcesBuilder validateOnBundleUse(boolean validateOnBundleUse) {
     validateOnBundleUse().setValue(validateOnBundleUse);
     return this;
   }
@@ -187,8 +171,8 @@ public final class ImplementationBuilder {
     return new ValueSupplier<>(() -> Once.fromValue(defaultValue));
   }
 
-  private <T> ValueSupplier<T> supplier(Supplier<T> defaultSupplier) {
-    return new ValueSupplier<>(() -> Once.fromSupplier(defaultSupplier));
+  private <T> ValueSupplier<T> supplier(Supplier<T> supplier) {
+    return new ValueSupplier<>(() -> Once.fromSupplier(supplier));
   }
 
   public final class ValueSupplier<T> implements Supplier<Once<T>> {
@@ -196,7 +180,7 @@ public final class ImplementationBuilder {
     private final Supplier<Once<T>> defaultOnce;
 
     @Nullable
-    private Function<ImplementationBuilder, Once<T>> customOnce;
+    private Function<ResourcesBuilder, Once<T>> customOnce;
 
     @Nullable
     private Once<T> value;
@@ -205,17 +189,12 @@ public final class ImplementationBuilder {
       this.defaultOnce = defaultOnce;
     }
 
-    private void reset() {
-      customOnce = null;
-      this.value = null;
-    }
-
     public void setValue(T value) {
       assertNotYetComputed();
       this.customOnce = _ignored -> Once.fromValue(value);
     }
 
-    public void setSupplier(Function<ImplementationBuilder, T> supplier) {
+    public void setSupplier(Function<ResourcesBuilder, T> supplier) {
       assertNotYetComputed();
       this.customOnce = implementation -> Once.fromSupplier(() -> supplier.apply(implementation));
     }
@@ -224,15 +203,15 @@ public final class ImplementationBuilder {
       if (this.value != null) {
         throw new IllegalStateException(
           "Cannot set the value, the value has already been constructed. " +
-          "Reset this builder first."
+          "Do not re-use builders."
         );
       }
     }
 
     private Once<T> computeValue() {
-      var current = this.customOnce;
-      if (current != null) {
-        return current.apply(ImplementationBuilder.this);
+      var customOnce = this.customOnce;
+      if (customOnce != null) {
+        return customOnce.apply(ResourcesBuilder.this);
       } else {
         return defaultOnce.get();
       }
@@ -246,6 +225,10 @@ public final class ImplementationBuilder {
         this.value = value;
       }
       return value;
+    }
+
+    public T getGet() {
+      return get().get();
     }
   }
 }

@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.spring;
 
-import com.github.cronosun.tyres.core.BundleInfo;
+import com.github.cronosun.tyres.core.BaseName;
 import java.util.Locale;
 
 public interface MessageSourceProvider {
@@ -8,5 +8,5 @@ public interface MessageSourceProvider {
     return new CachedMessageSourceProvider(factory);
   }
 
-  ExtMessageSource messageSource(BundleInfo bundleInfo, Locale locale);
+  ExtMessageSource messageSource(BaseName baseName, Locale locale);
 }

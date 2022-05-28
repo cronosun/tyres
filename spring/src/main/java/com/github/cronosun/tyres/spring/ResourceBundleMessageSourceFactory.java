@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.spring;
 
-import com.github.cronosun.tyres.core.BundleInfo;
+import com.github.cronosun.tyres.core.BaseName;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -16,11 +16,9 @@ final class ResourceBundleMessageSourceFactory implements MessageSourceFactory {
   private static final String ENCODING = StandardCharsets.UTF_8.name();
 
   @Override
-  public CreatedMessageSource createMessageSource(BundleInfo bundleInfo, Locale locale) {
-    var baseName = bundleInfo.baseName().value();
-
+  public CreatedMessageSource createMessageSource(BaseName baseName, Locale locale) {
     var messageSource = new ResourceBundleExtMessageSource();
-    messageSource.setBasename(baseName);
+    messageSource.setBasename(baseName.value());
     messageSource.setFallbackToSystemLocale(false);
     messageSource.setDefaultEncoding(ENCODING);
     // this is required for the contract of ExtMessageSource
@@ -40,8 +38,8 @@ final class ResourceBundleMessageSourceFactory implements MessageSourceFactory {
   }
 
   @Override
-  public Object cacheKeyFor(BundleInfo bundleInfo, Locale locale) {
-    return bundleInfo.baseName().value();
+  public Object cacheKeyFor(BaseName baseName, Locale locale) {
+    return baseName;
   }
 
   private static final class ResourceBundleExtMessageSource
@@ -59,7 +57,7 @@ final class ResourceBundleMessageSourceFactory implements MessageSourceFactory {
     }
 
     @Override
-    public Set<String> resourceNamesInBundleForValidation(BundleInfo bundleInfo, Locale locale) {
+    public Set<String> resourceNamesInBundleForValidation(BaseName baseName, Locale locale) {
       var baseNames = this.getBasenameSet();
       var baseNamesIterator = baseNames.iterator();
       var result = new HashSet<String>();

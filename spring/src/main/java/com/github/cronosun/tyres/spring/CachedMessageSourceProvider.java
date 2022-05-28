@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.spring;
 
-import com.github.cronosun.tyres.core.BundleInfo;
+import com.github.cronosun.tyres.core.BaseName;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 import java.util.Map;
@@ -18,8 +18,8 @@ final class CachedMessageSourceProvider implements MessageSourceProvider {
   }
 
   @Override
-  public ExtMessageSource messageSource(BundleInfo bundleInfo, Locale locale) {
-    var cacheKey = factory.cacheKeyFor(bundleInfo, locale);
+  public ExtMessageSource messageSource(BaseName baseName, Locale locale) {
+    var cacheKey = factory.cacheKeyFor(baseName, locale);
     var fromCache = this.cache.get(cacheKey);
     if (fromCache != null) {
       return fromCache;
@@ -30,7 +30,7 @@ final class CachedMessageSourceProvider implements MessageSourceProvider {
           return fromCache;
         } else {
           // ok, generate it
-          var createdSource = this.factory.createMessageSource(bundleInfo, locale);
+          var createdSource = this.factory.createMessageSource(baseName, locale);
           this.cache.put(createdSource.cacheKey(), createdSource.messageSource());
           return createdSource.messageSource();
         }

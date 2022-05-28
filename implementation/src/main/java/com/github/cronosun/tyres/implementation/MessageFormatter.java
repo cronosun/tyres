@@ -2,12 +2,24 @@ package com.github.cronosun.tyres.implementation;
 
 import java.util.Locale;
 
-public interface MessageFormatBackend {
+public interface MessageFormatter {
   /**
-   * The default implementation that uses {@link java.text.MessageFormat}.
+   * The default implementation that uses {@link java.text.MessageFormat} and does NOT cache the
+   * {@link java.text.MessageFormat} (you usually want to cache them).
+   *
+   * @see #newCachedMessageFormatter()
    */
-  static MessageFormatBackend defaultInstance() {
-    return DefaultMessageFormatBackend.instance();
+  static MessageFormatter noCacheDefaultInstance() {
+    return AbstractMessageFormatter.noCacheInstance();
+  }
+
+  /**
+   * Returns a new instance of the cached message formatter (internally using {@link java.text.MessageFormat}). You
+   * usually want this, unless your application loads and unloads parts dynamically, since the cache
+   * does never evict cached {@link java.text.MessageFormat}s.
+   */
+  static MessageFormatter newCachedMessageFormatter() {
+    return new CachedMessageFormatter();
   }
 
   /**

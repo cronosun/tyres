@@ -9,6 +9,12 @@ import org.jetbrains.annotations.Nullable;
  */
 @ThreadSafe
 public interface Text extends Resolvable {
+  // TODO: implement me!
+  /*@Nullable
+  default ResInfo.TextResInfo resInfo() {
+    return null;
+  }*/
+
   @Nullable
   String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig);
 

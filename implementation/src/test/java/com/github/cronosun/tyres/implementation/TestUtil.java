@@ -12,11 +12,11 @@ public final class TestUtil {
   private TestUtil() {}
 
   public static Resources newInstance(DefaultNotFoundConfig notFoundConfig) {
-    return new ImplementationBuilder().defaultNotFoundConfig(notFoundConfig).build();
+    return new ResourcesBuilder().defaultNotFoundConfig(notFoundConfig).build();
   }
 
   public static Resources newInstanceValidateOnUse(DefaultNotFoundConfig notFoundConfig) {
-    return new ImplementationBuilder()
+    return new ResourcesBuilder()
       .defaultNotFoundConfig(notFoundConfig)
       .validateOnBundleUse(true)
       .build();
@@ -26,7 +26,7 @@ public final class TestUtil {
     DefaultNotFoundConfig notFoundConfig,
     CurrentLocaleProvider currentLocaleProvider
   ) {
-    return new ImplementationBuilder()
+    return new ResourcesBuilder()
       .defaultNotFoundConfig(notFoundConfig)
       .currentLocaleProvider(currentLocaleProvider)
       .build();
