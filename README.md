@@ -4,8 +4,8 @@
 
 ## Introduction
 
-Provides functionality for typed resources (such as messages) for [spring](https://spring.io/) applications or other
-Java applications.
+Provides functionality for typed resources (messages, binary data) for [spring](https://spring.io/) applications or
+other Java applications (such as console apps, Android or JavaFX).
 
 ### Main features
 
@@ -13,8 +13,8 @@ Java applications.
 * Supports arguments for messages.
 * Supports 3 types of resources:
     * **Formatted**: Formatted messages, with 0-n arguments (see Java's `MessageFormat`).
-    * **Text**: Plain string, not formatted and 0 arguments.
-    * **Binary** resources (localization is supported too).
+    * **Text**: Plain string, not formatted, no arguments.
+    * **Binary** resources (localization is supported too; useful for localized templates).
 * Supports multiple backend implementations: Spring `MessageSource` and Java `ResourceBundle` are included - or write
   your own.
 * Lightweight & small.
@@ -78,20 +78,20 @@ class TranslateTest {
         var inputStream = bundle.someBinary().get(Locale.UK);
         assertNotNull(inputStream);
         inputStream.close();
-        
+
         // messages can be compared without actually producing text; useful for tests.
         var expected = bundle.amountTooLarge(333);
         var actual = bundle.amountTooLarge(333);
         assertEquals(expected, actual);
     }
-    
+
     // Messages can be referenced in static context (and resolved later).
     enum MyEnum {
         MISSING(Resolvable.constant(MyMessages.class, MyMessages::missingAmount)),
         NOT_FORMATTED(Resolvable.constant(MyMessages.class, MyMessages::notFormatted));
 
         MyEnum(Resolvable displayName) {
-          // <...>    
+            // <...>    
         }
         // <...>
     }
@@ -100,11 +100,11 @@ class TranslateTest {
 
 ## Modules
 
-* `core`: Contains the API and a default implementation of `TyResImplementation`. You always need this dependency.
+* `core`: Contains the API and some core functionality. You always need this dependency.
 * `implementation`: Contains the default implementation - you most likely want this dependency too (unless you write
   your own
   implementation from scratch).
-* `spring`: Contains an implementation for spring. You only need this implementation if you're using spring.
+* `spring`: Contains an implementation for spring (based on `implementation`). You only need this implementation if you're using spring.
 * `kotlin`: Currently does not contain code, just some tests to make sure the library also works flawlessly with kotlin.
 
 ## More
@@ -180,7 +180,7 @@ tell it does not support those things / has those drawbacks (but I could be wron
   that), don't know whether it works in a standalone Java application or in an android application.
 * Missing validation: Does not detect missing translations / malformed message patterns (unless you "produce" the
   message).
-* Lacks some minor features such as `Localized`, `ResolvableList` & `Resolvable`. 
+* Lacks some minor features such as `Localized`, `ResolvableList` & `Resolvable`.
 * No support for localized binary resources.
 
 So if you want a mature framework, such as [Apache DeltaSpike](https://deltaspike.apache.org/), use it. If you want a
@@ -189,74 +189,81 @@ small library with some additional features, use TyRes.
 ### Performance / overhead
 
 This describes the operations the default implementation (see `implementation` module) performs.
- 
+
 #### Getting a bundle for the first time: `T Resources#get(Class<T>)`
 
 ```java
 interface MyBundle {
     Text myText();
+
     Fmt formatted(String argument);
 }
 
-Resources resources = resources();
-// It's about this operation: getting a bundle
-var myBundle = resources.get(MyBundle.class);
+    Resources resources = resources();
+    // It's about this operation: getting a bundle
+    var myBundle = resources.get(MyBundle.class);
 ```
 
-This is the most expensive operation - but will only be performed once per bundle class (`MyBundle.class` in the example); Subsequent calls to `T Resources#get(Class<T>)` will just return the already created bundle.
+This is the most expensive operation - but will only be performed once per bundle class (`MyBundle.class` in the
+example); Subsequent calls to `T Resources#get(Class<T>)` will just return the already created bundle.
 
- * Uses reflection to query the interface
- * Constructs the model (see `BundleInfo` and `EntryInfo`).
- * Creates a proxy.
- * Stores the bundle in a concurrent hash map.
+* Uses reflection to query the interface
+* Constructs the model (see `BundleInfo` and `EntryInfo`).
+* Creates a proxy.
+* Stores the bundle in a concurrent hash map.
 
-Subsequent calls to `Resources#get` then just return the already created bundle from a concurrent hash map. If you're using a DI framework, you can store the bundle (or store it somewhere else, as it does not change).
+Subsequent calls to `Resources#get` then just return the already created bundle from a concurrent hash map. If you're
+using a DI framework, you can store the bundle (or store it somewhere else, as it does not change).
 
 #### Getting a text from a bundle (no arguments)
 
 ```java
-Resources resources = resources();
-var myBundle = resources.get(MyBundle.class);
+Resources resources=resources();
+        var myBundle=resources.get(MyBundle.class);
 // It's about this operation: getting text from a bundle
-var text = myBundle.myText();
+        var text=myBundle.myText();
 ```
 
-This operation performs a call to `Map<String, Text>#get(String)` performed by the proxy, where `String` is the method name. No memory allocation involved here.
+This operation performs a call to `Map<String, Text>#get(String)` performed by the proxy, where `String` is the method
+name. No memory allocation involved here.
 
 #### Getting a formatted text with arguments from a bundle
 
 ```java
-Resources resources = resources();
-var myBundle = resources.get(MyBundle.class);
+Resources resources=resources();
+        var myBundle=resources.get(MyBundle.class);
 // It's about this operation: getting text with arguments from a bundle
-var text = myBundle.formatted("The argument");
+        var text=myBundle.formatted("The argument");
 ```
 
-This is similar to getting a text without arguments but additionally involves one allocation: Creates a new `Fmt` object with the argument(s) (in the example `The argument`).
+This is similar to getting a text without arguments but additionally involves one allocation: Creates a new `Fmt` object
+with the argument(s) (in the example `The argument`).
 
 #### Resolving the text
 
 ```java
-Resources resources = resources();
-var myBundle = resources.get(MyBundle.class);
-var text = myBundle.myText();
+Resources resources=resources();
+        var myBundle=resources.get(MyBundle.class);
+        var text=myBundle.myText();
 // It's about this operation: resolving the text
-var resolvedText = text.get(Locale.US);
+        var resolvedText=text.get(Locale.US);
 ```
 
 This is now nothing more than calling the backend (such as Java's `ResourceBundle` and Java's `MessageFormat`).
 
 #### Validation
 
-Validation is a heavy operation and should not be performed in production (only to be enabled in dev-builds, local development and unit-tests).
+Validation is a heavy operation and should not be performed in production (only to be enabled in dev-builds, local
+development and unit-tests).
 
 #### Summary
 
- * If you save the bundle using DI (or save it somewhere else) for messages without arguments, this is the overhead:
-   * One call to `Map<String, Object>#get(String)` (performed by the proxy).
- * Formatted messages with at least one argument additionally require one allocation.
- * If you don't store the bundle and call `T Resources#get(Class<T>)`, one call to `ConcurrentHashMap<Class, T>#get(Class)` is performed.
- * DO NOT perform validation in production builds.
+* If you save the bundle using DI (or save it somewhere else) for messages without arguments, this is the overhead:
+    * One call to `Map<String, Object>#get(String)` (performed by the proxy).
+* Formatted messages with at least one argument additionally require one allocation.
+* If you don't store the bundle and call `T Resources#get(Class<T>)`, one call
+  to `ConcurrentHashMap<Class, T>#get(Class)` is performed.
+* DO NOT perform validation in production builds.
 
 ## Legal
 
