@@ -1,3 +1,5 @@
+![Header Logo](imgs/header_logo.webp)
+
 # TyRes - Typed Resources
 
 ## Introduction
@@ -146,3 +148,12 @@ allows low level control:
 
 * What `.properties`-file to use.
 * How the keys in the `.properties`-file look like.
+
+## Legal
+
+### Header logo
+
+["Tyre"](https://www.flickr.com/photos/9937638@N02/5698711393) by [mahela1993](https://www.flickr.com/photos/9937638@N02) is licensed under [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/). Changes were made, original photo can be found [here](https://www.flickr.com/photos/9937638@N02/5698711393).
+
+
+
