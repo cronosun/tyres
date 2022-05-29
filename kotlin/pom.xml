@@ -23,6 +23,19 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    <developers>
+        <developer>
+            <name>Simon Ruoss</name>
+            <email>silvergate@gmail.com</email>
+            <organization>None</organization>
+            <organizationUrl>https://github.com/cronosun</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/cronosun/tyres.git</connection>
+        <developerConnection>scm:git:ssh://github.com:cronosun/tyres.git</developerConnection>
+        <url>http://github.com/cronosun/tyres/tree/master</url>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -44,7 +57,6 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
