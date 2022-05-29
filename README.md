@@ -21,6 +21,7 @@ Java applications.
 * Validation: Detect missing translations or unused translations.
 * Testing: Easy to test whether services return correct messages (messages can be referenced in tests).
 * Globally configurable what to do if a resource is missing (return a fallback message or throw an exception).
+* Does not require the latest LTS (Java 17) - also works with Java 11.
 
 ### What does it look like?
 
@@ -29,8 +30,11 @@ Write a message bundle (it's just an interface):
 ```java
 public interface MyMessages {
     Fmt amountTooLarge(int amount);
+
     Text missingAmount();
+
     Text notFormatted();
+
     @File("some_data.png")
     Bin someBinary();
 }
@@ -56,9 +60,10 @@ class TranslateTest {
     public void testTranslations() {
         // validate the bundle (will for example detect missing translations).
         resources.validate(MyMessages.class, Set.of(Locale.UK));
-        
+
+        // get the bundle - can also be injected, if you're using spring or a different DI framework.
         var bundle = resources.get(MyMessages.class);
-        
+
         var msg1 = bundle.missingAmount().get(Locale.UK);
         assertEquals("Amount is required!", msg1);
 
@@ -73,6 +78,22 @@ class TranslateTest {
         var inputStream = bundle.someBinary().get(Locale.UK);
         assertNotNull(inputStream);
         inputStream.close();
+        
+        // messages can be compared without actually producing text; useful for tests.
+        var expected = bundle.amountTooLarge(333);
+        var actual = bundle.amountTooLarge(333);
+        assertEquals(expected, actual);
+    }
+    
+    // Messages can be referenced in static context (and resolved later).
+    enum MyEnum {
+        MISSING(Resolvable.constant(MyMessages.class, MyMessages::missingAmount)),
+        NOT_FORMATTED(Resolvable.constant(MyMessages.class, MyMessages::notFormatted));
+
+        MyEnum(Resolvable displayName) {
+          // <...>    
+        }
+        // <...>
     }
 }
 ```
@@ -149,11 +170,32 @@ allows low level control:
 * What `.properties`-file to use.
 * How the keys in the `.properties`-file look like.
 
+### Alternatives
+
+The closest alternative I could find
+is [Apache DeltaSpike, i18n](https://deltaspike.apache.org/documentation/core.html#Messagesandi18n). As far as I can
+tell it does not support those things / has those drawbacks (but I could be wrong):
+
+* It's integrated in a framework, spring integration seems tricky (at least I could not find documentation on how to do
+  that), don't know whether it works in a standalone Java application or in an android application.
+* Missing validation: Does not detect missing translations / malformed message patterns (unless you "produce" the
+  message).
+* Lacks some minor features such as `Localized`, `ResolvableList` & `Resolvable`. 
+* No support for localized binary resources.
+
+So if you want a mature framework, such as [Apache DeltaSpike](https://deltaspike.apache.org/), use it. If you want a
+small library with some additional features, use TyRes.
+
 ## Legal
 
 ### Header logo
 
-["Tyre"](https://www.flickr.com/photos/9937638@N02/5698711393) by [mahela1993](https://www.flickr.com/photos/9937638@N02) is licensed under [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/). Changes were made, original photo can be found [here](https://www.flickr.com/photos/9937638@N02/5698711393).
+["Tyre"](https://www.flickr.com/photos/9937638@N02/5698711393)
+by [mahela1993](https://www.flickr.com/photos/9937638@N02) is licensed
+under [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/). Changes were made, original photo can be
+found [here](https://www.flickr.com/photos/9937638@N02/5698711393).
 
+### License
 
+TyRes is licensed under [Apache License, Version 2.0](LICENSE.md).
 

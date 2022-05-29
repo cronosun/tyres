@@ -8,12 +8,29 @@
     <artifactId>tyres-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
+    <name>TyRes parent</name>
+    <description>The parent project of cronosun TyRes.</description>
+    <url>https://github.com/cronosun/tyres</url>
+
     <modules>
         <module>core</module>
         <module>implementation</module>
         <module>spring</module>
         <module>kotlin</module>
     </modules>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/cronosun/tyres</url>
+    </scm>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

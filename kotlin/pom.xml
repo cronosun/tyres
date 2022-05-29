@@ -7,9 +7,23 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kotlin</artifactId>
+
+    <name>TyRes Kotlin</name>
+    <description>Kotlin test project for cronosun TyRes.</description>
+    <url>https://github.com/cronosun/tyres</url>
+
     <properties>
         <kotlin.version>1.6.21</kotlin.version>
     </properties>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <dependencies>
         <dependency>
             <groupId>com.github.cronosun.tyres</groupId>
@@ -28,6 +42,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
