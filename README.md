@@ -117,6 +117,14 @@ also meant as documentation. Also
 see [the spring tests](spring/src/test/java/com/github/cronosun/tyres/spring/README.md) if you're interested in spring
 support.
 
+### Tests
+
+Currently, contains 65+ tests.
+
+![Tests](imgs/tests.png)
+
+![maven workflow](https://github.com/cronosun/tyres/actions/workflows/maven.yml/badge.svg)
+
 ### Validation
 
 TyRes can validate resource bundles and finds those errors:
