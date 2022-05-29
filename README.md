@@ -186,6 +186,78 @@ tell it does not support those things / has those drawbacks (but I could be wron
 So if you want a mature framework, such as [Apache DeltaSpike](https://deltaspike.apache.org/), use it. If you want a
 small library with some additional features, use TyRes.
 
+### Performance / overhead
+
+This describes the operations the default implementation (see `implementation` module) performs.
+ 
+#### Getting a bundle for the first time: `T Resources#get(Class<T>)`
+
+```java
+interface MyBundle {
+    Text myText();
+    Fmt formatted(String argument);
+}
+
+Resources resources = resources();
+// It's about this operation: getting a bundle
+var myBundle = resources.get(MyBundle.class);
+```
+
+This is the most expensive operation - but will only be performed once per bundle class (`MyBundle.class` in the example); Subsequent calls to `T Resources#get(Class<T>)` will just return the already created bundle.
+
+ * Uses reflection to query the interface
+ * Constructs the model (see `BundleInfo` and `EntryInfo`).
+ * Creates a proxy.
+ * Stores the bundle in a concurrent hash map.
+
+Subsequent calls to `Resources#get` then just return the already created bundle from a concurrent hash map. If you're using a DI framework, you can store the bundle (or store it somewhere else, as it does not change).
+
+#### Getting a text from a bundle (no arguments)
+
+```java
+Resources resources = resources();
+var myBundle = resources.get(MyBundle.class);
+// It's about this operation: getting text from a bundle
+var text = myBundle.myText();
+```
+
+This operation performs a call to `Map<String, Text>#get(String)` performed by the proxy, where `String` is the method name. No memory allocation involved here.
+
+#### Getting a formatted text with arguments from a bundle
+
+```java
+Resources resources = resources();
+var myBundle = resources.get(MyBundle.class);
+// It's about this operation: getting text with arguments from a bundle
+var text = myBundle.formatted("The argument");
+```
+
+This is similar to getting a text without arguments but additionally involves one allocation: Creates a new `Fmt` object with the argument(s) (in the example `The argument`).
+
+#### Resolving the text
+
+```java
+Resources resources = resources();
+var myBundle = resources.get(MyBundle.class);
+var text = myBundle.myText();
+// It's about this operation: resolving the text
+var resolvedText = text.get(Locale.US);
+```
+
+This is now nothing more than calling the backend (such as Java's `ResourceBundle` and Java's `MessageFormat`).
+
+#### Validation
+
+Validation is a heavy operation and should not be performed in production (only to be enabled in dev-builds, local development and unit-tests).
+
+#### Summary
+
+ * If you save the bundle using DI (or save it somewhere else) for messages without arguments, this is the overhead:
+   * One call to `Map<String, Object>#get(String)` (performed by the proxy).
+ * Formatted messages with at least one argument additionally require one allocation.
+ * If you don't store the bundle and call `T Resources#get(Class<T>)`, one call to `ConcurrentHashMap<Class, T>#get(Class)` is performed.
+ * DO NOT perform validation in production builds.
+
 ## Legal
 
 ### Header logo
