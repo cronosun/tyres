@@ -125,6 +125,11 @@ final class ResolvableConst<T> implements Resolvable {
     }
 
     @Override
+    public @Nullable ResInfo.TextResInfo resInfo() {
+      return null;
+    }
+
+    @Override
     public String getText(
       @Nullable Locale locale,
       NotFoundConfig.WithNullAndDefault notFoundConfig

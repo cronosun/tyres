@@ -60,7 +60,7 @@ final class DefaultBundleFactory implements BundleFactory {
         .map(ResourcesMap.WithArgumentsAndResInfo::resInfo);
     } else {
       throw new TyResException(
-        "Unable to get resouces from '" +
+        "Unable to get resources from '" +
         bundle +
         "'. The bundle must have been created by this factory (it's not). Read the documentation!"
       );
@@ -181,7 +181,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
-      public ResInfo resInfo() {
+      public ResInfo.TextResInfo resInfo() {
         return info;
       }
 
@@ -238,7 +238,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
-      public ResInfo resInfo() {
+      public ResInfo.TextResInfo resInfo() {
         return info;
       }
 
@@ -282,6 +282,11 @@ final class DefaultBundleFactory implements BundleFactory {
       private FmtWithArgsImpl(FmtImpl noArgs, Object[] args) {
         this.noArgs = noArgs;
         this.args = args;
+      }
+
+      @Override
+      public @Nullable ResInfo.TextResInfo resInfo() {
+        return noArgs.info;
       }
 
       @Override

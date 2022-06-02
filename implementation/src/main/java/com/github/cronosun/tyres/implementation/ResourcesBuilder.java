@@ -19,15 +19,17 @@ public final class ResourcesBuilder {
     }
     built = true;
     return resources().getGet();
-
-
   }
 
   private final ValueSupplier<DefaultNotFoundConfig> defaultNotFoundConfig = constant(
     DefaultNotFoundConfig.FALLBACK
   );
-  private final ValueSupplier<MessageFormatter> messageFormatBackend = supplier(MessageFormatter::newCachedMessageFormatter);
-  private final ValueSupplier<TextBackend> textBackend = supplier(() -> new ResourceBundleTextBackend(messageFormatBackend().getGet(), null));
+  private final ValueSupplier<MessageFormatter> messageFormatBackend = supplier(
+    MessageFormatter::newCachedMessageFormatter
+  );
+  private final ValueSupplier<TextBackend> textBackend = supplier(() ->
+    new ResourceBundleTextBackend(messageFormatBackend().getGet(), null)
+  );
   private final ValueSupplier<BinBackend> binBackend = constant(
     BinBackend.resourceBundleInstance()
   );
@@ -52,20 +54,18 @@ public final class ResourcesBuilder {
   private final ValueSupplier<EffectiveNameGenerator> effectiveNameGenerator = constant(
     EffectiveNameGenerator.empty()
   );
-  private final ValueSupplier<BundleFactory> bundleFactory = supplier(() -> new DefaultBundleFactory(
-          resources().get(),
-          resourcesBackend().getGet(),
-          effectiveNameGenerator().getGet()
-  ));
+  private final ValueSupplier<BundleFactory> bundleFactory = supplier(() ->
+    new DefaultBundleFactory(
+      resources().get(),
+      resourcesBackend().getGet(),
+      effectiveNameGenerator().getGet()
+    )
+  );
   private final ValueSupplier<BundleCache> bundleCache = supplier(() ->
     BundleCache.newDefault(bundleFactory().getGet())
   );
   private final ValueSupplier<ValidatorBackend> validatorForCache = supplier(() ->
-    new DefaultValidator(
-      resources().get(),
-      bundleFactory().getGet(),
-      resourcesBackend().getGet()
-    )
+    new DefaultValidator(resources().get(), bundleFactory().getGet(), resourcesBackend().getGet())
   );
   private final ValueSupplier<Boolean> validateOnBundleUse = constant(false);
   private final ValueSupplier<ValidatorBackend> validator = supplier(() ->
@@ -155,9 +155,7 @@ public final class ResourcesBuilder {
     return this;
   }
 
-  public ResourcesBuilder effectiveNameGenerator(
-    EffectiveNameGenerator effectiveNameGenerator
-  ) {
+  public ResourcesBuilder effectiveNameGenerator(EffectiveNameGenerator effectiveNameGenerator) {
     this.effectiveNameGenerator().setValue(effectiveNameGenerator);
     return this;
   }

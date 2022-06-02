@@ -247,6 +247,11 @@ public final class Localized implements Resolvable {
     }
 
     @Override
+    public @Nullable ResInfo.TextResInfo resInfo() {
+      return null;
+    }
+
+    @Override
     public @Nullable String getText(
       @Nullable Locale locale,
       NotFoundConfig.WithNullAndDefault notFoundConfig
