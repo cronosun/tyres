@@ -48,7 +48,8 @@ public final class ResourcesBuilder {
       binBackend().getGet(),
       argsResolver().getGet(),
       fallbackGenerator().getGet(),
-      validator().getGet()
+      validator().getGet(),
+      effectiveNameGenerator().get()
     )
   );
   private final ValueSupplier<EffectiveNameGenerator> effectiveNameGenerator = constant(
@@ -58,7 +59,7 @@ public final class ResourcesBuilder {
     new DefaultBundleFactory(
       resources().get(),
       resourcesBackend().getGet(),
-      effectiveNameGenerator().getGet()
+      effectiveNameGenerator().get()
     )
   );
   private final ValueSupplier<BundleCache> bundleCache = supplier(() ->

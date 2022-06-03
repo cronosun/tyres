@@ -1,7 +1,6 @@
 package com.github.cronosun.tyres.implementation;
 
-import com.github.cronosun.tyres.core.ResInfo;
-import com.github.cronosun.tyres.core.Resources;
+import com.github.cronosun.tyres.core.EntryInfo;
 import java.util.stream.Stream;
 
 public interface BundleFactory {
@@ -16,5 +15,5 @@ public interface BundleFactory {
    * if this operation is not supported.
    * Note 3: Only used this for validation since this operation (depending on the implementation) might be slow.
    */
-  Stream<ResInfo> declaredResourcesForValidation(Object bundle);
+  Stream<EntryInfo> declaredResourcesForValidation(Object bundle);
 }

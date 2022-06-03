@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.spi.ResourceBundleProvider;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.Nullable;
 
 final class ResourceBundleTextBackend implements TextBackend {
@@ -25,8 +26,14 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Override
-  public @Nullable String maybeFmt(ResInfo.TextResInfo info, Object[] args, Locale locale) {
-    var pattern = maybeText(info, locale);
+  public @Nullable String maybeFmt(
+    EntryInfo.TextEntry entry,
+    BaseName baseName,
+    String name,
+    Object[] args,
+    Locale locale
+  ) {
+    var pattern = maybeText(entry, baseName, name, locale);
     if (pattern != null) {
       return this.messageFormatter.format(pattern, args, locale);
     } else {
@@ -35,16 +42,21 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Override
-  public void validateFmt(ResInfo.TextResInfo info, Locale locale) {
-    var pattern = maybeText(info, locale);
+  public void validateFmt(
+    EntryInfo.TextEntry entry,
+    BaseName baseName,
+    String name,
+    Locale locale
+  ) {
+    var pattern = maybeText(entry, baseName, name, locale);
     if (pattern != null) {
-      var numberOfArguments = info.method().getParameterCount();
+      var numberOfArguments = entry.method().getParameterCount();
       this.messageFormatter.validatePattern(pattern, locale, numberOfArguments);
     } else {
-      if (!info.validationOptional()) {
+      if (entry.required()) {
         throw new TyResException(
           "Text (fmt) " +
-          info.conciseDebugString() +
+          entry.conciseDebugString() +
           " for locale '" +
           locale.toLanguageTag() +
           "' not found and it's not marked as optional (see @" +
@@ -56,24 +68,34 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Override
-  public @Nullable String maybeText(ResInfo.TextResInfo info, Locale locale) {
-    var bundle = getResourceBundleForMessages(info.bundleInfo(), locale);
-    var string = getString(bundle, info);
-    if (string == null) {
-      // try the default
-      return info.defaultValue();
+  public @Nullable String maybeText(
+    EntryInfo.TextEntry entry,
+    BaseName baseName,
+    String name,
+    Locale locale
+  ) {
+    var bundle = getBundle(baseName, locale);
+    var text = getString(bundle, name);
+    if (text != null) {
+      return text;
     } else {
-      return string;
+      // try the default
+      return entry.defaultValue();
     }
   }
 
   @Override
-  public void validateText(ResInfo.TextResInfo info, Locale locale) {
-    var text = maybeText(info, locale);
-    if (text == null && !info.validationOptional()) {
+  public void validateText(
+    EntryInfo.TextEntry entry,
+    BaseName baseName,
+    String name,
+    Locale locale
+  ) {
+    var text = maybeText(entry, baseName, name, locale);
+    if (text == null && entry.required()) {
       throw new TyResException(
         "Text " +
-        info.conciseDebugString() +
+        entry.conciseDebugString() +
         " for locale '" +
         locale.toLanguageTag() +
         "' not found and it's not marked as optional (see @" +
@@ -84,72 +106,24 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Override
-  public void validateNoSuperfluousResources(
-    Stream<ResInfo.TextResInfo> allTextResourcesFromBundle,
-    Locale locale
-  ) {
-    var iterator = allTextResourcesFromBundle.iterator();
-    BaseName baseName = null;
-    BaseName originalBasename = null;
-    var usedKeys = new HashSet<String>();
-    while (iterator.hasNext()) {
-      var item = iterator.next();
-      var bundle = item.bundleInfo();
-
-      // note: if base name != effective base name, we can't perform the validation, since multiple bundles
-      // might use the same bundle.
-      if (!bundle.effectiveBaseName().equals(bundle.baseName())) {
-        return;
-      }
-
-      if (baseName == null) {
-        baseName = bundle.effectiveBaseName();
-        originalBasename = bundle.baseName();
-      } else {
-        if (!baseName.equals(bundle.effectiveBaseName())) {
-          var baseNames = WithConciseDebugString.build(
-            List.of(baseName, bundle.effectiveBaseName())
-          );
-          throw new TyResException(
-            "Unable to validate, there are resources in the set with different base names: '" +
-            baseNames +
-            "'."
-          );
-        }
-      }
-      usedKeys.add(item.effectiveName());
-    }
-
-    if (baseName != null) {
-      var bundle = getBundle(baseName.value(), locale);
-      if (bundle != null) {
-        var allKeysFromBundle = bundle.getKeys();
-        while (allKeysFromBundle.hasMoreElements()) {
-          var keyFromBundle = allKeysFromBundle.nextElement();
-          if (!usedKeys.contains(keyFromBundle)) {
-            throw new TyResException(
-              "The key '" +
-              keyFromBundle +
-              "' in bundle " +
-              baseName.conciseDebugString() +
-              " (locale '" +
-              locale.toLanguageTag() +
-              "') is not in use in the bunde (original base name " +
-              originalBasename.conciseDebugString() +
-              "). Remove it, or use it!"
-            );
-          }
-        }
-      }
+  public Stream<String> maybeAllResourcesInBundle(BaseName baseName, Locale locale) {
+    var bundle = getBundle(baseName, locale);
+    if (bundle != null) {
+      var entries = bundle.getKeys();
+      return StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(entries.asIterator(), Spliterator.ORDERED),
+        false
+      );
+    } else {
+      return Stream.empty();
     }
   }
 
   @Nullable
-  private String getString(@Nullable ResourceBundle bundle, ResInfo.TextResInfo info) {
+  private String getString(@Nullable ResourceBundle bundle, String name) {
     if (bundle != null) {
-      var key = info.effectiveName();
-      if (bundle.containsKey(key)) {
-        return bundle.getString(key);
+      if (bundle.containsKey(name)) {
+        return bundle.getString(name);
       } else {
         return null;
       }
@@ -159,19 +133,14 @@ final class ResourceBundleTextBackend implements TextBackend {
   }
 
   @Nullable
-  private ResourceBundle getResourceBundleForMessages(BundleInfo bundleInfo, Locale locale) {
-    var baseName = bundleInfo.effectiveBaseName().value();
-    return getBundle(baseName, locale);
-  }
-
-  @Nullable
-  private ResourceBundle getBundle(String baseName, Locale locale) {
+  private ResourceBundle getBundle(BaseName baseName, Locale locale) {
+    var baseNameValue = baseName.value();
     var resourceBundleProvider = this.resourceBundleProvider;
     if (resourceBundleProvider == null) {
       try {
         // From Java 9 onwards property files are encoded as UTF-8 by default
         return ResourceBundle.getBundle(
-          baseName,
+          baseNameValue,
           locale,
           ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
         );
@@ -180,7 +149,7 @@ final class ResourceBundleTextBackend implements TextBackend {
         return null;
       }
     } else {
-      return resourceBundleProvider.getBundle(baseName, locale);
+      return resourceBundleProvider.getBundle(baseNameValue, locale);
     }
   }
 }

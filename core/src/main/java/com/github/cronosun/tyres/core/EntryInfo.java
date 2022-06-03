@@ -7,26 +7,33 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Information about a single entry in a bundle.
+ */
 @ThreadSafe
-public abstract class ResInfo implements WithConciseDebugString {
+public abstract class EntryInfo implements WithConciseDebugString {
 
   private static final Class<?>[] KNOWN_TEXT_TYPES = new Class[] { Text.class, Fmt.class };
 
-  private ResInfo(
+  private EntryInfo(
     BundleInfo bundleInfo,
     Method method,
-    @Nullable Validation validationAnnotation
+    boolean required,
+    @Nullable Object implementationData
   ) {
     this.bundleInfo = Objects.requireNonNull(bundleInfo);
     this.method = Objects.requireNonNull(method);
-    this.validationAnnotation = validationAnnotation;
+    this.required = required;
+    this.implementationData = implementationData;
   }
 
   private final BundleInfo bundleInfo;
   private final Method method;
 
+  private final boolean required;
+
   @Nullable
-  private final Validation validationAnnotation;
+  private final Object implementationData;
 
   public final Method method() {
     return this.method;
@@ -36,44 +43,61 @@ public abstract class ResInfo implements WithConciseDebugString {
     return bundleInfo;
   }
 
-  @Nullable
-  public final Validation validationAnnotation() {
-    return validationAnnotation;
+  /**
+   * <code>true</code> if this entry is required (default). It's used for validation. See {@link Validation#optional()}
+   * annotation.
+   */
+  public final boolean required() {
+    return required;
   }
 
-  public final boolean validationOptional() {
-    var validationAnnotation = validationAnnotation();
-    if (validationAnnotation != null) {
-      return validationAnnotation.optional();
-    } else {
-      return false;
-    }
+  /**
+   * This is additional data the implementation can add (optionally). This is implementation specific and should not be
+   * used, unless you write a {@link Resources} implementation.
+   */
+  @Nullable
+  public Object implementationData() {
+    return this.implementationData;
   }
 
   @ThreadSafe
-  public static final class TextResInfo extends ResInfo {
+  public static final class TextEntry extends EntryInfo {
 
     private final TextType type;
     private final String name;
-    private final String effectiveName;
 
     @Nullable
     private final String defaultValue;
 
-    public TextResInfo(
+    public TextEntry(
       BundleInfo bundleInfo,
       Method method,
-      @Nullable Validation validationAnnotation,
+      boolean required,
+      @Nullable Object implementationData,
       TextType type,
       String name,
-      String effectiveName,
       @Nullable String defaultValue
     ) {
-      super(bundleInfo, method, validationAnnotation);
+      super(bundleInfo, method, required, implementationData);
       this.type = Objects.requireNonNull(type);
       this.name = Objects.requireNonNull(name);
-      this.effectiveName = Objects.requireNonNull(effectiveName);
       this.defaultValue = defaultValue;
+    }
+
+    private TextEntry withImplementationData(@Nullable Object implementationData) {
+      if (implementationData != null || this.implementationData() != null) {
+        return new TextEntry(
+          bundleInfo(),
+          method(),
+          required(),
+          implementationData,
+          type(),
+          name(),
+          defaultValue()
+        );
+      } else {
+        return this;
+      }
     }
 
     public TextType type() {
@@ -87,13 +111,6 @@ public abstract class ResInfo implements WithConciseDebugString {
       return name;
     }
 
-    /**
-     * It's usually the same as {@link #name()} (but implementations are allowed to rewrite that).
-     */
-    public String effectiveName() {
-      return effectiveName;
-    }
-
     @Nullable
     public String defaultValue() {
       return defaultValue;
@@ -104,31 +121,27 @@ public abstract class ResInfo implements WithConciseDebugString {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
-      TextResInfo text = (TextResInfo) o;
+      TextEntry that = (TextEntry) o;
       return (
-        type == text.type &&
-        name.equals(text.name) &&
-        effectiveName.equals(text.effectiveName) &&
-        Objects.equals(defaultValue, text.defaultValue)
+        type == that.type &&
+        name.equals(that.name) &&
+        Objects.equals(defaultValue, that.defaultValue)
       );
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(super.hashCode(), type, name, effectiveName, defaultValue);
+      return Objects.hash(super.hashCode(), type, name, defaultValue);
     }
 
     @Override
     public String toString() {
       return (
-        "Text{" +
+        "TextEntryInfo{" +
         "type=" +
         type +
         ", name='" +
         name +
-        '\'' +
-        ", effectiveName='" +
-        effectiveName +
         '\'' +
         ", defaultValue='" +
         defaultValue +
@@ -137,8 +150,10 @@ public abstract class ResInfo implements WithConciseDebugString {
         bundleInfo() +
         ", method=" +
         method() +
-        ", validationAnnotation=" +
-        validationAnnotation() +
+        ", required=" +
+        required() +
+        ", implementationData=" +
+        implementationData() +
         '}'
       );
     }
@@ -150,21 +165,27 @@ public abstract class ResInfo implements WithConciseDebugString {
   }
 
   @ThreadSafe
-  public static final class BinResInfo extends ResInfo {
+  public static final class BinEntry extends EntryInfo {
 
     private final Filename filename;
-    private final Filename effectiveFilename;
 
-    public BinResInfo(
+    public BinEntry(
       BundleInfo bundleInfo,
       Method method,
-      @Nullable Validation validationAnnotation,
-      Filename filename,
-      Filename effectiveFilename
+      boolean required,
+      @Nullable Object implementationData,
+      Filename filename
     ) {
-      super(bundleInfo, method, validationAnnotation);
+      super(bundleInfo, method, required, implementationData);
       this.filename = Objects.requireNonNull(filename);
-      this.effectiveFilename = effectiveFilename;
+    }
+
+    private BinEntry withImplementationData(@Nullable Object implementationData) {
+      if (implementationData != null || this.implementationData() != null) {
+        return new BinEntry(bundleInfo(), method(), required(), implementationData, filename());
+      } else {
+        return this;
+      }
     }
 
     /**
@@ -172,13 +193,6 @@ public abstract class ResInfo implements WithConciseDebugString {
      */
     public Filename filename() {
       return filename;
-    }
-
-    /**
-     * This is usually the same as {@link #filename()} (unless the implementation chooses to rewrite the filename).
-     */
-    public Filename effectiveFilename() {
-      return effectiveFilename;
     }
 
     @Override
@@ -191,29 +205,29 @@ public abstract class ResInfo implements WithConciseDebugString {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
-      BinResInfo that = (BinResInfo) o;
-      return filename.equals(that.filename) && effectiveFilename.equals(that.effectiveFilename);
+      BinEntry that = (BinEntry) o;
+      return filename.equals(that.filename);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(super.hashCode(), filename, effectiveFilename);
+      return Objects.hash(super.hashCode(), filename);
     }
 
     @Override
     public String toString() {
       return (
-        "Bin{" +
+        "BinEntryInfo{" +
         "filename=" +
         filename +
-        ", effectiveFilename=" +
-        effectiveFilename +
         ", bundleInfo=" +
         bundleInfo() +
         ", method=" +
         method() +
-        ", validationAnnotation=" +
-        validationAnnotation() +
+        ", required=" +
+        required() +
+        ", implementationData=" +
+        implementationData() +
         '}'
       );
     }
@@ -223,17 +237,18 @@ public abstract class ResInfo implements WithConciseDebugString {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    ResInfo resInfo = (ResInfo) o;
+    EntryInfo entryInfo = (EntryInfo) o;
     return (
-      bundleInfo.equals(resInfo.bundleInfo) &&
-      method.equals(resInfo.method) &&
-      Objects.equals(validationAnnotation, resInfo.validationAnnotation)
+      required == entryInfo.required &&
+      bundleInfo.equals(entryInfo.bundleInfo) &&
+      method.equals(entryInfo.method) &&
+      Objects.equals(implementationData, entryInfo.implementationData)
     );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(bundleInfo, method, validationAnnotation);
+    return Objects.hash(bundleInfo, method, required, implementationData);
   }
 
   public enum TextType {
@@ -242,38 +257,34 @@ public abstract class ResInfo implements WithConciseDebugString {
   }
 
   /**
-   * Gets {@link ResInfo} by using reflection. This is the default implementation - implementations of
+   * Gets {@link EntryInfo} by using reflection. This is the default implementation - implementations of
    * {@link Resources} can use a different implementation, but should behave the same.
    *
    * Throws {@link TyResException} if the method is invalid.
    */
-  public static ResInfo reflect(
+  public static EntryInfo reflect(
     BundleInfo bundleInfo,
     Method method,
-    EffectiveNameGenerator effectiveNameGenerator
+    ImplementationDataProvider implementationDataProvider
   ) {
     var fileAnnotation = method.getAnnotation(File.class);
     var filename = determineFilename(fileAnnotation);
     if (filename == null) {
       // if it has no filename, it must be a text
-      return newText(bundleInfo, method, effectiveNameGenerator);
+      var entryInfo = newText(bundleInfo, method);
+      return entryInfo.withImplementationData(
+        implementationDataProvider.implementationDataForTextEntry(entryInfo)
+      );
     } else {
-      return newBin(bundleInfo, method, filename, effectiveNameGenerator);
+      var entryInfo = newBin(bundleInfo, method, filename);
+      return entryInfo.withImplementationData(
+        implementationDataProvider.implementationDataForBinEntry(entryInfo)
+      );
     }
   }
 
-  public interface EffectiveNameGenerator {
-    String effectiveNameForText(BundleInfo bundleInfo, Method method, String name);
-    Filename effectiveNameForBin(BundleInfo bundleInfo, Method method, Filename filename);
-  }
-
-  private static BinResInfo newBin(
-    BundleInfo bundleInfo,
-    Method method,
-    Filename filename,
-    EffectiveNameGenerator effectiveNameGenerator
-  ) {
-    var validationAnnotation = method.getAnnotation(Validation.class);
+  private static BinEntry newBin(BundleInfo bundleInfo, Method method, Filename filename) {
+    var required = isRequired(method);
     if (method.getAnnotation(Rename.class) != null) {
       throw new TyResException(
         "Annotation @" +
@@ -326,23 +337,14 @@ public abstract class ResInfo implements WithConciseDebugString {
         "]. Arguments are only supported for formatted messages (this is binary). If you want a formatted message, return '" +
         Fmt.class.getSimpleName() +
         "' instead of '" +
-        BinResInfo.class +
+        BinEntry.class +
         "'."
       );
     }
-    var effectiveFilename = effectiveNameGenerator.effectiveNameForBin(
-      bundleInfo,
-      method,
-      filename
-    );
-    return new BinResInfo(bundleInfo, method, validationAnnotation, filename, effectiveFilename);
+    return new BinEntry(bundleInfo, method, required, null, filename);
   }
 
-  private static TextResInfo newText(
-    BundleInfo bundleInfo,
-    Method method,
-    EffectiveNameGenerator effectiveNameGenerator
-  ) {
+  private static TextEntry newText(BundleInfo bundleInfo, Method method) {
     var textType = determineTextType(method);
     if (textType == null) {
       var returnType = method.getReturnType();
@@ -378,15 +380,14 @@ public abstract class ResInfo implements WithConciseDebugString {
         "]. Arguments are only supported for formatted messages. If you want a formatted message, return '" +
         Fmt.class.getSimpleName() +
         "' instead of '" +
-        TextResInfo.class +
+        TextEntry.class +
         "'."
       );
     }
 
-    var validationAnnotation = method.getAnnotation(Validation.class);
+    var required = isRequired(method);
     var renameAnnotation = method.getAnnotation(Rename.class);
     var name = determineName(method, renameAnnotation);
-    var effectiveName = effectiveNameGenerator.effectiveNameForText(bundleInfo, method, name);
     var defaultValueAnnotation = method.getAnnotation(Default.class);
     final String defaultValue;
     if (defaultValueAnnotation != null) {
@@ -394,15 +395,7 @@ public abstract class ResInfo implements WithConciseDebugString {
     } else {
       defaultValue = null;
     }
-    return new TextResInfo(
-      bundleInfo,
-      method,
-      validationAnnotation,
-      textType,
-      name,
-      effectiveName,
-      defaultValue
-    );
+    return new TextEntry(bundleInfo, method, required, null, textType, name, defaultValue);
   }
 
   private static Filename determineFilename(@Nullable File file) {
@@ -418,6 +411,16 @@ public abstract class ResInfo implements WithConciseDebugString {
       return method.getName();
     } else {
       return rename.value();
+    }
+  }
+
+  private static boolean isRequired(Method method) {
+    var validationAnnotation = method.getAnnotation(Validation.class);
+    if (validationAnnotation == null) {
+      // default value: required = true
+      return true;
+    } else {
+      return !validationAnnotation.optional();
     }
   }
 

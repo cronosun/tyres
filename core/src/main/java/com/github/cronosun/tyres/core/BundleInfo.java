@@ -4,26 +4,38 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 public final class BundleInfo implements WithConciseDebugString {
 
   private final Class<?> bundleClass;
   private final BaseName baseName;
-  private final BaseName effectiveBaseName;
+
+  @Nullable
+  private final Object implementationData;
 
   public BundleInfo(Class<?> bundleClass, BaseName baseName) {
-    this(bundleClass, baseName, baseName);
+    this(bundleClass, baseName, null);
   }
 
-  public BundleInfo(Class<?> bundleClass, BaseName baseName, BaseName effectiveBaseName) {
+  public BundleInfo(Class<?> bundleClass, BaseName baseName, @Nullable Object implementationData) {
     this.bundleClass = Objects.requireNonNull(bundleClass);
     this.baseName = Objects.requireNonNull(baseName);
-    this.effectiveBaseName = Objects.requireNonNull(effectiveBaseName);
+    this.implementationData = implementationData;
   }
 
-  public static BundleInfo reflect(Class<?> bundleClass) {
-    return new BundleInfo(bundleClass, getBaseName(bundleClass));
+  public static BundleInfo reflect(
+    Class<?> bundleClass,
+    ImplementationDataProvider implementationDataProvider
+  ) {
+    var bundleInfo = new BundleInfo(bundleClass, getBaseName(bundleClass));
+    var implementationData = implementationDataProvider.implementationDataForBundle(bundleInfo);
+    if (implementationData != null) {
+      return new BundleInfo(bundleInfo.bundleClass(), bundleInfo.baseName(), implementationData);
+    } else {
+      return bundleInfo;
+    }
   }
 
   public Class<?> bundleClass() {
@@ -35,17 +47,18 @@ public final class BundleInfo implements WithConciseDebugString {
   }
 
   /**
-   * The base name that is used for lookup in the bundle. It's usually (and initially) the same as
-   * {@link #baseName()} - but the implementation is allowed to change that.
+   * This is additional data the implementation can add (optionally). This is implementation specific and should not be
+   * used, unless you write a {@link Resources} implementation.
    */
-  public BaseName effectiveBaseName() {
-    return this.effectiveBaseName;
+  @Nullable
+  public Object implementationData() {
+    return this.implementationData;
   }
 
-  public Stream<ResInfo> resources(ResInfo.EffectiveNameGenerator effectiveNameGenerator) {
+  public Stream<EntryInfo> resources(ImplementationDataProvider implementationDataProvider) {
     return Arrays
       .stream(bundleClass.getMethods())
-      .map(method -> ResInfo.reflect(this, method, effectiveNameGenerator));
+      .map(method -> EntryInfo.reflect(this, method, implementationDataProvider));
   }
 
   public int numberOfMethods() {
@@ -86,26 +99,18 @@ public final class BundleInfo implements WithConciseDebugString {
     return (
       bundleClass.equals(that.bundleClass) &&
       baseName.equals(that.baseName) &&
-      effectiveBaseName.equals(that.effectiveBaseName)
+      Objects.equals(implementationData, that.implementationData)
     );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(bundleClass, baseName, effectiveBaseName);
+    return Objects.hash(bundleClass, baseName, implementationData);
   }
 
   @Override
   public String conciseDebugString() {
     return WithConciseDebugString.build(List.of(baseName()));
-  }
-
-  public BundleInfo withEffectiveBaseName(BaseName effectiveBaseName) {
-    if (effectiveBaseName.equals(this.effectiveBaseName())) {
-      return this;
-    } else {
-      return new BundleInfo(bundleClass(), baseName(), effectiveBaseName);
-    }
   }
 
   @Override
@@ -116,8 +121,8 @@ public final class BundleInfo implements WithConciseDebugString {
       bundleClass +
       ", baseName=" +
       baseName +
-      ", effectiveBaseName=" +
-      effectiveBaseName +
+      ", implementationData=" +
+      implementationData +
       '}'
     );
   }

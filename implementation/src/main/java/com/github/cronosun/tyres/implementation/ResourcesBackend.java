@@ -1,7 +1,7 @@
 package com.github.cronosun.tyres.implementation;
 
+import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.NotFoundConfig;
-import com.github.cronosun.tyres.core.ResInfo;
 import com.github.cronosun.tyres.core.Resources;
 import java.io.InputStream;
 import java.util.Locale;
@@ -13,7 +13,7 @@ public interface ResourcesBackend {
   @Nullable
   String getText(
     Resources resources,
-    ResInfo.TextResInfo info,
+    EntryInfo.TextEntry entry,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
   );
@@ -21,7 +21,7 @@ public interface ResourcesBackend {
   @Nullable
   String getFmt(
     Resources resources,
-    ResInfo.TextResInfo info,
+    EntryInfo.TextEntry entry,
     Object[] args,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
@@ -30,10 +30,10 @@ public interface ResourcesBackend {
   @Nullable
   InputStream getInputStream(
     Resources resources,
-    ResInfo.BinResInfo info,
+    EntryInfo.BinEntry entry,
     @Nullable Locale locale,
     boolean required
   );
 
-  void validateAllResourcesFromBundle(Supplier<Stream<ResInfo>> resInfo, Locale locale);
+  void validateAllResourcesFromBundle(Supplier<Stream<EntryInfo>> resInfo, Locale locale);
 }

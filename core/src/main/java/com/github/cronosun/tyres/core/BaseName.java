@@ -20,6 +20,10 @@ public final class BaseName implements WithConciseDebugString {
     this.path = path;
   }
 
+  public static char separator() {
+    return DOT_SEPARATOR;
+  }
+
   public static BaseName fromClass(Class<?> cls) {
     var packageName = cls.getPackageName();
     var name = cls.getSimpleName();

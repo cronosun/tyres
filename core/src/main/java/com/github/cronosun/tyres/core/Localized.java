@@ -247,7 +247,7 @@ public final class Localized implements Resolvable {
     }
 
     @Override
-    public @Nullable ResInfo.TextResInfo resInfo() {
+    public @Nullable EntryInfo.TextEntry resInfo() {
       return null;
     }
 

@@ -2,6 +2,7 @@ package com.github.cronosun.tyres.implementation;
 
 import com.github.cronosun.tyres.core.*;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
@@ -16,25 +17,28 @@ final class DefaultResourcesBackend implements ResourcesBackend {
   private final ArgsResolver argsResolver;
   private final FallbackGenerator fallbackGenerator;
   private final ValidatorBackend validatorBackend;
+  private final Once<EffectiveNameGenerator> effectiveNameGenerator;
 
   public DefaultResourcesBackend(
     TextBackend textBackend,
     BinBackend binBackend,
     ArgsResolver argsResolver,
     FallbackGenerator fallbackGenerator,
-    ValidatorBackend validatorBackend
+    ValidatorBackend validatorBackend,
+    Once<EffectiveNameGenerator> effectiveNameGenerator
   ) {
     this.textBackend = textBackend;
     this.binBackend = binBackend;
     this.argsResolver = argsResolver;
     this.fallbackGenerator = fallbackGenerator;
     this.validatorBackend = validatorBackend;
+    this.effectiveNameGenerator = effectiveNameGenerator;
   }
 
   @Override
   public @Nullable String getText(
     Resources resources,
-    ResInfo.TextResInfo info,
+    EntryInfo.TextEntry entry,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
   ) {
@@ -43,21 +47,26 @@ final class DefaultResourcesBackend implements ResourcesBackend {
     );
     var localeToUse = locale(locale, resources);
     if (localeToUse == null) {
-      return handleReturnForText(null, info, null, NO_ARGS, notFoundConfigWithNullNoDefault);
+      return handleReturnForText(null, entry, null, NO_ARGS, notFoundConfigWithNullNoDefault);
     }
-    validatorBackend.validate(
-      ValidatorBackend.When.ON_USE,
-      info.bundleInfo().bundleClass(),
-      localeToUse
+    var bundleInfo = entry.bundleInfo();
+    validatorBackend.validate(ValidatorBackend.When.ON_USE, bundleInfo.bundleClass(), localeToUse);
+    var baseName = DefaultImplementationDataProvider.baseNameForText(bundleInfo);
+    var name = DefaultImplementationDataProvider.name(entry);
+    var value = this.textBackend.maybeText(entry, baseName, name, localeToUse);
+    return handleReturnForText(
+      value,
+      entry,
+      localeToUse,
+      NO_ARGS,
+      notFoundConfigWithNullNoDefault
     );
-    var value = this.textBackend.maybeText(info, localeToUse);
-    return handleReturnForText(value, info, localeToUse, NO_ARGS, notFoundConfigWithNullNoDefault);
   }
 
   @Override
   public @Nullable String getFmt(
     Resources resources,
-    ResInfo.TextResInfo info,
+    EntryInfo.TextEntry entry,
     Object[] args,
     @Nullable Locale locale,
     NotFoundConfig.WithNullAndDefault notFoundConfig
@@ -67,7 +76,7 @@ final class DefaultResourcesBackend implements ResourcesBackend {
     );
     var localeToUse = locale(locale, resources);
     if (localeToUse == null) {
-      return handleReturnForText(null, info, null, args, notFoundConfigWithNullNoDefault);
+      return handleReturnForText(null, entry, null, args, notFoundConfigWithNullNoDefault);
     }
     var resolvedArgs = argsResolver.resolve(
       resources,
@@ -76,17 +85,20 @@ final class DefaultResourcesBackend implements ResourcesBackend {
       args
     );
     if (resolvedArgs == null) {
-      return handleReturnForText(null, info, localeToUse, args, notFoundConfigWithNullNoDefault);
+      return handleReturnForText(null, entry, localeToUse, args, notFoundConfigWithNullNoDefault);
     }
-    var value = this.textBackend.maybeFmt(info, resolvedArgs, localeToUse);
+    var bundleInfo = entry.bundleInfo();
+    var baseName = DefaultImplementationDataProvider.baseNameForText(bundleInfo);
+    var name = DefaultImplementationDataProvider.name(entry);
+    var value = this.textBackend.maybeFmt(entry, baseName, name, resolvedArgs, localeToUse);
     validatorBackend.validate(
       ValidatorBackend.When.ON_USE,
-      info.bundleInfo().bundleClass(),
+      entry.bundleInfo().bundleClass(),
       localeToUse
     );
     return handleReturnForText(
       value,
-      info,
+      entry,
       localeToUse,
       resolvedArgs,
       notFoundConfigWithNullNoDefault
@@ -96,7 +108,7 @@ final class DefaultResourcesBackend implements ResourcesBackend {
   @Override
   public @Nullable InputStream getInputStream(
     Resources resources,
-    ResInfo.BinResInfo info,
+    EntryInfo.BinEntry entry,
     @Nullable Locale locale,
     boolean required
   ) {
@@ -107,53 +119,131 @@ final class DefaultResourcesBackend implements ResourcesBackend {
     } else {
       validatorBackend.validate(
         ValidatorBackend.When.ON_USE,
-        info.bundleInfo().bundleClass(),
+        entry.bundleInfo().bundleClass(),
         localeToUse
       );
-      inputStream = this.binBackend.maybeBin(info, localeToUse);
+      var baseName = DefaultImplementationDataProvider.baseNameForBin(entry.bundleInfo());
+      var filename = DefaultImplementationDataProvider.filename(entry);
+      inputStream = this.binBackend.maybeBin(entry, baseName, filename, localeToUse);
     }
     if (inputStream == null && required) {
-      return throwNotFound(info, localeToUse);
+      return throwNotFound(entry, localeToUse);
     } else {
       return inputStream;
     }
   }
 
   @Override
-  public void validateAllResourcesFromBundle(Supplier<Stream<ResInfo>> resInfo, Locale locale) {
+  public void validateAllResourcesFromBundle(Supplier<Stream<EntryInfo>> resInfo, Locale locale) {
     // first make sure everything is here
     var resInfoStream = resInfo.get();
-    resInfoStream.forEach(item -> this.validateSingleResouce(item, locale));
+    resInfoStream.forEach(item -> this.validateSingleResource(item, locale));
     // now ask the text backend whether there are superfluous resources
-    var textResources = resInfo
+    var textEntries = resInfo
       .get()
-      .filter(info -> info instanceof ResInfo.TextResInfo)
-      .map(info -> (ResInfo.TextResInfo) info);
-    textBackend.validateNoSuperfluousResources(textResources, locale);
+      .filter(info -> info instanceof EntryInfo.TextEntry)
+      .map(info -> (EntryInfo.TextEntry) info);
+    validateNoSuperfluousResources(textEntries, locale);
   }
 
-  private void validateSingleResouce(ResInfo resInfo, Locale locale) {
-    if (resInfo instanceof ResInfo.TextResInfo) {
-      var cast = (ResInfo.TextResInfo) resInfo;
+  private void validateNoSuperfluousResources(
+    Stream<EntryInfo.TextEntry> textEntries,
+    Locale locale
+  ) {
+    var declaredNamesInBundle = new HashSet<String>();
+    var textEntriesIterator = textEntries.iterator();
+    BaseName uniqueEffectiveBaseName = null;
+    BaseName uniqueDeclaredBaseName = null;
+    while (textEntriesIterator.hasNext()) {
+      var textEntry = textEntriesIterator.next();
+      var bundleInfo = textEntry.bundleInfo();
+      var thisBaseName = DefaultImplementationDataProvider.baseNameForText(bundleInfo);
+      if (uniqueEffectiveBaseName == null) {
+        uniqueEffectiveBaseName = thisBaseName;
+      } else {
+        if (!uniqueEffectiveBaseName.equals(thisBaseName)) {
+          // cannot validate if there are multiple base names in one bundle
+          return;
+        }
+      }
+      if (uniqueDeclaredBaseName == null) {
+        uniqueDeclaredBaseName = bundleInfo.baseName();
+      } else {
+        if (!uniqueDeclaredBaseName.equals(bundleInfo.baseName())) {
+          // cannot validate if there are multiple base names in one bundle
+          return;
+        }
+      }
+      declaredNamesInBundle.add(textEntry.name());
+    }
+    if (uniqueEffectiveBaseName == null) {
+      return;
+    }
+    if (uniqueDeclaredBaseName == null) {
+      return;
+    }
+
+    // ask the backend what resources we have
+    var originalNamesInBundle = textBackend.maybeAllResourcesInBundle(
+      uniqueEffectiveBaseName,
+      locale
+    );
+    if (originalNamesInBundle == null) {
+      return;
+    }
+    var originalNamesInBundleIterator = originalNamesInBundle.iterator();
+    var effectiveNameGenerator = this.effectiveNameGenerator.get();
+    while (originalNamesInBundleIterator.hasNext()) {
+      var effectiveNameInBundle = originalNamesInBundleIterator.next();
+      var declaredName = effectiveNameGenerator.fromEffectiveNameToDeclaredName(
+        uniqueDeclaredBaseName,
+        uniqueEffectiveBaseName,
+        effectiveNameInBundle
+      );
+      if (declaredName != null) {
+        if (!declaredNamesInBundle.contains(declaredName)) {
+          throw new TyResException(
+            "There's text/pattern found, key '" +
+            declaredName +
+            "', " +
+            uniqueDeclaredBaseName.conciseDebugString() +
+            " (locale '" +
+            locale.toLanguageTag() +
+            "') but it's not used in the bundle interface (effective base name " +
+            uniqueEffectiveBaseName.conciseDebugString() +
+            "). Remove the text/pattern, or use it in the bundle interface!"
+          );
+        }
+      }
+    }
+  }
+
+  private void validateSingleResource(EntryInfo entry, Locale locale) {
+    if (entry instanceof EntryInfo.TextEntry) {
+      var cast = (EntryInfo.TextEntry) entry;
+      var baseName = DefaultImplementationDataProvider.baseNameForText(entry.bundleInfo());
+      var name = DefaultImplementationDataProvider.name(cast);
       switch (cast.type()) {
         case TEXT:
-          textBackend.validateText(cast, locale);
+          textBackend.validateText(cast, baseName, name, locale);
           break;
         case FMT:
-          textBackend.validateFmt(cast, locale);
+          textBackend.validateFmt(cast, baseName, name, locale);
           break;
         default:
           throw new TyResException("Unknown text type: " + cast.type());
       }
-    } else if (resInfo instanceof ResInfo.BinResInfo) {
-      var cast = (ResInfo.BinResInfo) resInfo;
-      this.binBackend.validate(cast, locale);
+    } else if (entry instanceof EntryInfo.BinEntry) {
+      var cast = (EntryInfo.BinEntry) entry;
+      var baseName = DefaultImplementationDataProvider.baseNameForBin(entry.bundleInfo());
+      var filename = DefaultImplementationDataProvider.filename(cast);
+      this.binBackend.validate(cast, baseName, filename, locale);
     }
   }
 
   private String handleReturnForText(
     @Nullable String text,
-    ResInfo.TextResInfo info,
+    EntryInfo.TextEntry info,
     @Nullable Locale locale,
     Object[] args,
     NotFoundConfig.WithNullNoDefault notFoundConfig
@@ -185,12 +275,12 @@ final class DefaultResourcesBackend implements ResourcesBackend {
     }
   }
 
-  private <T> T throwNotFound(ResInfo resInfo, @Nullable Locale locale) {
+  private <T> T throwNotFound(EntryInfo entryInfo, @Nullable Locale locale) {
     if (locale == null) {
-      var debugString = resInfo.conciseDebugString();
+      var debugString = entryInfo.conciseDebugString();
       throw new TyResException("No locale found resolving '" + debugString + "'.");
     } else {
-      var debugString = WithConciseDebugString.build(List.of(locale.toLanguageTag(), resInfo));
+      var debugString = WithConciseDebugString.build(List.of(locale.toLanguageTag(), entryInfo));
       throw new TyResException("Resource '" + debugString + "' not found.");
     }
   }

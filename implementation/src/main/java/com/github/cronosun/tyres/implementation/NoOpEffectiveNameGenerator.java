@@ -2,8 +2,9 @@ package com.github.cronosun.tyres.implementation;
 
 import com.github.cronosun.tyres.core.BaseName;
 import com.github.cronosun.tyres.core.BundleInfo;
+import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.Filename;
-import java.lang.reflect.Method;
+import org.jetbrains.annotations.Nullable;
 
 final class NoOpEffectiveNameGenerator implements EffectiveNameGenerator {
 
@@ -16,17 +17,35 @@ final class NoOpEffectiveNameGenerator implements EffectiveNameGenerator {
   }
 
   @Override
-  public String effectiveNameForText(BundleInfo bundleInfo, Method method, String name) {
-    return name;
+  @Nullable
+  public BaseName effectiveBaseNameForText(BundleInfo bundleInfo) {
+    return null;
   }
 
   @Override
-  public Filename effectiveNameForBin(BundleInfo bundleInfo, Method method, Filename filename) {
-    return filename;
+  @Nullable
+  public BaseName effectiveBaseNameForBin(BundleInfo bundleInfo) {
+    return null;
   }
 
   @Override
-  public BaseName effectiveBaseName(Class<?> bundleClass, BaseName declaredBaseName) {
-    return declaredBaseName;
+  @Nullable
+  public String effectiveName(EntryInfo.TextEntry entry) {
+    return null;
+  }
+
+  @Override
+  public @Nullable String fromEffectiveNameToDeclaredName(
+    BaseName declaredBaseName,
+    BaseName effectiveBaseName,
+    String effectiveName
+  ) {
+    return effectiveName;
+  }
+
+  @Override
+  @Nullable
+  public Filename effectiveName(EntryInfo.BinEntry entry) {
+    return null;
   }
 }

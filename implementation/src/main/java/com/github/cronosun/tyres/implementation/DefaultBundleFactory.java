@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
@@ -14,28 +13,23 @@ final class DefaultBundleFactory implements BundleFactory {
 
   private final Once<Resources> resources;
   private final ResourcesBackend backend;
-  private final EffectiveNameGenerator effectiveNameGenerator;
+  private final DefaultImplementationDataProvider defaultImplementationDataProvider;
 
   public DefaultBundleFactory(
     Once<Resources> resources,
     ResourcesBackend backend,
-    EffectiveNameGenerator effectiveNameGenerator
+    Once<EffectiveNameGenerator> effectiveNameGenerator
   ) {
     this.resources = resources;
     this.backend = backend;
-    this.effectiveNameGenerator = effectiveNameGenerator;
+    this.defaultImplementationDataProvider =
+      new DefaultImplementationDataProvider(effectiveNameGenerator);
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> T createBundle(Class<T> bundleClass) {
-    var originalBundleInfo = BundleInfo.reflect(bundleClass);
-    var effectiveBaseName = effectiveNameGenerator.effectiveBaseName(
-      bundleClass,
-      originalBundleInfo.baseName()
-    );
-    var bundleInfo = originalBundleInfo.withEffectiveBaseName(effectiveBaseName);
-
+    var bundleInfo = BundleInfo.reflect(bundleClass, defaultImplementationDataProvider);
     var resourcesMap = ResourcesMap.from(this, bundleInfo);
     var invocationHandler = new InvocationHandler(resourcesMap);
     return (T) Proxy.newProxyInstance(
@@ -50,7 +44,7 @@ final class DefaultBundleFactory implements BundleFactory {
   }
 
   @Override
-  public Stream<ResInfo> declaredResourcesForValidation(Object bundle) {
+  public Stream<EntryInfo> declaredResourcesForValidation(Object bundle) {
     var handler = Proxy.getInvocationHandler(bundle);
     if (handler instanceof InvocationHandler) {
       var cast = (InvocationHandler) handler;
@@ -114,7 +108,7 @@ final class DefaultBundleFactory implements BundleFactory {
     public static ResourcesMap from(DefaultBundleFactory factory, BundleInfo bundleInfo) {
       var numberOfMethods = bundleInfo.numberOfMethods();
       var map = bundleInfo
-        .resources(factory.effectiveNameGenerator)
+        .resources(factory.defaultImplementationDataProvider)
         .map(resInfo -> {
           var key = resInfo.method().getName();
           var value = (WithArgumentsAndResInfo) ResourcesMap.fromMethodInfoToImplementation(
@@ -126,7 +120,7 @@ final class DefaultBundleFactory implements BundleFactory {
         .collect(Collectors.toUnmodifiableMap(item -> item.key, item -> item.value));
       if (map.size() != numberOfMethods) {
         var methodNames = bundleInfo
-          .resources(factory.effectiveNameGenerator)
+          .resources(factory.defaultImplementationDataProvider)
           .map(item -> item.method().getName())
           .collect(Collectors.joining(", "));
         throw new TyResException(
@@ -142,10 +136,10 @@ final class DefaultBundleFactory implements BundleFactory {
 
     private static WithArgumentsAndResInfo<?> fromMethodInfoToImplementation(
       DefaultBundleFactory factory,
-      ResInfo resInfo
+      EntryInfo entryInfo
     ) {
-      if (resInfo instanceof ResInfo.TextResInfo) {
-        var text = (ResInfo.TextResInfo) resInfo;
+      if (entryInfo instanceof EntryInfo.TextEntry) {
+        var text = (EntryInfo.TextEntry) entryInfo;
         switch (text.type()) {
           case TEXT:
             return new TextImpl(factory, text);
@@ -154,20 +148,20 @@ final class DefaultBundleFactory implements BundleFactory {
           default:
             throw new TyResException("Unknown text type: " + text.type());
         }
-      } else if (resInfo instanceof ResInfo.BinResInfo) {
-        var bin = (ResInfo.BinResInfo) resInfo;
+      } else if (entryInfo instanceof EntryInfo.BinEntry) {
+        var bin = (EntryInfo.BinEntry) entryInfo;
         return new BinImpl(factory, bin);
       } else {
-        throw new TyResException("Unknown resource type: " + resInfo);
+        throw new TyResException("Unknown resource type: " + entryInfo);
       }
     }
 
     private static final class TextImpl implements Text, WithArgumentsAndResInfo<TextImpl> {
 
       private final DefaultBundleFactory factory;
-      private final ResInfo.TextResInfo info;
+      private final EntryInfo.TextEntry info;
 
-      private TextImpl(DefaultBundleFactory factory, ResInfo.TextResInfo info) {
+      private TextImpl(DefaultBundleFactory factory, EntryInfo.TextEntry info) {
         this.factory = factory;
         this.info = info;
       }
@@ -181,7 +175,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
-      public ResInfo.TextResInfo resInfo() {
+      public EntryInfo.TextEntry resInfo() {
         return info;
       }
 
@@ -221,9 +215,9 @@ final class DefaultBundleFactory implements BundleFactory {
 
       private static final Object[] NO_ARGS = new Object[] {};
       private final DefaultBundleFactory factory;
-      private final ResInfo.TextResInfo info;
+      private final EntryInfo.TextEntry info;
 
-      private FmtImpl(DefaultBundleFactory factory, ResInfo.TextResInfo info) {
+      private FmtImpl(DefaultBundleFactory factory, EntryInfo.TextEntry info) {
         this.factory = factory;
         this.info = info;
       }
@@ -238,7 +232,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
-      public ResInfo.TextResInfo resInfo() {
+      public EntryInfo.TextEntry resInfo() {
         return info;
       }
 
@@ -285,7 +279,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
-      public @Nullable ResInfo.TextResInfo resInfo() {
+      public @Nullable EntryInfo.TextEntry resInfo() {
         return noArgs.info;
       }
 
@@ -332,9 +326,9 @@ final class DefaultBundleFactory implements BundleFactory {
     private static final class BinImpl implements Bin, WithArgumentsAndResInfo<BinImpl> {
 
       private final DefaultBundleFactory factory;
-      private final ResInfo.BinResInfo info;
+      private final EntryInfo.BinEntry info;
 
-      private BinImpl(DefaultBundleFactory factory, ResInfo.BinResInfo info) {
+      private BinImpl(DefaultBundleFactory factory, EntryInfo.BinEntry info) {
         this.factory = factory;
         this.info = info;
       }
@@ -348,7 +342,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
-      public ResInfo resInfo() {
+      public EntryInfo resInfo() {
         return info;
       }
 
@@ -383,7 +377,7 @@ final class DefaultBundleFactory implements BundleFactory {
 
     interface WithArgumentsAndResInfo<TSelf> {
       TSelf withArguments(Object[] args);
-      ResInfo resInfo();
+      EntryInfo resInfo();
     }
 
     private static final class MapEntry<K, V> {

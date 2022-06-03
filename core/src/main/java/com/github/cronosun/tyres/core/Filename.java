@@ -20,6 +20,15 @@ public final class Filename implements WithConciseDebugString {
     this.extension = extension;
   }
 
+  public static Filename fromBaseExtension(String base, @Nullable String extension) {
+    if (extension != null) {
+      var value = base + EXTENSION_SEPARATOR + extension;
+      return new Filename(value, base, extension);
+    } else {
+      return new Filename(base, base, null);
+    }
+  }
+
   public static Filename from(String name) {
     var extensionSeparatorPos = name.lastIndexOf(EXTENSION_SEPARATOR);
     if (extensionSeparatorPos == -1) {

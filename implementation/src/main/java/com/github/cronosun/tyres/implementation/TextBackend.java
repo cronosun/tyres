@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.implementation;
 
-import com.github.cronosun.tyres.core.ResInfo;
+import com.github.cronosun.tyres.core.BaseName;
+import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -9,7 +10,13 @@ import org.jetbrains.annotations.Nullable;
 @ThreadSafe
 public interface TextBackend {
   @Nullable
-  String maybeFmt(ResInfo.TextResInfo info, Object[] args, Locale locale);
+  String maybeFmt(
+    EntryInfo.TextEntry entry,
+    BaseName baseName,
+    String name,
+    Object[] args,
+    Locale locale
+  );
 
   /**
    * Validates the format, throws {@link com.github.cronosun.tyres.core.TyResException}
@@ -23,10 +30,10 @@ public interface TextBackend {
    *    <li>Asserts that the pattern is valid and number of arguments in the pattern match the number of arguments in the method.</li>
    * </ul>
    */
-  void validateFmt(ResInfo.TextResInfo info, Locale locale);
+  void validateFmt(EntryInfo.TextEntry entry, BaseName baseName, String name, Locale locale);
 
   @Nullable
-  String maybeText(ResInfo.TextResInfo info, Locale locale);
+  String maybeText(EntryInfo.TextEntry entry, BaseName baseName, String name, Locale locale);
 
   /**
    * Validates the text, throws {@link com.github.cronosun.tyres.core.TyResException} on error.
@@ -34,17 +41,14 @@ public interface TextBackend {
    * Note: This is an optional operation. If the implementation does not support validation,
    * this is a no-op. If it's implemented, implementations should do this:
    */
-  void validateText(ResInfo.TextResInfo info, Locale locale);
+  void validateText(EntryInfo.TextEntry entry, BaseName baseName, String name, Locale locale);
 
   /**
-   * Asserts that there are no superfluous resources, throws {@link com.github.cronosun.tyres.core.TyResException}
-   * if there are.
+   * Lists all resources in given bundle (for validation).
    *
-   * Note 1: This is an optional operation (if this is not supported, the method is a no-op).
-   * Note 2: You MUST deliver all text resources from a bundle.
+   * Note 1: This is used for bundle validation only (detect superfluous resources). It might be a slow operation.
+   * Note 2: This operation is optional. If it's not supported, just return <code>null</code>.
    */
-  void validateNoSuperfluousResources(
-    Stream<ResInfo.TextResInfo> allTextResourcesFromBundle,
-    Locale locale
-  );
+  @Nullable
+  Stream<String> maybeAllResourcesInBundle(BaseName baseName, Locale locale);
 }

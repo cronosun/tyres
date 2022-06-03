@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.implementation;
 
-import com.github.cronosun.tyres.core.ResInfo;
+import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.util.List;
 import java.util.Locale;
@@ -15,11 +15,11 @@ final class DefaultFallbackGenerator implements FallbackGenerator {
   }
 
   @Override
-  public String fallbackMsgFor(ResInfo resInfo, @Nullable Locale locale, Object[] args) {
+  public String fallbackMsgFor(EntryInfo entryInfo, @Nullable Locale locale, Object[] args) {
     if (args.length == 0) {
-      return resInfo.conciseDebugString();
+      return entryInfo.conciseDebugString();
     } else {
-      return WithConciseDebugString.build(List.of(resInfo, args));
+      return WithConciseDebugString.build(List.of(entryInfo, args));
     }
   }
 }

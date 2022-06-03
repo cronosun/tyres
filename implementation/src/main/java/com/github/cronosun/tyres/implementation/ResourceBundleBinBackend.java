@@ -31,35 +31,47 @@ final class ResourceBundleBinBackend implements BinBackend {
   }
 
   @Override
-  public @Nullable InputStream maybeBin(ResInfo.BinResInfo info, Locale locale) {
-    var filename = info.effectiveFilename();
-    return maybeGet(info, filename, locale);
+  public @Nullable InputStream maybeBin(
+    EntryInfo.BinEntry entry,
+    BaseName baseName,
+    Filename filename,
+    Locale locale
+  ) {
+    return maybeGet(entry, baseName, filename, locale);
   }
 
   @Override
-  public void validate(ResInfo.BinResInfo info, Locale locale) {
-    try (var inputStream = maybeBin(info, locale)) {
-      if (inputStream == null && !info.validationOptional()) {
+  public void validate(
+    EntryInfo.BinEntry entry,
+    BaseName baseName,
+    Filename filename,
+    Locale locale
+  ) {
+    try (var inputStream = maybeBin(entry, baseName, filename, locale)) {
+      if (inputStream == null && entry.required()) {
         throw new TyResException(
           "Binary resource " +
-          info.conciseDebugString() +
+          entry.conciseDebugString() +
           " for locale '" +
           locale.toLanguageTag() +
-          "' not found. If this resouce is optional, see the @" +
+          "' not found. If this resource is optional, see the @" +
           Validation.class.getSimpleName() +
           " annotation."
         );
       }
     } catch (IOException e) {
-      throw new TyResException("Unable to load binary " + info.conciseDebugString() + ".", e);
+      throw new TyResException("Unable to load binary " + entry.conciseDebugString() + ".", e);
     }
   }
 
   @Nullable
-  private InputStream maybeGet(ResInfo.BinResInfo resInfo, Filename filename, Locale locale) {
-    var bundleInfo = resInfo.bundleInfo();
-    var baseName = bundleInfo.effectiveBaseName();
-    var bundleClass = bundleInfo.bundleClass();
+  private InputStream maybeGet(
+    EntryInfo.BinEntry entry,
+    BaseName baseName,
+    Filename filename,
+    Locale locale
+  ) {
+    var bundleClass = entry.bundleInfo().bundleClass();
 
     // first try from cache
     var originalCacheKey = new CacheKey(baseName, filename, locale, bundleClass);
@@ -100,16 +112,23 @@ final class ResourceBundleBinBackend implements BinBackend {
   }
 
   private String createResourceName(BaseName baseName, Filename filename, Locale locale) {
-    var builder = new StringBuilder(baseName.value());
-    if (builder.length() != 0) {
-      builder.append(".");
+    var builder = new StringBuilder();
+    var resourceName = baseName.value().replace('.', '/');
+    builder.append(resourceName);
+    if (!resourceName.isEmpty() && !resourceName.endsWith("/")) {
+      builder.append("/");
     }
-    builder.append(filename.base());
-    var baseNameString = builder.toString();
 
-    var bundleName = control.toBundleName(baseNameString, locale);
-    var suffix = Objects.requireNonNullElse(filename.extension(), "");
-    return control.toResourceName(bundleName, suffix);
+    builder.append(filename.base());
+    var fileLocaleSuffix = control.toBundleName("", locale);
+    builder.append(fileLocaleSuffix);
+    var extension = filename.extension();
+    if (extension != null) {
+      builder.append('.');
+      builder.append(filename.extension());
+    }
+
+    return builder.toString();
   }
 
   private static final class CacheKey {

@@ -15,6 +15,15 @@ public final class TestUtil {
     return new ResourcesBuilder().defaultNotFoundConfig(notFoundConfig).build();
   }
 
+  public static Resources newInstanceWithEffectiveNameGenerator(
+    DefaultNotFoundConfig notFoundConfig,
+    EffectiveNameGenerator effectiveNameGenerator
+  ) {
+    var builder = new ResourcesBuilder().defaultNotFoundConfig(notFoundConfig);
+    builder.effectiveNameGenerator().setValue(effectiveNameGenerator);
+    return builder.build();
+  }
+
   public static Resources newInstanceValidateOnUse(DefaultNotFoundConfig notFoundConfig) {
     return new ResourcesBuilder()
       .defaultNotFoundConfig(notFoundConfig)

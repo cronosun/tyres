@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.core;
 import java.lang.annotation.*;
 
 /**
- * See {@link ResInfo.TextResInfo#defaultValue()}.
+ * See {@link EntryInfo.TextEntry#defaultValue()}.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

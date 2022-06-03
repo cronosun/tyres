@@ -10,12 +10,12 @@ import org.jetbrains.annotations.Nullable;
 @ThreadSafe
 public interface Text extends Resolvable {
   /**
-   * Returns the {@link com.github.cronosun.tyres.core.ResInfo.TextResInfo} that was used to construct this
+   * Returns the {@link EntryInfo.TextEntry} that was used to construct this
    * text instance. It's not present if this {@link Text} instance was constructed from something else (such as
    * {@link Localized} for example).
    */
   @Nullable
-  ResInfo.TextResInfo resInfo();
+  EntryInfo.TextEntry resInfo();
 
   @Nullable
   String getText(@Nullable Locale locale, NotFoundConfig.WithNullAndDefault notFoundConfig);
