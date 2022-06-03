@@ -9,4 +9,6 @@ public interface MyServiceBundle {
   Fmt amountIsTooSmall(int givenAmount);
 
   Fmt amountIsTooLarge(int givenAmount);
+
+  Fmt somethingWithTestObject(TestObject testObject);
 }
