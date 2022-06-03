@@ -2,7 +2,7 @@ package com.github.cronosun.tyres.core;
 
 import java.util.Locale;
 import java.util.Objects;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * A resource that produces text. A specialization is {@link Fmt} (formatted and with 0-n arguments).

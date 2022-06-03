@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * The {@link TextBackend} using spring's {@link org.springframework.context.MessageSource}.

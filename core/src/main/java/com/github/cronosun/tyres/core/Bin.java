@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.core;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Objects;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Binary resource.

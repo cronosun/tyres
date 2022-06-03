@@ -2,7 +2,7 @@ package com.github.cronosun.tyres.core;
 
 import java.util.List;
 import java.util.Objects;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 @ThreadSafe
 public final class Filename implements WithConciseDebugString {

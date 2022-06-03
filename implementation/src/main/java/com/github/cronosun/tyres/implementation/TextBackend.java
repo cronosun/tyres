@@ -5,7 +5,7 @@ import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 @ThreadSafe
 public interface TextBackend {

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Information about a single entry in a bundle.
@@ -175,7 +175,7 @@ public abstract class EntryInfo implements WithConciseDebugString {
     return new TextEntry(bundleInfo, method, required, null, textType, name, defaultValue);
   }
 
-  private static Filename determineFilename(@Nullable File file) {
+  private static @Nullable Filename determineFilename(@Nullable File file) {
     if (file != null) {
       return Filename.from(file.value());
     } else {
@@ -318,7 +318,7 @@ public abstract class EntryInfo implements WithConciseDebugString {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
@@ -402,7 +402,7 @@ public abstract class EntryInfo implements WithConciseDebugString {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;

@@ -1,6 +1,7 @@
 package com.github.cronosun.tyres.core;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Depending on the situation you might want to configure the application's "not found strategy" differently. For
@@ -91,11 +92,7 @@ public enum NotFoundConfig {
       DefaultNotFoundConfig defaultNotFoundConfig
     ) {
       var withNullNoDefault = this.withNullNoDefault;
-      if (withNullNoDefault != null) {
-        return withNullNoDefault;
-      } else {
-        return defaultNotFoundConfig.withNull();
-      }
+      return Objects.requireNonNullElseGet(withNullNoDefault, defaultNotFoundConfig::withNull);
     }
   }
 }

@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public interface ResourcesBackend {
   @Nullable

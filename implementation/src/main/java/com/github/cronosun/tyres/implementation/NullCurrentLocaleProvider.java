@@ -1,7 +1,7 @@
 package com.github.cronosun.tyres.implementation;
 
 import java.util.Locale;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 final class NullCurrentLocaleProvider implements CurrentLocaleProvider {
 

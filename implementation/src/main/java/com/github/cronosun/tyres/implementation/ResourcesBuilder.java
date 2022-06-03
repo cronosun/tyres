@@ -4,7 +4,7 @@ import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public final class ResourcesBuilder {
 
@@ -34,16 +34,6 @@ public final class ResourcesBuilder {
   );
   private final ValueSupplier<Boolean> validateOnBundleUse = constant(false);
   private boolean built = false;
-  private final ValueSupplier<ResourcesBackend> resourcesBackend = supplier(() ->
-    new DefaultResourcesBackend(
-      textBackend().getGet(),
-      binBackend().getGet(),
-      argsResolver().getGet(),
-      fallbackGenerator().getGet(),
-      validator().getGet(),
-      effectiveNameGenerator().get()
-    )
-  );
 
   /**
    * Builds {@link Resources}. After calling this method, the builder cannot be re-used.
@@ -56,8 +46,27 @@ public final class ResourcesBuilder {
     return resources().getGet();
   }
 
+  private final ValueSupplier<ResourcesBackend> resourcesBackend = supplier(() ->
+    new DefaultResourcesBackend(
+      textBackend().getGet(),
+      binBackend().getGet(),
+      argsResolver().getGet(),
+      fallbackGenerator().getGet(),
+      validator().getGet(),
+      effectiveNameGenerator().get()
+    )
+  );
+
   public ValueSupplier<DefaultNotFoundConfig> defaultNotFoundConfig() {
     return defaultNotFoundConfig;
+  }
+
+  public ValueSupplier<MessageFormatter> messageFormatBackend() {
+    return messageFormatBackend;
+  }
+
+  public ValueSupplier<TextBackend> textBackend() {
+    return textBackend;
   }
 
   private final ValueSupplier<BundleFactory> bundleFactory = supplier(() ->
@@ -68,22 +77,6 @@ public final class ResourcesBuilder {
     )
   );
 
-  public ValueSupplier<MessageFormatter> messageFormatBackend() {
-    return messageFormatBackend;
-  }
-
-  private final ValueSupplier<BundleCache> bundleCache = supplier(() ->
-    BundleCache.newDefault(bundleFactory().getGet())
-  );
-
-  public ValueSupplier<TextBackend> textBackend() {
-    return textBackend;
-  }
-
-  private final ValueSupplier<ValidatorBackend> validatorForCache = supplier(() ->
-    new DefaultValidator(resources().get(), bundleFactory().getGet(), resourcesBackend().getGet())
-  );
-
   public ValueSupplier<BinBackend> binBackend() {
     return binBackend;
   }
@@ -92,26 +85,21 @@ public final class ResourcesBuilder {
     return fallbackGenerator;
   }
 
-  private final ValueSupplier<ValidatorBackend> validator = supplier(() ->
-    new CachedConfigurableValidator(validatorForCache().get(), validateOnBundleUse().getGet())
+  private final ValueSupplier<BundleCache> bundleCache = supplier(() ->
+    BundleCache.newDefault(bundleFactory().getGet())
   );
 
   public ValueSupplier<CurrentLocaleProvider> currentLocaleProvider() {
     return currentLocaleProvider;
   }
 
-  private final ValueSupplier<Resources> resources = supplier(() ->
-    new DefaultResources(
-      defaultNotFoundConfig().getGet(),
-      bundleCache().getGet(),
-      currentLocaleProvider().getGet(),
-      validator().get()
-    )
-  );
-
   public ValueSupplier<ArgsResolver> argsResolver() {
     return argsResolver;
   }
+
+  private final ValueSupplier<ValidatorBackend> validatorForCache = supplier(() ->
+    new DefaultValidator(resources().get(), bundleFactory().getGet(), resourcesBackend().getGet())
+  );
 
   public ValueSupplier<ResourcesBackend> resourcesBackend() {
     return resourcesBackend;
@@ -125,6 +113,10 @@ public final class ResourcesBuilder {
     return resources;
   }
 
+  private final ValueSupplier<ValidatorBackend> validator = supplier(() ->
+    new CachedConfigurableValidator(validatorForCache().get(), validateOnBundleUse().getGet())
+  );
+
   public ValueSupplier<BundleFactory> bundleFactory() {
     return bundleFactory;
   }
@@ -132,6 +124,15 @@ public final class ResourcesBuilder {
   public ValueSupplier<BundleCache> bundleCache() {
     return bundleCache;
   }
+
+  private final ValueSupplier<Resources> resources = supplier(() ->
+    new DefaultResources(
+      defaultNotFoundConfig().getGet(),
+      bundleCache().getGet(),
+      currentLocaleProvider().getGet(),
+      validator().get()
+    )
+  );
 
   public ValueSupplier<ValidatorBackend> validator() {
     return validator;

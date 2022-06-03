@@ -2,7 +2,7 @@ package com.github.cronosun.tyres.implementation;
 
 import com.github.cronosun.tyres.core.*;
 import java.util.Objects;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 final class DefaultImplementationDataProvider implements ImplementationDataProvider {
 

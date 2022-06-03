@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import java.util.spi.ResourceBundleProvider;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 final class ResourceBundleTextBackend implements TextBackend {
 

@@ -78,15 +78,18 @@ class TranslateTest {
 ## Modules
 
 * `core`: Contains the API and a default implementation of `TyResImplementation`. You always need this dependency.
-* `implementation`: Contains the default implementation - you most likely want this dependency too (unless you write your own
+* `implementation`: Contains the default implementation - you most likely want this dependency too (unless you write
+  your own
   implementation from scratch).
 * `spring`: Contains an implementation for spring. You only need this implementation if you're using spring.
+* `kotlin`: Currently does not contain code, just some tests to make sure the library also works flawlessly with kotlin.
 
 ## More
 
 ### Documentation
 
-See the [tests](implementation/src/test/java/com/github/cronosun/tyres/implementation/README.md) in the `implementation` module, they are
+See the [tests](implementation/src/test/java/com/github/cronosun/tyres/implementation/README.md) in the `implementation`
+module, they are
 also meant as documentation. Also
 see [the spring tests](spring/src/test/java/com/github/cronosun/tyres/spring/README.md) if you're interested in spring
 support.
@@ -138,6 +141,8 @@ By using `Text` and `Fmt` instead of `UnspecifiedRes`, the validator knows.
 
 ### I want all the resources in one single `.properties`-file
 
-This is possible, see tests and `EffectiveNameGenerator`. You can also implement your own `EffectiveNameGenerator`: This allows low level control:
- * What `.properties`-file to use.
- * How the keys in the `.properties`-file look like.
+This is possible, see tests and `EffectiveNameGenerator`. You can also implement your own `EffectiveNameGenerator`: This
+allows low level control:
+
+* What `.properties`-file to use.
+* How the keys in the `.properties`-file look like.

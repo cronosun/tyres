@@ -4,7 +4,7 @@ import com.github.cronosun.tyres.core.BaseName;
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.Filename;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 final class NoOpEffectiveNameGenerator implements EffectiveNameGenerator {
 
@@ -35,7 +35,7 @@ final class NoOpEffectiveNameGenerator implements EffectiveNameGenerator {
   }
 
   @Override
-  public @Nullable String fromEffectiveNameToDeclaredName(
+  public String fromEffectiveNameToDeclaredName(
     BaseName declaredBaseName,
     BaseName effectiveBaseName,
     String effectiveName

@@ -3,7 +3,7 @@ package com.github.cronosun.tyres.spring;
 import com.github.cronosun.tyres.core.BaseName;
 import java.util.Locale;
 import java.util.Set;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.springframework.context.MessageSource;
 
 /**

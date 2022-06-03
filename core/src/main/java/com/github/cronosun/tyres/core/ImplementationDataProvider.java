@@ -1,6 +1,6 @@
 package com.github.cronosun.tyres.core;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Implementations can enrich {@link BundleInfo} and {@link EntryInfo} with implementation specific data.

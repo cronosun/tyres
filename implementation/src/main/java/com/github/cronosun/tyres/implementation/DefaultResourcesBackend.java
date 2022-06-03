@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 final class DefaultResourcesBackend implements ResourcesBackend {
 
@@ -179,9 +179,6 @@ final class DefaultResourcesBackend implements ResourcesBackend {
     if (uniqueEffectiveBaseName == null) {
       return;
     }
-    if (uniqueDeclaredBaseName == null) {
-      return;
-    }
 
     // ask the backend what resources we have
     var originalNamesInBundle = textBackend.maybeAllResourcesInBundle(
@@ -241,7 +238,7 @@ final class DefaultResourcesBackend implements ResourcesBackend {
     }
   }
 
-  private String handleReturnForText(
+  private @Nullable String handleReturnForText(
     @Nullable String text,
     EntryInfo.TextEntry info,
     @Nullable Locale locale,

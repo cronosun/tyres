@@ -4,7 +4,7 @@ import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.WithConciseDebugString;
 import java.util.List;
 import java.util.Locale;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 final class DefaultFallbackGenerator implements FallbackGenerator {
 

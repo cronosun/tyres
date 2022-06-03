@@ -12,6 +12,7 @@
         <module>core</module>
         <module>implementation</module>
         <module>spring</module>
+        <module>kotlin</module>
     </modules>
 
     <properties>

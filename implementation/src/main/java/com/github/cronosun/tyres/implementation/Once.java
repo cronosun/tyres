@@ -2,7 +2,7 @@ package com.github.cronosun.tyres.implementation;
 
 import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 @ThreadSafe
 public abstract class Once<T> implements Supplier<T> {

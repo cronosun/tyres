@@ -7,7 +7,8 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 final class DefaultBundleFactory implements BundleFactory {
 
@@ -149,7 +150,7 @@ final class DefaultBundleFactory implements BundleFactory {
           "' (this should not happen, could be a TyRes implementation error)."
         );
       }
-      if (args != null && args.length != 0) {
+      if (args.length != 0) {
         return entry.withArguments(args);
       } else {
         return entry;
@@ -181,6 +182,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
+      @Nonnull
       public EntryInfo.TextEntry resInfo() {
         return info;
       }
@@ -238,6 +240,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
+      @Nonnull
       public EntryInfo.TextEntry resInfo() {
         return info;
       }
@@ -285,7 +288,7 @@ final class DefaultBundleFactory implements BundleFactory {
       }
 
       @Override
-      public @Nullable EntryInfo.TextEntry resInfo() {
+      public EntryInfo.TextEntry resInfo() {
         return noArgs.info;
       }
 

@@ -4,7 +4,7 @@ import com.github.cronosun.tyres.core.NotFoundConfig;
 import com.github.cronosun.tyres.core.Resolvable;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Resolves arguments: Converts {@link Resolvable} to string.

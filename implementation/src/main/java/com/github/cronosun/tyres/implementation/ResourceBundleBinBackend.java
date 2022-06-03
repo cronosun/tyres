@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 final class ResourceBundleBinBackend implements BinBackend {
 

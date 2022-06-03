@@ -4,7 +4,7 @@ import com.github.cronosun.tyres.core.BaseName;
 import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.Filename;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public interface EffectiveNameGenerator {
   /**

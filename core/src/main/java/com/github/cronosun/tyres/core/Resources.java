@@ -1,7 +1,7 @@
 package com.github.cronosun.tyres.core;
 
 import java.util.Locale;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 @ThreadSafe
 public interface Resources {

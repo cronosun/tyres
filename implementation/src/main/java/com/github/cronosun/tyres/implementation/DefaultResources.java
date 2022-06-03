@@ -4,7 +4,7 @@ import com.github.cronosun.tyres.core.DefaultNotFoundConfig;
 import com.github.cronosun.tyres.core.Resources;
 import java.util.Locale;
 import java.util.Objects;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 final class DefaultResources implements Resources {
 

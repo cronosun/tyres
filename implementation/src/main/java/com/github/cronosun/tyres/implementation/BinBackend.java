@@ -5,7 +5,7 @@ import com.github.cronosun.tyres.core.EntryInfo;
 import com.github.cronosun.tyres.core.Filename;
 import java.io.InputStream;
 import java.util.Locale;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public interface BinBackend {
   static BinBackend resourceBundleInstance() {

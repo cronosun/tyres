@@ -2,7 +2,7 @@ package com.github.cronosun.tyres.implementation.service_tests;
 
 import com.github.cronosun.tyres.core.Resolvable;
 import java.util.UUID;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public class MyService {
 

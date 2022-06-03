@@ -5,7 +5,7 @@ import static java.util.ResourceBundle.Control.FORMAT_PROPERTIES;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Contains 0-n localized messages / texts.
