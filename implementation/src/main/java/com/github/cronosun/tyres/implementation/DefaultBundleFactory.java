@@ -64,6 +64,8 @@ final class DefaultBundleFactory implements BundleFactory {
 
   private static final class InvocationHandler implements java.lang.reflect.InvocationHandler {
 
+    private static final Object[] NO_ARGS = new Object[] {};
+
     private final ResourcesMap resourcesMap;
 
     private InvocationHandler(ResourcesMap resourcesMap) {
@@ -72,7 +74,7 @@ final class DefaultBundleFactory implements BundleFactory {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
-      return resourcesMap.get(method, args);
+      return resourcesMap.get(method, Objects.requireNonNullElse(args, NO_ARGS));
     }
   }
 

@@ -1,7 +1,7 @@
 package com.github.cronosun.tyres.core;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 /**
  * Depending on the situation you might want to configure the application's "not found strategy" differently. For

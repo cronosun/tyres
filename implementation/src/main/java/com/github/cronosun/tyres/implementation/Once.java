@@ -1,7 +1,6 @@
 package com.github.cronosun.tyres.implementation;
 
 import com.github.cronosun.tyres.core.ThreadSafe;
-
 import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -26,6 +25,7 @@ public abstract class Once<T> implements Supplier<T> {
 
     @Nullable
     private volatile Supplier<T> supplier;
+
     private final Object lock = new Object();
 
     @Nullable
