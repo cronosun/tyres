@@ -135,3 +135,9 @@ fileNotFound=File {0} not found.
 * Or is this intentional and the developer really wants the literal text `File {0} not found.`?
 
 By using `Text` and `Fmt` instead of `UnspecifiedRes`, the validator knows.
+
+### I want all the resources in one single `.properties`-file
+
+This is possible, see tests and `EffectiveNameGenerator`. You can also implement your own `EffectiveNameGenerator`: This allows low level control:
+ * What `.properties`-file to use.
+ * How the keys in the `.properties`-file look like.
