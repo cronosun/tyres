@@ -1,6 +1,8 @@
 package com.github.cronosun.tyres.implementation;
 
 import com.github.cronosun.tyres.core.ThreadSafe;
+
+import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
@@ -22,7 +24,8 @@ public abstract class Once<T> implements Supplier<T> {
 
   private static final class OnceFromSupplier<T> extends Once<T> {
 
-    private final Supplier<T> supplier;
+    @Nullable
+    private volatile Supplier<T> supplier;
     private final Object lock = new Object();
 
     @Nullable
@@ -41,8 +44,11 @@ public abstract class Once<T> implements Supplier<T> {
         synchronized (this.lock) {
           value = this.value;
           if (value == null) {
-            value = this.supplier.get();
+            var supplier = Objects.requireNonNull(this.supplier, "Supplier is null.");
+            value = supplier.get();
             this.value = value;
+            // we don't need the supplier anymore (potentially allows the GC to free some resources)
+            this.supplier = null;
           }
           return value;
         }
