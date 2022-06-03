@@ -1,7 +1,6 @@
 package com.github.cronosun.tyres.spring;
 
 import com.github.cronosun.tyres.core.BaseName;
-import com.github.cronosun.tyres.core.BundleInfo;
 import com.github.cronosun.tyres.core.ThreadSafe;
 import java.util.Locale;
 
