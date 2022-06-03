@@ -21,7 +21,7 @@ public interface TextBackend {
   /**
    * Validates the format, throws {@link com.github.cronosun.tyres.core.TyResException}
    * on error.
-   *
+   * <p>
    * Note: This is an optional operation. If the implementation does not support validation,
    * this is a no-op. If it's implemented, implementations should do this:
    *
@@ -37,7 +37,7 @@ public interface TextBackend {
 
   /**
    * Validates the text, throws {@link com.github.cronosun.tyres.core.TyResException} on error.
-   *
+   * <p>
    * Note: This is an optional operation. If the implementation does not support validation,
    * this is a no-op. If it's implemented, implementations should do this:
    */
@@ -45,7 +45,7 @@ public interface TextBackend {
 
   /**
    * Lists all resources in given bundle (for validation).
-   *
+   * <p>
    * Note 1: This is used for bundle validation only (detect superfluous resources). It might be a slow operation.
    * Note 2: This operation is optional. If it's not supported, just return <code>null</code>.
    */

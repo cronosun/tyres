@@ -30,7 +30,7 @@ public interface Resources {
   /**
    * Validates the given bundle for the given locale. Throws {@link com.github.cronosun.tyres.core.TyResException}
    * if the bundle does not validate.
-   *
+   * <p>
    * Note: This is highly implementation specific. Implementations must at least check whether {@link #get(Class)}
    * works. Implementations - however - should do more:
    *

@@ -86,25 +86,6 @@ final class DefaultBundleFactory implements BundleFactory {
       this.map = map;
     }
 
-    public Object get(Method method, Object[] args) {
-      var name = method.getName();
-      var entry = map.get(name);
-      if (entry == null) {
-        throw new TyResException(
-          "Entry '" +
-          name +
-          "' not found in bundle " +
-          bundleInfo.conciseDebugString() +
-          "' (this should not happen, could be a TyRes implementation error)."
-        );
-      }
-      if (args != null && args.length != 0) {
-        return entry.withArguments(args);
-      } else {
-        return entry;
-      }
-    }
-
     public static ResourcesMap from(DefaultBundleFactory factory, BundleInfo bundleInfo) {
       var numberOfMethods = bundleInfo.numberOfMethods();
       var map = bundleInfo
@@ -154,6 +135,31 @@ final class DefaultBundleFactory implements BundleFactory {
       } else {
         throw new TyResException("Unknown resource type: " + entryInfo);
       }
+    }
+
+    public Object get(Method method, Object[] args) {
+      var name = method.getName();
+      var entry = map.get(name);
+      if (entry == null) {
+        throw new TyResException(
+          "Entry '" +
+          name +
+          "' not found in bundle " +
+          bundleInfo.conciseDebugString() +
+          "' (this should not happen, could be a TyRes implementation error)."
+        );
+      }
+      if (args != null && args.length != 0) {
+        return entry.withArguments(args);
+      } else {
+        return entry;
+      }
+    }
+
+    interface WithArgumentsAndResInfo<TSelf> {
+      TSelf withArguments(Object[] args);
+
+      EntryInfo resInfo();
     }
 
     private static final class TextImpl implements Text, WithArgumentsAndResInfo<TextImpl> {
@@ -373,11 +379,6 @@ final class DefaultBundleFactory implements BundleFactory {
       public String conciseDebugString() {
         return info.conciseDebugString();
       }
-    }
-
-    interface WithArgumentsAndResInfo<TSelf> {
-      TSelf withArguments(Object[] args);
-      EntryInfo resInfo();
     }
 
     private static final class MapEntry<K, V> {

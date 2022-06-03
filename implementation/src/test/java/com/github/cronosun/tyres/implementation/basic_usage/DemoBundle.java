@@ -10,7 +10,9 @@ public interface DemoBundle {
   Text unformattedTextWithDefault();
 
   Fmt formattedTextNoArgument();
+
   Fmt somethingWithArgument(String name);
+
   Fmt somethingWithTwoArguments(String firstName, String lastName);
 
   Fmt argumentsAreResolved(Resolvable resolvableOne, Resolvable resolvableTwo);

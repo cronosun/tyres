@@ -24,6 +24,13 @@ public class SingleBaseNameTest {
     "SingleBaseName"
   );
 
+  private static Resources newResources() {
+    return TestUtil.newInstanceWithEffectiveNameGenerator(
+      DefaultNotFoundConfig.THROW,
+      EffectiveNameGenerator.singleBaseName(SINGLE_BASE_NAME, SINGLE_BASE_NAME)
+    );
+  }
+
   @Test
   void testCanGetTextsAndBinary() throws IOException {
     var resources = newResources();
@@ -90,13 +97,6 @@ public class SingleBaseNameTest {
     assertThrows(
       TyResException.class,
       () -> resources.validate(FileNotFoundBundle.class, Locale.ROOT)
-    );
-  }
-
-  private static Resources newResources() {
-    return TestUtil.newInstanceWithEffectiveNameGenerator(
-      DefaultNotFoundConfig.THROW,
-      EffectiveNameGenerator.singleBaseName(SINGLE_BASE_NAME, SINGLE_BASE_NAME)
     );
   }
 }

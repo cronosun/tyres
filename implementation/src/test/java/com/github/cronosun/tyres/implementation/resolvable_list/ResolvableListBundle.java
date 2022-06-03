@@ -5,6 +5,8 @@ import com.github.cronosun.tyres.core.Text;
 
 public interface ResolvableListBundle {
   Text colour();
+
   Fmt somethingWithArgument(String argument);
+
   Text aluminium();
 }

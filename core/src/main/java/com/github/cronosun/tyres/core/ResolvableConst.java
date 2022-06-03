@@ -10,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 @ThreadSafe
 final class ResolvableConst<T> implements Resolvable {
 
+  private final Class<T> bundleClass;
+  private final Function<T, Text> function;
+
   @Nullable
   private transient volatile Text cachedText;
 
@@ -24,9 +27,6 @@ final class ResolvableConst<T> implements Resolvable {
   public static <T> ResolvableConst<T> of(Class<T> bundleClass, Function<T, Text> function) {
     return new ResolvableConst<>(bundleClass, function);
   }
-
-  private final Class<T> bundleClass;
-  private final Function<T, Text> function;
 
   @Override
   public Text resolve(Resources resources) {

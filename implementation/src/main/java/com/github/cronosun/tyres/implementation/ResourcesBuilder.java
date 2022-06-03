@@ -8,19 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 public final class ResourcesBuilder {
 
-  private boolean built = false;
-
-  /**
-   * Builds {@link Resources}. After calling this method, the builder cannot be re-used.
-   */
-  public Resources build() {
-    if (built) {
-      throw new IllegalStateException("Cannot re-use the builder.");
-    }
-    built = true;
-    return resources().getGet();
-  }
-
   private final ValueSupplier<DefaultNotFoundConfig> defaultNotFoundConfig = constant(
     DefaultNotFoundConfig.FALLBACK
   );
@@ -42,6 +29,11 @@ public final class ResourcesBuilder {
   private final ValueSupplier<ArgsResolver> argsResolver = constant(
     ArgsResolver.defaultInstance()
   );
+  private final ValueSupplier<EffectiveNameGenerator> effectiveNameGenerator = constant(
+    EffectiveNameGenerator.empty()
+  );
+  private final ValueSupplier<Boolean> validateOnBundleUse = constant(false);
+  private boolean built = false;
   private final ValueSupplier<ResourcesBackend> resourcesBackend = supplier(() ->
     new DefaultResourcesBackend(
       textBackend().getGet(),
@@ -52,9 +44,22 @@ public final class ResourcesBuilder {
       effectiveNameGenerator().get()
     )
   );
-  private final ValueSupplier<EffectiveNameGenerator> effectiveNameGenerator = constant(
-    EffectiveNameGenerator.empty()
-  );
+
+  /**
+   * Builds {@link Resources}. After calling this method, the builder cannot be re-used.
+   */
+  public Resources build() {
+    if (built) {
+      throw new IllegalStateException("Cannot re-use the builder.");
+    }
+    built = true;
+    return resources().getGet();
+  }
+
+  public ValueSupplier<DefaultNotFoundConfig> defaultNotFoundConfig() {
+    return defaultNotFoundConfig;
+  }
+
   private final ValueSupplier<BundleFactory> bundleFactory = supplier(() ->
     new DefaultBundleFactory(
       resources().get(),
@@ -62,37 +67,22 @@ public final class ResourcesBuilder {
       effectiveNameGenerator().get()
     )
   );
-  private final ValueSupplier<BundleCache> bundleCache = supplier(() ->
-    BundleCache.newDefault(bundleFactory().getGet())
-  );
-  private final ValueSupplier<ValidatorBackend> validatorForCache = supplier(() ->
-    new DefaultValidator(resources().get(), bundleFactory().getGet(), resourcesBackend().getGet())
-  );
-  private final ValueSupplier<Boolean> validateOnBundleUse = constant(false);
-  private final ValueSupplier<ValidatorBackend> validator = supplier(() ->
-    new CachedConfigurableValidator(validatorForCache().get(), validateOnBundleUse().getGet())
-  );
-
-  private final ValueSupplier<Resources> resources = supplier(() ->
-    new DefaultResources(
-      defaultNotFoundConfig().getGet(),
-      bundleCache().getGet(),
-      currentLocaleProvider().getGet(),
-      validator().get()
-    )
-  );
-
-  public ValueSupplier<DefaultNotFoundConfig> defaultNotFoundConfig() {
-    return defaultNotFoundConfig;
-  }
 
   public ValueSupplier<MessageFormatter> messageFormatBackend() {
     return messageFormatBackend;
   }
 
+  private final ValueSupplier<BundleCache> bundleCache = supplier(() ->
+    BundleCache.newDefault(bundleFactory().getGet())
+  );
+
   public ValueSupplier<TextBackend> textBackend() {
     return textBackend;
   }
+
+  private final ValueSupplier<ValidatorBackend> validatorForCache = supplier(() ->
+    new DefaultValidator(resources().get(), bundleFactory().getGet(), resourcesBackend().getGet())
+  );
 
   public ValueSupplier<BinBackend> binBackend() {
     return binBackend;
@@ -102,9 +92,22 @@ public final class ResourcesBuilder {
     return fallbackGenerator;
   }
 
+  private final ValueSupplier<ValidatorBackend> validator = supplier(() ->
+    new CachedConfigurableValidator(validatorForCache().get(), validateOnBundleUse().getGet())
+  );
+
   public ValueSupplier<CurrentLocaleProvider> currentLocaleProvider() {
     return currentLocaleProvider;
   }
+
+  private final ValueSupplier<Resources> resources = supplier(() ->
+    new DefaultResources(
+      defaultNotFoundConfig().getGet(),
+      bundleCache().getGet(),
+      currentLocaleProvider().getGet(),
+      validator().get()
+    )
+  );
 
   public ValueSupplier<ArgsResolver> argsResolver() {
     return argsResolver;

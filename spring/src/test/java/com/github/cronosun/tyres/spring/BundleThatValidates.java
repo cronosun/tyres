@@ -5,5 +5,6 @@ import com.github.cronosun.tyres.core.Text;
 
 public interface BundleThatValidates {
   Text sayHello();
+
   Fmt sayHelloTo(String name);
 }

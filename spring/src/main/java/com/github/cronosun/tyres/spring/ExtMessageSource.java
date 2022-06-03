@@ -1,7 +1,6 @@
 package com.github.cronosun.tyres.spring;
 
 import com.github.cronosun.tyres.core.BaseName;
-import com.github.cronosun.tyres.core.BundleInfo;
 import java.util.Locale;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;

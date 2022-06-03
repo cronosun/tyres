@@ -65,7 +65,6 @@ abstract class AbstractMessageFormatter implements MessageFormatter {
 
   /**
    * Formats the given pattern. Throws an exception on error (invalid pattern, invalid arguments, ...).
-   *
    */
   protected abstract String formatInternal(String pattern, Object[] args, Locale locale);
 

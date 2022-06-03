@@ -7,11 +7,11 @@ final class NullCurrentLocaleProvider implements CurrentLocaleProvider {
 
   private static final NullCurrentLocaleProvider INSTANCE = new NullCurrentLocaleProvider();
 
+  private NullCurrentLocaleProvider() {}
+
   public static NullCurrentLocaleProvider instance() {
     return INSTANCE;
   }
-
-  private NullCurrentLocaleProvider() {}
 
   @Override
   public @Nullable Locale currentLocale() {

@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 final class DefaultBundleCache implements BundleCache {
 
   private final BundleFactory bundleFactory;
-  private volatile CacheEntry<?> lastEntry;
   private final Map<Class<?>, CacheEntry<?>> cache = new ConcurrentHashMap<>();
   private final Object lock = new Object();
+  private volatile CacheEntry<?> lastEntry;
 
   DefaultBundleCache(BundleFactory bundleFactory) {
     this.bundleFactory = bundleFactory;

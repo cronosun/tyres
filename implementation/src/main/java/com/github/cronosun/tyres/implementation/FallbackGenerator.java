@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Nullable;
 
 @ThreadSafe
 public interface FallbackGenerator {
-  String fallbackMsgFor(EntryInfo entryInfo, @Nullable Locale locale, Object[] args);
-
   /**
    * The default fallback generator. This is the right choice for most cases.
    */
   static FallbackGenerator defaultInstance() {
     return DefaultFallbackGenerator.instance();
   }
+
+  String fallbackMsgFor(EntryInfo entryInfo, @Nullable Locale locale, Object[] args);
 }

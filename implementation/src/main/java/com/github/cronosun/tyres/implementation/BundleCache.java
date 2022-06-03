@@ -1,8 +1,6 @@
 package com.github.cronosun.tyres.implementation;
 
 public interface BundleCache {
-  <T> T bundle(Class<T> bundleClass);
-
   /**
    * Returns a new instance of the default bundle cache.
    * <p>
@@ -12,4 +10,6 @@ public interface BundleCache {
   static BundleCache newDefault(BundleFactory bundleFactory) {
     return new DefaultBundleCache(bundleFactory);
   }
+
+  <T> T bundle(Class<T> bundleClass);
 }

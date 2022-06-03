@@ -5,6 +5,8 @@ import com.github.cronosun.tyres.core.Text;
 
 public interface RestInfoFromTextBundle {
   Text message1();
+
   Fmt message2();
+
   Fmt message3(String argument);
 }

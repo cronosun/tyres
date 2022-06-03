@@ -7,6 +7,26 @@ import com.github.cronosun.tyres.core.Filename;
 import org.jetbrains.annotations.Nullable;
 
 public interface EffectiveNameGenerator {
+  /**
+   * Returns the empty implementation: The empty implementation does nothing: It does not rewrite names.
+   */
+  static EffectiveNameGenerator empty() {
+    return NoOpEffectiveNameGenerator.instance();
+  }
+
+  /**
+   * Use this if you want to use one single base name for text resources and/or binary resources.
+   * <p>
+   * Text resources will get this name: `[ORIGINAL_BASE_NAME].[ORIGINAL_NAME]`.
+   * Binary resources will get this file name: `[ORIGINAL_BASE_NAME].[ORIGINAL_FILE_NAME]`.
+   */
+  static EffectiveNameGenerator singleBaseName(
+    @Nullable BaseName textBaseName,
+    @Nullable BaseName binBaseName
+  ) {
+    return new SingleBaseNameEffectiveNameGenerator(textBaseName, binBaseName);
+  }
+
   @Nullable
   BaseName effectiveBaseNameForText(BundleInfo bundleInfo);
 
@@ -19,7 +39,7 @@ public interface EffectiveNameGenerator {
   /**
    * Reverse of {@link #effectiveName(EntryInfo.TextEntry)}: Returns the declared name
    * ({@link EntryInfo.TextEntry#name()}) given the effective name.
-   *
+   * <p>
    * Returns <code>null</code> if the given effective name is not a name of this bundle.
    */
   @Nullable
@@ -31,24 +51,4 @@ public interface EffectiveNameGenerator {
 
   @Nullable
   Filename effectiveName(EntryInfo.BinEntry entry);
-
-  /**
-   * Returns the empty implementation: The empty implementation does nothing: It does not rewrite names.
-   */
-  static EffectiveNameGenerator empty() {
-    return NoOpEffectiveNameGenerator.instance();
-  }
-
-  /**
-   * Use this if you want to use one single base name for text resources and/or binary resources.
-   *
-   * Text resources will get this name: `[ORIGINAL_BASE_NAME].[ORIGINAL_NAME]`.
-   * Binary resources will get this file name: `[ORIGINAL_BASE_NAME].[ORIGINAL_FILE_NAME]`.
-   */
-  static EffectiveNameGenerator singleBaseName(
-    @Nullable BaseName textBaseName,
-    @Nullable BaseName binBaseName
-  ) {
-    return new SingleBaseNameEffectiveNameGenerator(textBaseName, binBaseName);
-  }
 }

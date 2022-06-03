@@ -14,6 +14,12 @@ import org.jetbrains.annotations.Nullable;
 public abstract class EntryInfo implements WithConciseDebugString {
 
   private static final Class<?>[] KNOWN_TEXT_TYPES = new Class[] { Text.class, Fmt.class };
+  private final BundleInfo bundleInfo;
+  private final Method method;
+  private final boolean required;
+
+  @Nullable
+  private final Object implementationData;
 
   private EntryInfo(
     BundleInfo bundleInfo,
@@ -27,239 +33,10 @@ public abstract class EntryInfo implements WithConciseDebugString {
     this.implementationData = implementationData;
   }
 
-  private final BundleInfo bundleInfo;
-  private final Method method;
-
-  private final boolean required;
-
-  @Nullable
-  private final Object implementationData;
-
-  public final Method method() {
-    return this.method;
-  }
-
-  public final BundleInfo bundleInfo() {
-    return bundleInfo;
-  }
-
-  /**
-   * <code>true</code> if this entry is required (default). It's used for validation. See {@link Validation#optional()}
-   * annotation.
-   */
-  public final boolean required() {
-    return required;
-  }
-
-  /**
-   * This is additional data the implementation can add (optionally). This is implementation specific and should not be
-   * used, unless you write a {@link Resources} implementation.
-   */
-  @Nullable
-  public Object implementationData() {
-    return this.implementationData;
-  }
-
-  @ThreadSafe
-  public static final class TextEntry extends EntryInfo {
-
-    private final TextType type;
-    private final String name;
-
-    @Nullable
-    private final String defaultValue;
-
-    public TextEntry(
-      BundleInfo bundleInfo,
-      Method method,
-      boolean required,
-      @Nullable Object implementationData,
-      TextType type,
-      String name,
-      @Nullable String defaultValue
-    ) {
-      super(bundleInfo, method, required, implementationData);
-      this.type = Objects.requireNonNull(type);
-      this.name = Objects.requireNonNull(name);
-      this.defaultValue = defaultValue;
-    }
-
-    private TextEntry withImplementationData(@Nullable Object implementationData) {
-      if (implementationData != null || this.implementationData() != null) {
-        return new TextEntry(
-          bundleInfo(),
-          method(),
-          required(),
-          implementationData,
-          type(),
-          name(),
-          defaultValue()
-        );
-      } else {
-        return this;
-      }
-    }
-
-    public TextType type() {
-      return type;
-    }
-
-    /**
-     * The name as declared in the bundle. It's either the method name or the value from {@link Rename}.
-     */
-    public String name() {
-      return name;
-    }
-
-    @Nullable
-    public String defaultValue() {
-      return defaultValue;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
-      TextEntry that = (TextEntry) o;
-      return (
-        type == that.type &&
-        name.equals(that.name) &&
-        Objects.equals(defaultValue, that.defaultValue)
-      );
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(super.hashCode(), type, name, defaultValue);
-    }
-
-    @Override
-    public String toString() {
-      return (
-        "TextEntryInfo{" +
-        "type=" +
-        type +
-        ", name='" +
-        name +
-        '\'' +
-        ", defaultValue='" +
-        defaultValue +
-        '\'' +
-        ", bundleInfo=" +
-        bundleInfo() +
-        ", method=" +
-        method() +
-        ", required=" +
-        required() +
-        ", implementationData=" +
-        implementationData() +
-        '}'
-      );
-    }
-
-    @Override
-    public String conciseDebugString() {
-      return WithConciseDebugString.build(List.of(bundleInfo(), method().getName()));
-    }
-  }
-
-  @ThreadSafe
-  public static final class BinEntry extends EntryInfo {
-
-    private final Filename filename;
-
-    public BinEntry(
-      BundleInfo bundleInfo,
-      Method method,
-      boolean required,
-      @Nullable Object implementationData,
-      Filename filename
-    ) {
-      super(bundleInfo, method, required, implementationData);
-      this.filename = Objects.requireNonNull(filename);
-    }
-
-    private BinEntry withImplementationData(@Nullable Object implementationData) {
-      if (implementationData != null || this.implementationData() != null) {
-        return new BinEntry(bundleInfo(), method(), required(), implementationData, filename());
-      } else {
-        return this;
-      }
-    }
-
-    /**
-     * The filename as declared in the bundle, see {@link File} annotation.
-     */
-    public Filename filename() {
-      return filename;
-    }
-
-    @Override
-    public String conciseDebugString() {
-      return WithConciseDebugString.build(List.of(bundleInfo(), method().getName(), filename));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
-      BinEntry that = (BinEntry) o;
-      return filename.equals(that.filename);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(super.hashCode(), filename);
-    }
-
-    @Override
-    public String toString() {
-      return (
-        "BinEntryInfo{" +
-        "filename=" +
-        filename +
-        ", bundleInfo=" +
-        bundleInfo() +
-        ", method=" +
-        method() +
-        ", required=" +
-        required() +
-        ", implementationData=" +
-        implementationData() +
-        '}'
-      );
-    }
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    EntryInfo entryInfo = (EntryInfo) o;
-    return (
-      required == entryInfo.required &&
-      bundleInfo.equals(entryInfo.bundleInfo) &&
-      method.equals(entryInfo.method) &&
-      Objects.equals(implementationData, entryInfo.implementationData)
-    );
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(bundleInfo, method, required, implementationData);
-  }
-
-  public enum TextType {
-    TEXT,
-    FMT,
-  }
-
   /**
    * Gets {@link EntryInfo} by using reflection. This is the default implementation - implementations of
    * {@link Resources} can use a different implementation, but should behave the same.
-   *
+   * <p>
    * Throws {@link TyResException} if the method is invalid.
    */
   public static EntryInfo reflect(
@@ -433,6 +210,227 @@ public abstract class EntryInfo implements WithConciseDebugString {
       return TextType.FMT;
     } else {
       return null;
+    }
+  }
+
+  public final Method method() {
+    return this.method;
+  }
+
+  public final BundleInfo bundleInfo() {
+    return bundleInfo;
+  }
+
+  /**
+   * <code>true</code> if this entry is required (default). It's used for validation. See {@link Validation#optional()}
+   * annotation.
+   */
+  public final boolean required() {
+    return required;
+  }
+
+  /**
+   * This is additional data the implementation can add (optionally). This is implementation specific and should not be
+   * used, unless you write a {@link Resources} implementation.
+   */
+  @Nullable
+  public Object implementationData() {
+    return this.implementationData;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    EntryInfo entryInfo = (EntryInfo) o;
+    return (
+      required == entryInfo.required &&
+      bundleInfo.equals(entryInfo.bundleInfo) &&
+      method.equals(entryInfo.method) &&
+      Objects.equals(implementationData, entryInfo.implementationData)
+    );
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(bundleInfo, method, required, implementationData);
+  }
+
+  public enum TextType {
+    TEXT,
+    FMT,
+  }
+
+  @ThreadSafe
+  public static final class TextEntry extends EntryInfo {
+
+    private final TextType type;
+    private final String name;
+
+    @Nullable
+    private final String defaultValue;
+
+    public TextEntry(
+      BundleInfo bundleInfo,
+      Method method,
+      boolean required,
+      @Nullable Object implementationData,
+      TextType type,
+      String name,
+      @Nullable String defaultValue
+    ) {
+      super(bundleInfo, method, required, implementationData);
+      this.type = Objects.requireNonNull(type);
+      this.name = Objects.requireNonNull(name);
+      this.defaultValue = defaultValue;
+    }
+
+    private TextEntry withImplementationData(@Nullable Object implementationData) {
+      if (implementationData != null || this.implementationData() != null) {
+        return new TextEntry(
+          bundleInfo(),
+          method(),
+          required(),
+          implementationData,
+          type(),
+          name(),
+          defaultValue()
+        );
+      } else {
+        return this;
+      }
+    }
+
+    public TextType type() {
+      return type;
+    }
+
+    /**
+     * The name as declared in the bundle. It's either the method name or the value from {@link Rename}.
+     */
+    public String name() {
+      return name;
+    }
+
+    @Nullable
+    public String defaultValue() {
+      return defaultValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+      TextEntry that = (TextEntry) o;
+      return (
+        type == that.type &&
+        name.equals(that.name) &&
+        Objects.equals(defaultValue, that.defaultValue)
+      );
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), type, name, defaultValue);
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "TextEntryInfo{" +
+        "type=" +
+        type +
+        ", name='" +
+        name +
+        '\'' +
+        ", defaultValue='" +
+        defaultValue +
+        '\'' +
+        ", bundleInfo=" +
+        bundleInfo() +
+        ", method=" +
+        method() +
+        ", required=" +
+        required() +
+        ", implementationData=" +
+        implementationData() +
+        '}'
+      );
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return WithConciseDebugString.build(List.of(bundleInfo(), method().getName()));
+    }
+  }
+
+  @ThreadSafe
+  public static final class BinEntry extends EntryInfo {
+
+    private final Filename filename;
+
+    public BinEntry(
+      BundleInfo bundleInfo,
+      Method method,
+      boolean required,
+      @Nullable Object implementationData,
+      Filename filename
+    ) {
+      super(bundleInfo, method, required, implementationData);
+      this.filename = Objects.requireNonNull(filename);
+    }
+
+    private BinEntry withImplementationData(@Nullable Object implementationData) {
+      if (implementationData != null || this.implementationData() != null) {
+        return new BinEntry(bundleInfo(), method(), required(), implementationData, filename());
+      } else {
+        return this;
+      }
+    }
+
+    /**
+     * The filename as declared in the bundle, see {@link File} annotation.
+     */
+    public Filename filename() {
+      return filename;
+    }
+
+    @Override
+    public String conciseDebugString() {
+      return WithConciseDebugString.build(List.of(bundleInfo(), method().getName(), filename));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+      BinEntry that = (BinEntry) o;
+      return filename.equals(that.filename);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), filename);
+    }
+
+    @Override
+    public String toString() {
+      return (
+        "BinEntryInfo{" +
+        "filename=" +
+        filename +
+        ", bundleInfo=" +
+        bundleInfo() +
+        ", method=" +
+        method() +
+        ", required=" +
+        required() +
+        ", implementationData=" +
+        implementationData() +
+        '}'
+      );
     }
   }
 }

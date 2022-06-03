@@ -38,6 +38,32 @@ public final class BundleInfo implements WithConciseDebugString {
     }
   }
 
+  private static BaseName getBaseName(Class<?> bundleClass) {
+    var renamePackageAnnotation = bundleClass.getAnnotation(RenamePackage.class);
+    var renameNameAnnotation = bundleClass.getAnnotation(RenameName.class);
+
+    if (renamePackageAnnotation == null && renameNameAnnotation == null) {
+      // 99% case
+      return BaseName.fromClass(bundleClass);
+    }
+
+    final String packageName;
+    if (renamePackageAnnotation == null) {
+      packageName = bundleClass.getPackageName();
+    } else {
+      packageName = renamePackageAnnotation.value();
+    }
+
+    final String name;
+    if (renameNameAnnotation == null) {
+      name = bundleClass.getSimpleName();
+    } else {
+      name = renameNameAnnotation.value();
+    }
+
+    return BaseName.fromPackageAndName(packageName, name);
+  }
+
   public Class<?> bundleClass() {
     return bundleClass;
   }
@@ -63,32 +89,6 @@ public final class BundleInfo implements WithConciseDebugString {
 
   public int numberOfMethods() {
     return bundleClass.getMethods().length;
-  }
-
-  private static BaseName getBaseName(Class<?> bundleClass) {
-    var renamePackageAnnotation = bundleClass.getAnnotation(RenamePackage.class);
-    var renameNameAnnotation = bundleClass.getAnnotation(RenameName.class);
-
-    if (renamePackageAnnotation == null && renameNameAnnotation == null) {
-      // 99% case
-      return BaseName.fromClass(bundleClass);
-    }
-
-    final String packageName;
-    if (renamePackageAnnotation == null) {
-      packageName = bundleClass.getPackageName();
-    } else {
-      packageName = renamePackageAnnotation.value();
-    }
-
-    final String name;
-    if (renameNameAnnotation == null) {
-      name = bundleClass.getSimpleName();
-    } else {
-      name = renameNameAnnotation.value();
-    }
-
-    return BaseName.fromPackageAndName(packageName, name);
   }
 
   @Override

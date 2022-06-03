@@ -23,11 +23,10 @@ public abstract class Once<T> implements Supplier<T> {
   private static final class OnceFromSupplier<T> extends Once<T> {
 
     private final Supplier<T> supplier;
+    private final Object lock = new Object();
 
     @Nullable
     private volatile T value;
-
-    private final Object lock = new Object();
 
     private OnceFromSupplier(Supplier<T> supplier) {
       this.supplier = supplier;

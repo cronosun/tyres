@@ -7,6 +7,7 @@ import com.github.cronosun.tyres.core.Text;
 
 public interface SingleBaseNameOkBundle {
   Text message1();
+
   Text message2();
 
   @Default("Some text")

@@ -8,6 +8,10 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 public interface BinBackend {
+  static BinBackend resourceBundleInstance() {
+    return ResourceBundleBinBackend.instance();
+  }
+
   /**
    * Get the binary if found or <code>null</code> if there's no such binary.
    */
@@ -18,10 +22,6 @@ public interface BinBackend {
     Filename filename,
     Locale locale
   );
-
-  static BinBackend resourceBundleInstance() {
-    return ResourceBundleBinBackend.instance();
-  }
 
   /**
    * Validates the resource (asserts it exists and can be read). Throws a

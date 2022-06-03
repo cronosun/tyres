@@ -12,35 +12,6 @@ final class DefaultImplementationDataProvider implements ImplementationDataProvi
     this.effectiveNameGenerator = effectiveNameGenerator;
   }
 
-  @Override
-  public @Nullable Object implementationDataForBundle(BundleInfo bundleInfo) {
-    var effectiveNameGenerator = this.effectiveNameGenerator.get();
-    var binBaseName = effectiveNameGenerator.effectiveBaseNameForBin(bundleInfo);
-    var textBaseName = effectiveNameGenerator.effectiveBaseNameForText(bundleInfo);
-    if (binBaseName != null || textBaseName != null) {
-      var baseName = bundleInfo.baseName();
-      return new EffectiveBaseNames(
-        Objects.requireNonNullElse(textBaseName, baseName),
-        Objects.requireNonNullElse(binBaseName, baseName)
-      );
-    } else {
-      // not required, seems to be the no-op implementation.
-      return null;
-    }
-  }
-
-  @Override
-  public @Nullable Object implementationDataForTextEntry(EntryInfo.TextEntry textEntry) {
-    var effectiveNameGenerator = this.effectiveNameGenerator.get();
-    return effectiveNameGenerator.effectiveName(textEntry);
-  }
-
-  @Override
-  public @Nullable Object implementationDataForBinEntry(EntryInfo.BinEntry binEntry) {
-    var effectiveNameGenerator = this.effectiveNameGenerator.get();
-    return effectiveNameGenerator.effectiveName(binEntry);
-  }
-
   public static BaseName baseNameForText(BundleInfo bundleInfo) {
     var implementationData = bundleInfo.implementationData();
     if (implementationData instanceof EffectiveBaseNames) {
@@ -77,6 +48,35 @@ final class DefaultImplementationDataProvider implements ImplementationDataProvi
     } else {
       return entry.filename();
     }
+  }
+
+  @Override
+  public @Nullable Object implementationDataForBundle(BundleInfo bundleInfo) {
+    var effectiveNameGenerator = this.effectiveNameGenerator.get();
+    var binBaseName = effectiveNameGenerator.effectiveBaseNameForBin(bundleInfo);
+    var textBaseName = effectiveNameGenerator.effectiveBaseNameForText(bundleInfo);
+    if (binBaseName != null || textBaseName != null) {
+      var baseName = bundleInfo.baseName();
+      return new EffectiveBaseNames(
+        Objects.requireNonNullElse(textBaseName, baseName),
+        Objects.requireNonNullElse(binBaseName, baseName)
+      );
+    } else {
+      // not required, seems to be the no-op implementation.
+      return null;
+    }
+  }
+
+  @Override
+  public @Nullable Object implementationDataForTextEntry(EntryInfo.TextEntry textEntry) {
+    var effectiveNameGenerator = this.effectiveNameGenerator.get();
+    return effectiveNameGenerator.effectiveName(textEntry);
+  }
+
+  @Override
+  public @Nullable Object implementationDataForBinEntry(EntryInfo.BinEntry binEntry) {
+    var effectiveNameGenerator = this.effectiveNameGenerator.get();
+    return effectiveNameGenerator.effectiveName(binEntry);
   }
 
   private static final class EffectiveBaseNames {
